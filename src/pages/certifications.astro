@@ -1,0 +1,85 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Frame from '../components/Frame.astro';
+import AnimatedText from '../components/AnimatedText.astro';
+import { certifications } from '../data/cv';
+
+const sortedCertifications = [...certifications].sort((a, b) =>
+  b.datetime.localeCompare(a.datetime),
+);
+const featuredCertifications = sortedCertifications.slice(0, 5);
+const moreCertifications = sortedCertifications.slice(5);
+const certificationEffects = [
+  { match: 'Power BI', word: 'Power BI', effect: 'pulse', delay: -1.1 },
+  { match: 'Azure', word: 'Azure', effect: 'decode', delay: -2.4, alt: 'AZUR3' },
+  { match: 'Tableau', word: 'Tableau', effect: 'scan', delay: -3.7 },
+  { match: 'Cloud', word: 'Cloud', effect: 'flicker', delay: -4.9 },
+  { match: 'Security', word: 'Security', effect: 'jitter', delay: -2.9 },
+  { match: 'Storage', word: 'Storage', effect: 'wave', delay: -5.5 },
+  { match: 'Qlik', word: 'Qlik', effect: 'invert', delay: -1.8 },
+  { match: 'Python', word: 'Python', effect: 'decode', delay: -4.2, alt: 'PY7H0N' },
+  { match: 'Scrum', word: 'Scrum', effect: 'pulse', delay: -3.2 },
+] as const;
+
+const effectForCertification = (title: string) =>
+  certificationEffects.find(({ match }) => title.includes(match));
+---
+
+<Layout title="CERTIFICATIONS" description="Professional certifications earned by Aniq Saidi.">
+  <Frame title="CERTIFICATIONS">
+    <div data-fit-group data-mobile-min="1" data-desktop-count="5">
+    <div class="credential-list" data-fit-visible>
+      {featuredCertifications.map((certification, index) => (
+        <article class="credential certification" data-fit-item data-order={index}>
+          <div>
+            <h2>
+              {effectForCertification(certification.title) ? (
+                <AnimatedText
+                  text={certification.title}
+                  word={effectForCertification(certification.title)!.word}
+                  effect={effectForCertification(certification.title)!.effect}
+                  delay={effectForCertification(certification.title)!.delay}
+                  alt={'alt' in effectForCertification(certification.title)!
+                    ? effectForCertification(certification.title)!.alt
+                    : undefined}
+                />
+              ) : certification.title}
+            </h2>
+            <p>{certification.issuer}</p>
+          </div>
+          <time datetime={certification.datetime}>{certification.date}</time>
+        </article>
+      ))}
+    </div>
+    <details class="career-details" data-fit-details>
+      <summary>
+        <span class="details-closed">[+] READ MORE CERTIFICATIONS</span>
+        <span class="details-open">[-] SHOW FEWER CERTIFICATIONS</span>
+      </summary>
+      <div class="credential-list credential-list--continued" data-fit-overflow>
+        {moreCertifications.map((certification, index) => (
+          <article class="credential certification" data-fit-item data-order={featuredCertifications.length + index}>
+            <div>
+              <h2>
+                {effectForCertification(certification.title) ? (
+                  <AnimatedText
+                    text={certification.title}
+                    word={effectForCertification(certification.title)!.word}
+                    effect={effectForCertification(certification.title)!.effect}
+                    delay={effectForCertification(certification.title)!.delay}
+                    alt={'alt' in effectForCertification(certification.title)!
+                      ? effectForCertification(certification.title)!.alt
+                      : undefined}
+                  />
+                ) : certification.title}
+              </h2>
+              <p>{certification.issuer}</p>
+            </div>
+            <time datetime={certification.datetime}>{certification.date}</time>
+          </article>
+        ))}
+      </div>
+    </details>
+    </div>
+  </Frame>
+</Layout>

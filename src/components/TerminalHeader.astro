@@ -17,17 +17,67 @@ const current = (path: string) =>
     <span class="logo-name">{SITE_TITLE}</span>
   </a>
   <div class="h-info">
-    <div class="h-line h-line-top">{SITE_TAGLINE}</div>
+    <div class="h-line h-line-top">
+      <span>{SITE_TAGLINE}</span>
+      <span class="tagline-cursor" aria-hidden="true">_</span>
+      <time class="header-clock" id="header-clock" aria-label="Current time in Malaysia">
+        <span id="clock-hour">--</span><span class="clock-separator" aria-hidden="true">:</span><span id="clock-minute">--</span> MYT
+      </time>
+    </div>
     <div class="h-line h-line-bottom">
       <span>BUILD: {SITE_BUILD_ID} VER {SITE_VERSION}</span>
-      <span>{buildDate}</span>
+      <span>
+        <span id="birthday-emoji" role="img" aria-label="Birthday" hidden>🎉 </span>
+        {buildDate}
+      </span>
     </div>
-    <nav class="h-nav" aria-label="Основная навигация">
+    <nav class="h-nav" aria-label="Primary navigation">
       <a href="/" aria-current={current('/')}>&gt; HOME</a>
-      <a href="/blog/" aria-current={current('/blog/')}>&gt; ARCHIVE</a>
       <a href="/about/" aria-current={current('/about/')}>&gt; ABOUT</a>
-      <a href="/rss.xml">&gt; RSS</a>
+      <a href="/experience/" aria-current={current('/experience/')}>&gt; EXPERIENCE</a>
+      <a href="/certifications/" aria-current={current('/certifications/')}>
+        &gt;&nbsp;<span class="nav-label-full">CERTIFICATIONS</span><span class="nav-label-short">CERTS</span>
+      </a>
+      <a href="/awards/" aria-current={current('/awards/')}>&gt; AWARDS</a>
+      <a href="/leadership/" aria-current={current('/leadership/')}>&gt; LEADERSHIP</a>
       <TerminalToggles class="toggles--header" />
     </nav>
   </div>
 </header>
+
+<script is:inline>
+  (function () {
+    var today = new Date();
+    var birthdayEmoji = document.getElementById('birthday-emoji');
+    var clock = document.getElementById('header-clock');
+    var clockHour = document.getElementById('clock-hour');
+    var clockMinute = document.getElementById('clock-minute');
+
+    function updateClock() {
+      if (!clock || !clockHour || !clockMinute) return;
+
+      var now = new Date();
+      var malaysiaTime = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Kuala_Lumpur',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }).format(now);
+
+      var timeParts = malaysiaTime.split(':');
+      clockHour.textContent = timeParts[0];
+      clockMinute.textContent = timeParts[1];
+      clock.setAttribute('datetime', now.toISOString());
+      clock.setAttribute('aria-label', malaysiaTime + ' Malaysia Time');
+
+      // Update just after the minute changes instead of polling every second.
+      window.setTimeout(updateClock, 60050 - (Date.now() % 60000));
+    }
+
+    updateClock();
+
+    if (birthdayEmoji && today.getMonth() === 7 && today.getDate() === 2) {
+      birthdayEmoji.hidden = false;
+    }
+  })();
+</script>

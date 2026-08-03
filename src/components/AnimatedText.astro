@@ -1,0 +1,25 @@
+---
+import AnimatedWord from './AnimatedWord.astro';
+
+interface Props {
+  text: string;
+  word: string;
+  effect?: 'glitch' | 'scan' | 'pulse' | 'flicker' | 'decode' | 'wave' | 'invert' | 'jitter';
+  delay?: number;
+  alt?: string;
+}
+
+const { text, word, effect = 'glitch', delay = 0, alt } = Astro.props;
+const wordIndex = text.toLowerCase().indexOf(word.toLowerCase());
+const matchedWord = wordIndex >= 0
+  ? text.slice(wordIndex, wordIndex + word.length)
+  : '';
+---
+
+{wordIndex >= 0 ? (
+  <>
+    {text.slice(0, wordIndex)}
+    <AnimatedWord text={matchedWord} effect={effect} delay={delay} alt={alt} />
+    {text.slice(wordIndex + word.length)}
+  </>
+) : text}

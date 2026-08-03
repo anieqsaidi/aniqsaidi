@@ -1,0 +1,24 @@
+---
+interface Props {
+  text: string;
+  effect?: 'glitch' | 'scan' | 'pulse' | 'flicker' | 'decode' | 'wave' | 'invert' | 'jitter';
+  delay?: number;
+  alt?: string;
+}
+
+const {
+  text,
+  effect = 'glitch',
+  delay = 0,
+  alt = text.replace(/[A-Za-z]/g, (character) =>
+    String.fromCharCode(33 + (character.charCodeAt(0) % 60)),
+  ),
+} = Astro.props;
+---
+
+<span
+  class:list={['word-fx', `word-fx--${effect}`]}
+  data-text={text}
+  data-alt={alt}
+  style={`--word-fx-delay: ${delay}s`}
+>{text}</span>

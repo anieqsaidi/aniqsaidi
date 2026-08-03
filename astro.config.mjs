@@ -3,8 +3,7 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-  // поменяйте на адрес вашего сайта (нужно для RSS)
-  site: 'https://example.com',
+  site: 'https://aniqsaidi.web.app',
   markdown: {
     // подсветка кода отключена: весь код рисуется одним «фосфорным» цветом,
     // как на настоящем терминале

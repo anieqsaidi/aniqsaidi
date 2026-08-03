@@ -1,0 +1,57 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Frame from '../components/Frame.astro';
+import AnimatedText from '../components/AnimatedText.astro';
+import { awards } from '../data/cv';
+
+const featuredAwards = awards.slice(0, 5);
+const moreAwards = awards.slice(5);
+---
+
+<Layout title="AWARDS" description="Awards, recognition, and leadership achievements of Aniq Saidi.">
+  <Frame title="AWARDS & RECOGNITION">
+    <div data-fit-group data-mobile-min="1" data-desktop-count="5">
+    <div class="credential-list" data-fit-visible>
+      {featuredAwards.map(([title, detail], index) => (
+        <article class="credential credential--stacked" data-fit-item data-order={index}>
+          <div>
+            <h2>
+              {index === 0
+                ? <AnimatedText text={title} word="Excellence" effect="wave" delay={-1.8} />
+                : index === 1
+                  ? <AnimatedText text={title} word="Performer" effect="pulse" delay={-3.3} />
+                  : title}
+            </h2>
+            <p>{detail}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+    <details class="career-details" data-fit-details>
+      <summary>
+        <span class="details-closed">[+] READ MORE AWARDS</span>
+        <span class="details-open">[-] SHOW FEWER AWARDS</span>
+      </summary>
+      <div class="credential-list credential-list--continued" data-fit-overflow>
+        {moreAwards.map(([title, detail], index) => (
+          <article class="credential credential--stacked" data-fit-item data-order={featuredAwards.length + index}>
+            <div>
+              <h2>
+                {index === 0
+                  ? <AnimatedText text={title} word="Silver" effect="pulse" delay={-4.9} />
+                  : index === 1
+                    ? <AnimatedText text={title} word="Special" effect="invert" delay={-2.1} />
+                    : index === 2
+                      ? <AnimatedText text={title} word="Dean's" effect="flicker" delay={-5.8} />
+                      : title}
+              </h2>
+              <p>{detail}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </details>
+    </div>
+  </Frame>
+
+</Layout>

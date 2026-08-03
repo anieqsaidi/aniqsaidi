@@ -12,6 +12,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+firebase-debug.log*
+
+# Firebase local deployment cache
+.firebase/
 
 # environment variables
 .env

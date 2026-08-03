@@ -1,22 +1,110 @@
 ---
-import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Frame from '../components/Frame.astro';
-import PostItem from '../components/PostItem.astro';
-const posts = (await getCollection('blog', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 5);
+import AnimatedText from '../components/AnimatedText.astro';
+import { profile } from '../data/cv';
 ---
 
 <Layout>
-  <Frame title="LATEST ENTRIES">
-    <div class="menu-list">
-      {posts.map((post) => <PostItem post={post} />)}
-      <a class="menu-item" href="/blog/">
-        <span class="mi-marker" aria-hidden="true">▪ &gt;</span>
-        <span class="mi-title">VIEW FULL ARCHIVE…</span>
-        <span class="mi-arrow" aria-hidden="true">›</span>
-      </a>
+  <Frame title="WELCOME">
+    <div class="home-summary">
+      <p class="home-role">{profile.role} // {profile.location}</p>
+      <p class="home-copy">
+        <AnimatedText text={profile.summary} word="systems" effect="scan" delay={-1.4} />
+      </p>
+      <p class="home-detail">
+        <AnimatedText text={profile.summaryDetail} word="reliable" effect="pulse" delay={-3.1} />
+      </p>
+      <p class="home-note">
+        <AnimatedText text={profile.summaryNote} word="brewing" effect="flicker" delay={-4.6} />
+      </p>
+      <p class="home-signoff">
+        <AnimatedText text={profile.summarySignoff} word="debugging" effect="glitch" />
+      </p>
+
+      <div class="home-overview">
+          <section aria-labelledby="home-now">
+            <h2 id="home-now">&gt; ONGOING PRIORITIES</h2>
+            <ul class="terminal-list">
+              <li><AnimatedText text="Healthcare systems" word="Healthcare" effect="pulse" delay={-5.2} /></li>
+              <li><AnimatedText text="Cloud data and analytics" word="Cloud" effect="scan" delay={-2.8} /></li>
+              <li><AnimatedText text="Practical AI and automation" word="AI" effect="decode" delay={-4.1} alt="A1" /></li>
+            </ul>
+          </section>
+
+          <section aria-labelledby="home-connect">
+          <h2 id="home-connect">&gt; CONNECT</h2>
+          <p class="home-connect-copy">
+            <AnimatedText
+              text="Have something useful to build or a problem worth solving?"
+              word="build"
+              effect="wave"
+              delay={-5.7}
+            />
+          </p>
+          <ul class="terminal-list home-connect-list">
+            <li>
+              <a class="home-email" href={`mailto:${profile.email}`} data-sfx>
+                EMAIL <span aria-hidden="true">↗</span>
+              </a>
+            </li>
+            <li>
+              <a class="home-email" href={profile.linkedin} rel="me" data-sfx>
+                LINKEDIN <span aria-hidden="true">↗</span>
+              </a>
+            </li>
+          </ul>
+          </section>
+      </div>
+
+      <p class="home-status">
+        <span class="status-light" aria-hidden="true"></span>
+        <span class="identity-rotator" aria-hidden="true">
+          <span id="identity-word">SELANGOREAN</span><span class="identity-cursor">_</span>
+        </span>
+        <span class="sr-only">Selangorean, thinker, builder, and problem solver.</span>
+      </p>
     </div>
   </Frame>
 </Layout>
+
+<script>
+  const identityWord = document.querySelector<HTMLElement>('#identity-word');
+  const identityWords = ['SELANGOREAN', 'THINKER', 'BUILDER', 'PROBLEM SOLVER'];
+
+  if (identityWord && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let wordIndex = 0;
+    let characterIndex = identityWords[0].length;
+    let deleting = false;
+
+    const typeIdentity = () => {
+      const word = identityWords[wordIndex];
+
+      if (!deleting && characterIndex < word.length) {
+        characterIndex += 1;
+        identityWord.textContent = word.slice(0, characterIndex);
+        window.setTimeout(typeIdentity, 90);
+        return;
+      }
+
+      if (!deleting) {
+        deleting = true;
+        window.setTimeout(typeIdentity, 1400);
+        return;
+      }
+
+      if (characterIndex > 0) {
+        characterIndex -= 1;
+        identityWord.textContent = word.slice(0, characterIndex);
+        window.setTimeout(typeIdentity, 55);
+        return;
+      }
+
+      deleting = false;
+      wordIndex = (wordIndex + 1) % identityWords.length;
+      window.setTimeout(typeIdentity, 250);
+    };
+
+    window.setTimeout(typeIdentity, 1400);
+  }
+</script>

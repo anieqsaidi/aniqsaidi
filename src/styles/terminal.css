@@ -1,16 +1,7 @@
 /* ============================================================
    RETRO TERMINAL THEME
-   Font: "The Ultimate Oldschool PC Font Pack" (int10h.org),
-   WebPlus IBM VGA 8x16 — CC BY-SA 4.0 (see /fonts/FONT-LICENSE.txt)
+   Font: JetBrains Mono with native monospace fallbacks.
    ============================================================ */
-
-@font-face {
-  font-family: 'IBM VGA';
-  src: url('/fonts/WebPlus_IBM_VGA_8x16.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
 
 /* ---------- Themes ---------- */
 
@@ -38,6 +29,29 @@
     brightness(0.9) contrast(1.05);
 }
 
+:root[data-theme='blue'] {
+  /* sky-blue phosphor — cool, bright, and easy on dark backgrounds */
+  --bg: #101d27;
+  --bg-deep: #09141d;
+  --fg: #69d2ff;
+  --fg-bright: #c2edff;
+  --fg-dim: #478daa;
+  --glow: rgba(105, 210, 255, 0.38);
+  --img-filter: grayscale(1) sepia(1) saturate(2.5) hue-rotate(145deg)
+    brightness(0.95) contrast(1.05);
+}
+
+:root[data-theme='black'] {
+  /* monochrome — crisp white phosphor on a true black terminal */
+  --bg: #050505;
+  --bg-deep: #000000;
+  --fg: #d7d7d7;
+  --fg-bright: #ffffff;
+  --fg-dim: #818181;
+  --glow: rgba(255, 255, 255, 0.24);
+  --img-filter: grayscale(1) brightness(0.92) contrast(1.18);
+}
+
 /* ---------- Base ---------- */
 
 * {
@@ -46,15 +60,28 @@
   box-sizing: border-box;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 html {
   background: var(--bg-deep);
 }
 
 body {
-  font-family: 'IBM VGA', 'Courier New', monospace;
-  font-size: 20px;
-  line-height: 1.5;
-  letter-spacing: 0.04em;
+  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Monaco, monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
   background: var(--bg);
   background-image: radial-gradient(
     ellipse 120% 90% at 50% 10%,
@@ -101,6 +128,8 @@ body::after {
 /* subtle flicker on everything */
 .crt {
   animation: flicker 4s infinite;
+  display: flex;
+  min-height: 100dvh;
 }
 
 @keyframes flicker {
@@ -136,8 +165,9 @@ body::after {
 /* ---------- Layout ---------- */
 
 .container {
+  width: 100%;
   max-width: 1080px;
-  margin: 0 auto;
+  margin: auto;
   padding: 24px 20px 40px;
 }
 
@@ -217,7 +247,218 @@ button {
 }
 
 .h-line-top {
+  display: flex;
+  align-items: center;
+  gap: 0.2em;
   border-bottom: 2px solid var(--fg);
+}
+
+.tagline-cursor {
+  animation: blink 1.1s steps(1) infinite;
+}
+
+.header-clock {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: inherit;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+.clock-separator {
+  display: inline-block;
+  animation: clock-tick 1s steps(1, end) infinite;
+}
+
+@keyframes clock-tick {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.15; }
+}
+
+.word-fx {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: baseline;
+}
+
+.word-fx--glitch {
+  animation: word-glitch-shift 5.2s steps(1, end) infinite;
+  animation-delay: var(--word-fx-delay, 0s);
+}
+
+.word-fx--glitch::before,
+.word-fx--glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.word-fx--glitch::before {
+  color: var(--fg);
+  text-shadow: -2px 0 var(--bg);
+  animation: word-glitch-top 5.2s steps(1, end) infinite;
+  animation-delay: var(--word-fx-delay, 0s);
+}
+
+.word-fx--glitch::after {
+  color: var(--fg);
+  text-shadow: 2px 0 var(--bg);
+  animation: word-glitch-bottom 5.2s steps(1, end) infinite;
+  animation-delay: var(--word-fx-delay, 0s);
+}
+
+.word-fx--scan::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: var(--fg-bright);
+  text-shadow: 0 0 8px var(--glow);
+  clip-path: inset(0 100% 0 0);
+  pointer-events: none;
+  animation: word-scan 5.8s steps(8, end) infinite;
+  animation-delay: var(--word-fx-delay, 0s);
+}
+
+.word-fx--pulse {
+  animation: word-pulse 6.1s ease-in-out infinite;
+  animation-delay: var(--word-fx-delay, 0s);
+}
+
+.word-fx--flicker {
+  animation: word-flicker 5.5s steps(1, end) infinite;
+  animation-delay: var(--word-fx-delay, 0s);
+}
+
+.word-fx--decode::after {
+  content: attr(data-alt);
+  position: absolute;
+  inset: 0;
+  color: var(--fg-bright);
+  background: var(--bg);
+  opacity: 0;
+  pointer-events: none;
+  animation: word-decode 6.4s steps(1, end) infinite;
+  animation-delay: var(--word-fx-delay, 0s);
+}
+
+.word-fx--wave {
+  animation: word-wave 6.7s steps(1, end) infinite;
+  animation-delay: var(--word-fx-delay, 0s);
+}
+
+.word-fx--invert {
+  animation: word-invert 7.1s steps(1, end) infinite;
+  animation-delay: var(--word-fx-delay, 0s);
+}
+
+.word-fx--jitter {
+  animation: word-jitter 6.9s steps(1, end) infinite;
+  animation-delay: var(--word-fx-delay, 0s);
+}
+
+@keyframes word-glitch-shift {
+  0%, 84%, 88%, 92%, 100% { transform: translate(0); }
+  85% { transform: translate(-1px, 1px); }
+  86% { transform: translate(2px, -1px); }
+  87% { transform: translate(-1px, 0); }
+  89% { transform: translate(1px, 0); }
+  90% { transform: translate(-2px, 1px); }
+  91% { transform: translate(1px, -1px); }
+}
+
+@keyframes word-glitch-top {
+  0%, 84%, 88%, 100% { opacity: 0; transform: translate(0); }
+  85% { opacity: 0.8; clip-path: inset(8% 0 62%); transform: translate(2px, -1px); }
+  86% { opacity: 0.65; clip-path: inset(34% 0 42%); transform: translate(-2px, 0); }
+  87% { opacity: 0.8; clip-path: inset(65% 0 10%); transform: translate(1px, 1px); }
+}
+
+@keyframes word-glitch-bottom {
+  0%, 88%, 92%, 100% { opacity: 0; transform: translate(0); }
+  89% { opacity: 0.7; clip-path: inset(55% 0 16%); transform: translate(-2px, 1px); }
+  90% { opacity: 0.8; clip-path: inset(18% 0 60%); transform: translate(2px, 0); }
+  91% { opacity: 0.65; clip-path: inset(74% 0 4%); transform: translate(-1px, -1px); }
+}
+
+@keyframes word-scan {
+  0%, 68% { clip-path: inset(0 100% 0 0); }
+  80% { clip-path: inset(0 0 0 0); }
+  81%, 100% { clip-path: inset(0 0 0 100%); }
+}
+
+@keyframes word-pulse {
+  0%, 72%, 88%, 100% { color: inherit; text-shadow: inherit; }
+  78% { color: var(--fg-bright); text-shadow: 0 0 3px var(--fg), 0 0 12px var(--glow); }
+  82% { color: var(--fg); text-shadow: 0 0 7px var(--glow); }
+}
+
+@keyframes word-flicker {
+  0%, 74%, 76%, 79%, 82%, 100% { opacity: 1; }
+  75%, 78% { opacity: 0.18; }
+  80% { opacity: 0.55; }
+}
+
+@keyframes word-decode {
+  0%, 70%, 72%, 74%, 76%, 100% { opacity: 0; transform: translateX(0); }
+  71% { opacity: 1; transform: translateX(-1px); }
+  73% { opacity: 0.75; transform: translateX(1px); }
+  75% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes word-wave {
+  0%, 72%, 81%, 100% {
+    transform: translateY(0) skewX(0);
+    color: inherit;
+    text-shadow: inherit;
+  }
+  73% {
+    transform: translateY(-2px) skewX(-5deg);
+    color: var(--fg-bright);
+    text-shadow: 1px 1px 0 var(--fg-dim);
+  }
+  75% {
+    transform: translateY(1px) skewX(4deg);
+    color: var(--fg);
+    text-shadow: -1px -1px 0 var(--fg-bright);
+  }
+  77% {
+    transform: translateY(-1px) skewX(-3deg);
+    color: var(--fg-bright);
+    text-shadow: 1px 0 5px var(--glow);
+  }
+  79% {
+    transform: translateY(1px) skewX(2deg);
+    color: var(--fg);
+    text-shadow: -1px 0 3px var(--glow);
+  }
+}
+
+@keyframes word-invert {
+  0%, 72%, 75%, 78%, 100% { color: inherit; background: transparent; text-shadow: inherit; }
+  73%, 77% { color: var(--bg); background: var(--fg-bright); text-shadow: none; }
+  74% { color: var(--fg-bright); background: var(--fg-dim); text-shadow: none; }
+}
+
+@keyframes word-jitter {
+  0%, 76%, 82%, 100% { transform: translate(0) skewX(0); }
+  77% { transform: translate(-1px, 0) skewX(-7deg); }
+  78% { transform: translate(1px, -1px) skewX(5deg); }
+  79% { transform: translate(-1px, 1px) skewX(0); }
+  80% { transform: translate(1px, 0) skewX(-4deg); }
+  81% { transform: translate(0) skewX(2deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tagline-cursor,
+  .clock-separator { animation: none; }
+
+  .word-fx,
+  .word-fx::before,
+  .word-fx::after { animation: none; }
 }
 
 .h-line-bottom {
@@ -238,6 +479,10 @@ button {
 .h-nav a,
 .h-nav .nav-theme {
   white-space: nowrap;
+}
+
+.nav-label-short {
+  display: none;
 }
 
 .toggles {
@@ -271,9 +516,18 @@ button {
 }
 
 @media (max-width: 640px) {
-  .t-header { flex-direction: column; gap: 16px; }
-  .logo { flex-direction: row; gap: 12px; padding: 8px 12px; }
-  .logo-glyph { font-size: 1.4em; }
+  .t-header { flex-direction: column; align-items: stretch; gap: 12px; }
+  .logo {
+    align-self: stretch;
+    flex-direction: row;
+    gap: 16px;
+    width: 100%;
+    padding: 11px 16px;
+  }
+  .logo-glyph { font-size: 1.9em; }
+  .logo-name { font-size: 0.85em; }
+  .h-info { width: 100%; }
+  .h-line-top { justify-content: center; text-align: center; }
   .h-line-bottom span:first-child {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -586,10 +840,38 @@ button {
 
 /* ---------- Records (dl key/value, about page) ---------- */
 
-.records {
+.profile-grid {
   display: grid;
-  grid-template-columns: max-content 1fr;
+  grid-template-columns: minmax(0, 1fr) 148px;
+  align-items: center;
+  gap: 32px;
+}
+
+.profile-avatar {
+  grid-column: 2;
+  grid-row: 1;
+  display: block;
+  width: 148px;
+  height: 148px;
+  object-fit: cover;
+  image-rendering: pixelated;
+  filter: var(--img-filter);
+  border: 1px solid var(--fg);
+  box-shadow: inset 0 0 0 2px var(--bg), 0 0 12px var(--glow);
+  padding: 4px;
+}
+
+.records {
+  grid-column: 1;
+  grid-row: 1;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
   gap: 6px 24px;
+}
+
+.records dd {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .records dt {
@@ -598,6 +880,270 @@ button {
 
 .records dt::after {
   content: ':';
+}
+
+/* ---------- CV / experience ---------- */
+
+.home-summary {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.home-role,
+.home-status {
+  color: var(--fg-dim);
+}
+
+.home-copy {
+  margin-top: 16px;
+  color: var(--fg-bright);
+}
+
+.home-detail {
+  margin-top: 10px;
+}
+
+.home-note {
+  margin-top: 12px;
+  color: var(--fg-bright);
+}
+
+.home-signoff {
+  margin-top: 8px;
+  color: var(--fg-dim);
+}
+
+.home-overview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 40px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--fg-dim);
+}
+
+.home-overview h2 {
+  margin-bottom: 10px;
+  color: var(--fg-bright);
+  font-size: 1em;
+  font-weight: normal;
+}
+
+.home-email {
+  display: inline-block;
+  color: var(--fg-bright);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.home-connect-list {
+  margin-top: 10px;
+}
+
+.home-email:hover {
+  background: var(--fg);
+  color: var(--bg);
+  text-shadow: none;
+}
+
+.home-status {
+  margin-top: 16px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--fg-dim);
+  font-size: 0.85em;
+}
+
+.status-light {
+  display: inline-block;
+  width: 0.65em;
+  height: 0.65em;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--fg);
+  box-shadow: 0 0 8px var(--glow);
+  animation: blink 1.8s steps(1) infinite;
+}
+
+.identity-rotator {
+  display: inline-block;
+  width: 18ch;
+  vertical-align: baseline;
+  color: var(--fg);
+}
+
+.identity-cursor {
+  margin-left: 1px;
+  animation: blink 0.75s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-light,
+  .identity-cursor { animation: none; }
+}
+
+.timeline,
+.credential-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-item {
+  padding: 8px 0 26px 22px;
+  border-left: 1px solid var(--fg-dim);
+  position: relative;
+}
+
+.timeline-item::before {
+  content: '■';
+  position: absolute;
+  left: -0.42em;
+  top: 7px;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+.timeline-item:last-child {
+  padding-bottom: 8px;
+}
+
+.timeline-head,
+.credential {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.timeline-head h2,
+.credential h2 {
+  color: var(--fg-bright);
+  font-size: 1em;
+  font-weight: normal;
+  text-transform: uppercase;
+}
+
+.timeline-head time,
+.credential > p {
+  flex: 0 0 auto;
+  color: var(--fg-dim);
+  text-align: right;
+}
+
+.timeline-location {
+  color: var(--fg-dim);
+  margin: 4px 0 10px;
+}
+
+.career-details {
+  margin-top: 12px;
+}
+
+.career-details summary {
+  display: inline-block;
+  color: var(--fg);
+  cursor: pointer;
+  list-style: none;
+}
+
+.career-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.career-details summary:hover,
+.career-details summary:focus-visible {
+  background: var(--fg);
+  color: var(--bg);
+  text-shadow: none;
+}
+
+.details-open {
+  display: none;
+}
+
+details[open] > summary .details-closed {
+  display: none;
+}
+
+details[open] > summary .details-open {
+  display: inline;
+}
+
+.timeline--continued {
+  margin-top: 22px;
+}
+
+.credential-list--continued {
+  margin-top: 16px;
+}
+
+/* Desktop keeps these sections fully expanded. Mobile turns them into a
+   compact disclosure so the primary content can fit in the first viewport. */
+.mobile-more > summary {
+  display: none;
+}
+
+.mobile-more:not([open]) > :not(summary) {
+  display: block;
+}
+
+.timeline-item ul,
+.terminal-list {
+  list-style: none;
+}
+
+.timeline-item li,
+.terminal-list li {
+  position: relative;
+  padding-left: 22px;
+  margin-top: 5px;
+}
+
+.timeline-item li::before,
+.terminal-list li::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: var(--fg-dim);
+}
+
+.skill-line {
+  margin-top: 12px;
+  color: var(--fg-dim);
+  font-size: 0.85em;
+}
+
+.skill-line span {
+  color: var(--fg);
+}
+
+.skill-records {
+  grid-template-columns: minmax(190px, max-content) 1fr;
+  row-gap: 14px;
+}
+
+.credential {
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--fg-dim);
+}
+
+.credential:first-child { padding-top: 0; }
+.credential:last-child { padding-bottom: 0; border-bottom: 0; }
+.credential--stacked { display: block; }
+
+.certification time {
+  flex: 0 0 auto;
+  color: var(--fg-dim);
+  text-align: right;
+}
+
+.columns-list {
+  columns: 2 360px;
+  column-gap: 32px;
+}
+
+.columns-list li {
+  break-inside: avoid;
+  margin: 0 0 10px;
 }
 
 /* ---------- Footer ---------- */
@@ -930,34 +1476,96 @@ button {
   body::after { display: none; }
 
   /* Glow on small text reads as blur. */
-  body { text-shadow: none; letter-spacing: 0.02em; }
+  body { font-size: 13px; text-shadow: none; letter-spacing: 0; }
+
+  /* Primary portfolio tabs occupy exactly one screen until a disclosure is
+     opened. Article and archive routes keep their normal document scrolling. */
+  .mobile-viewport-page {
+    overflow: hidden;
+  }
+
+  .mobile-viewport-page .crt {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .mobile-viewport-page .container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .mobile-viewport-page main {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .mobile-viewport-page.has-open-details {
+    overflow: auto;
+  }
+
+  .mobile-viewport-page.has-open-details .crt {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  .mobile-viewport-page.has-open-details .container {
+    height: auto;
+    min-height: 100dvh;
+  }
+
+  .mobile-viewport-page.has-open-details main {
+    flex: 0 0 auto;
+    overflow: visible;
+  }
 
   /* The double border cost ~50px of 390; one is enough. */
-  .frame { border-width: 1px; padding: 0; margin: 20px 0; }
-  .frame-body { border: 0; padding: 16px 14px; }
+  .frame { border-width: 1px; padding: 0; margin: 14px 0; }
+  .frame-body { border: 0; padding: 12px; }
+  main { margin-top: 10px; }
 
   /* The BUILD/date line is pure decoration. */
   .h-line-bottom { display: none; }
 
-  /* Nav: finger-sized targets, wrapping as needed. */
-  .h-nav { gap: 4px 10px; }
-  .h-nav a,
-  .h-nav button {
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
+  /* Nav: a balanced two-column command grid with finger-sized targets. */
+  .h-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    width: 100%;
+    padding: 6px 0 0;
   }
+  .h-nav a {
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: 4px 2px;
+    border: 1px solid var(--fg-dim);
+    font-size: 0.88em;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .nav-label-full { display: none; }
+  .nav-label-short { display: inline; }
 
   /* THEME and SND move to the footer: in the header they cost a whole
      second line, at the bottom they scroll away with the content. */
   .toggles--header { display: none; }
   .toggles--footer {
     display: flex;
+    justify-content: center;
     gap: 20px;
-    margin-top: 12px;
+    width: 100%;
+    margin-top: 4px;
   }
   .toggles--footer button {
-    min-height: 44px;
+    min-height: 34px;
     display: inline-flex;
     align-items: center;
   }
@@ -965,7 +1573,88 @@ button {
   /* Entry rows are proper targets too. */
   .menu-item { min-height: 48px; padding: 10px 12px; }
 
-  .container { padding-left: 14px; padding-right: 14px; }
+  .container {
+    margin: 0 auto;
+    padding: 10px 12px;
+  }
+
+  .mobile-more:not([open]) > :not(summary) {
+    display: none;
+  }
+
+  .mobile-more > summary {
+    display: inline-block;
+    margin: 4px 0 14px;
+    color: var(--fg);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .mobile-more > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mobile-more > summary:hover,
+  .mobile-more > summary:focus-visible {
+    background: var(--fg);
+    color: var(--bg);
+    text-shadow: none;
+  }
+
+  .timeline-head,
+  .credential {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .timeline-head time,
+  .credential > p,
+  .certification time {
+    text-align: left;
+  }
+
+  .skill-records {
+    display: block;
+  }
+
+  .skill-records dt {
+    margin-top: 16px;
+  }
+
+  .skill-records dt:first-child {
+    margin-top: 0;
+  }
+
+  .profile-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .profile-avatar {
+    grid-column: 1;
+    grid-row: 1;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+  }
+
+  .profile-grid .records {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .home-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .home-detail {
+    display: none;
+  }
+
+  .home-connect-copy {
+    display: none;
+  }
 
   /* An oversized table scrolls inside itself instead of dragging the whole
      page sideways: display:block turns it into a scroll container. */
@@ -980,6 +1669,7 @@ button {
 
   /* Let the tagline wrap onto two lines instead of being ellipsed. */
   .h-line-top {
+    justify-content: center;
     white-space: normal;
     overflow: visible;
     text-overflow: clip;
@@ -988,17 +1678,21 @@ button {
   /* The colophon would not shrink (flex: 0 0 auto) and pushed the page
      sideways; the decorative rules beside it do not read this narrow. */
   .t-footer {
+    margin-top: 12px;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 0;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    text-align: center;
   }
   .t-footer::before,
   .t-footer::after { display: none; }
   .t-colophon {
     flex: 1 1 auto;
+    width: 100%;
     min-width: 0;
-    text-align: left;
+    text-align: center;
     border-top: 1px solid var(--fg-dim);
-    padding-top: 12px;
+    padding-top: 8px;
   }
 }

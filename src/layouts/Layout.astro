@@ -19,6 +19,20 @@ interface Props {
 
 const { title, description = SITE_DESCRIPTION } = Astro.props;
 const pageTitle = title ? `${title} // ${SITE_TITLE}` : SITE_TITLE;
+const mobileViewportPages = new Set([
+  '/',
+  '/about',
+  '/about/',
+  '/experience',
+  '/experience/',
+  '/certifications',
+  '/certifications/',
+  '/awards',
+  '/awards/',
+  '/leadership',
+  '/leadership/',
+]);
+const isMobileViewportPage = mobileViewportPages.has(Astro.url.pathname);
 ---
 
 <!doctype html>
@@ -29,12 +43,11 @@ const pageTitle = title ? `${title} // ${SITE_TITLE}` : SITE_TITLE;
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      rel="preload"
-      href="/fonts/WebPlus_IBM_VGA_8x16.woff"
-      as="font"
-      type="font/woff"
-      crossorigin
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
     />
     <link
       rel="alternate"
@@ -46,12 +59,25 @@ const pageTitle = title ? `${title} // ${SITE_TITLE}` : SITE_TITLE;
     <!-- Apply the saved theme before first paint so it does not flash. -->
     <script is:inline>
       const saved = localStorage.getItem('theme');
-      if (saved === 'green' || saved === 'amber') {
+      if (saved === 'green' || saved === 'amber' || saved === 'blue' || saved === 'black') {
         document.documentElement.dataset.theme = saved;
+      }
+
+      // Detect compact screens before the body is painted. A temporary style
+      // prevents expanded desktop content from flashing during navigation.
+      if (window.matchMedia('(max-width: 640px)').matches) {
+        document.documentElement.dataset.viewport = 'mobile';
+        var mobilePreflightStyle = document.createElement('style');
+        mobilePreflightStyle.id = 'mobile-preflight-style';
+        mobilePreflightStyle.textContent =
+          '.mobile-viewport-page .crt { visibility: hidden !important; }';
+        document.head.appendChild(mobilePreflightStyle);
+      } else {
+        document.documentElement.dataset.viewport = 'desktop';
       }
     </script>
   </head>
-  <body>
+  <body class:list={{ 'mobile-viewport-page': isMobileViewportPage }}>
     <!-- Power-on screen: once per session, dismissed by any click or key. -->
     <div class="crt-boot" id="crt-boot" aria-hidden="true">
       <div class="crt-boot__screen">
@@ -102,11 +128,141 @@ const pageTitle = title ? `${title} // ${SITE_TITLE}` : SITE_TITLE;
       </div>
     </div>
 
+    <script is:inline>
+      // Resolve the initial compact layout synchronously, before first paint.
+      (function () {
+        var root = document.documentElement;
+        if (root.dataset.viewport === 'mobile') {
+          document.querySelectorAll('details.mobile-more[open]').forEach(function (details) {
+            details.removeAttribute('open');
+          });
+
+          var pageMain = document.querySelector('main');
+          if (pageMain) {
+            document.querySelectorAll('[data-fit-group]').forEach(function (group) {
+              var visible = group.querySelector('[data-fit-visible]');
+              var overflow = group.querySelector('[data-fit-overflow]');
+              var details = group.querySelector('[data-fit-details]');
+              if (!visible || !overflow || !details) return;
+
+              var items = Array.from(group.querySelectorAll('[data-fit-item]')).sort(
+                function (a, b) {
+                  return Number(a.getAttribute('data-order')) - Number(b.getAttribute('data-order'));
+                },
+              );
+              var minimum = Number(group.getAttribute('data-mobile-min') || 1);
+              // The disclosure must participate in measurement so it cannot
+              // be pushed below the clipped mobile viewport.
+              details.hidden = false;
+              items.forEach(function (item) { visible.appendChild(item); });
+
+              while (pageMain.scrollHeight > pageMain.clientHeight && visible.children.length > minimum) {
+                var last = visible.lastElementChild;
+                if (!last) break;
+                overflow.prepend(last);
+              }
+              details.hidden = overflow.children.length === 0;
+            });
+          }
+        }
+
+        root.dataset.fitReady = 'true';
+        document.getElementById('mobile-preflight-style')?.remove();
+      })();
+    </script>
+
     <script>
       import { sfx, bindSfx } from '../scripts/sfx';
 
-      // Links, buttons and list rows all sound like menu items.
-      bindSfx(document, '.menu-item, .h-nav a, .h-nav button, .logo, [data-sfx]');
+      // Every interactive link and button uses the terminal sound system.
+      bindSfx(document, 'a, button, summary');
+
+      // Read-more disclosures unlock document scrolling on compact mobile
+      // views. The class fallback also supports browsers without CSS :has().
+      const disclosures = document.querySelectorAll<HTMLDetailsElement>('details');
+      const mobileDisclosureMedia = window.matchMedia('(max-width: 640px)');
+      const mobileOnlyDisclosures = document.querySelectorAll<HTMLDetailsElement>(
+        'details.mobile-more',
+      );
+
+      function syncMobileOnlyDisclosures() {
+        document.documentElement.dataset.viewport = mobileDisclosureMedia.matches
+          ? 'mobile'
+          : 'desktop';
+        mobileOnlyDisclosures.forEach((details) => {
+          details.open = !mobileDisclosureMedia.matches;
+        });
+      }
+
+      function syncDisclosures() {
+        document.body.classList.toggle(
+          'has-open-details',
+          Boolean(document.querySelector('details[open]')),
+        );
+        disclosures.forEach((details) => {
+          details
+            .closest('.frame-body')
+            ?.classList.toggle('has-open-details', details.open);
+        });
+      }
+      disclosures.forEach((details) => details.addEventListener('toggle', syncDisclosures));
+      mobileDisclosureMedia.addEventListener('change', syncMobileOnlyDisclosures);
+      syncMobileOnlyDisclosures();
+      syncDisclosures();
+
+      // Repeated credentials use the real rendered viewport height instead of
+      // one hard-coded mobile count. Show as many as fit, then move the rest
+      // into the existing disclosure without changing their order.
+      const fitGroups = document.querySelectorAll<HTMLElement>('[data-fit-group]');
+
+      function fitViewportLists() {
+        const mobile = mobileDisclosureMedia.matches;
+        const pageMain = document.querySelector<HTMLElement>('main');
+        if (!pageMain) return;
+
+        fitGroups.forEach((group) => {
+          const visible = group.querySelector<HTMLElement>('[data-fit-visible]');
+          const overflow = group.querySelector<HTMLElement>('[data-fit-overflow]');
+          const details = group.querySelector<HTMLDetailsElement>('[data-fit-details]');
+          if (!visible || !overflow || !details || (mobile && details.open)) return;
+
+          const items = [...group.querySelectorAll<HTMLElement>('[data-fit-item]')].sort(
+            (a, b) => Number(a.dataset.order) - Number(b.dataset.order),
+          );
+          const desktopCount = Number(group.dataset.desktopCount ?? items.length);
+          const minimum = Number(group.dataset.mobileMin ?? 1);
+
+          // Always reserve the disclosure's rendered height while fitting.
+          // Otherwise a previously hidden summary can make too many rows look
+          // like they fit, then appear below the clipped viewport.
+          details.hidden = false;
+          items.forEach((item) => visible.append(item));
+
+          if (mobile) {
+            while (
+              pageMain.scrollHeight > pageMain.clientHeight &&
+              visible.children.length > minimum
+            ) {
+              const last = visible.lastElementChild;
+              if (!last) break;
+              overflow.prepend(last);
+            }
+          } else {
+            items.slice(desktopCount).forEach((item) => overflow.append(item));
+          }
+
+          details.hidden = overflow.children.length === 0;
+        });
+      }
+
+      let fitTimer = 0;
+      function queueViewportFit() {
+        window.clearTimeout(fitTimer);
+        fitTimer = window.setTimeout(fitViewportLists, 60);
+      }
+
+      document.fonts?.ready.then(fitViewportLists);
+      window.addEventListener('resize', queueViewportFit);
 
       // Two sound buttons exist (header and footer) and only one is ever
       // visible, but both have to stay in sync.
@@ -118,7 +274,7 @@ const pageTitle = title ? `${title} // ${SITE_TITLE}` : SITE_TITLE;
         soundBtns.forEach((btn) => {
           btn.setAttribute('aria-pressed', String(sfx.enabled));
           const label = btn.querySelector<HTMLElement>('[data-sound-label]');
-          if (label) label.textContent = sfx.enabled ? '♪ SND' : '♪ SND OFF';
+          if (label) label.textContent = sfx.enabled ? '♪ SOUND ON' : '♪ SOUND OFF';
         });
       }
       drawSound();
@@ -157,11 +313,38 @@ const pageTitle = title ? `${title} // ${SITE_TITLE}` : SITE_TITLE;
 
       function toggleTheme() {
         const el = document.documentElement;
-        const next = el.dataset.theme === 'green' ? 'amber' : 'green';
+        const themes = ['amber', 'green', 'blue', 'black'];
+        const currentTheme = el.dataset.theme ?? 'amber';
+        const next = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
         el.dataset.theme = next;
         localStorage.setItem('theme', next);
+        drawTheme();
         sfx.power(); // The screen "relights", so the phosphor hums.
       }
+
+      function drawTheme() {
+        const theme = document.documentElement.dataset.theme ?? 'amber';
+        const names: Record<string, string> = {
+          amber: 'amber',
+          green: 'green',
+          blue: 'sky blue',
+          black: 'black and white',
+        };
+        const nextNames: Record<string, string> = {
+          amber: 'green',
+          green: 'sky blue',
+          blue: 'black and white',
+          black: 'amber',
+        };
+        document.querySelectorAll<HTMLButtonElement>('[data-action="theme"]').forEach((btn) => {
+          btn.setAttribute(
+            'aria-label',
+            `Theme: ${names[theme]}. Activate for ${nextNames[theme]}.`,
+          );
+          btn.title = `Current theme: ${names[theme]}`;
+        });
+      }
+      drawTheme();
 
       document
         .querySelectorAll('[data-action="theme"]')
@@ -180,7 +363,23 @@ const pageTitle = title ? `${title} // ${SITE_TITLE}` : SITE_TITLE;
             break;
           case 'a':
           case 'ф':
-            location.href = '/blog/';
+            location.href = '/about/';
+            break;
+          case 'e':
+          case 'у':
+            location.href = '/experience/';
+            break;
+          case 'c':
+          case 'с':
+            location.href = '/certifications/';
+            break;
+          case 'w':
+          case 'ц':
+            location.href = '/awards/';
+            break;
+          case 'l':
+          case 'д':
+            location.href = '/leadership/';
             break;
           case 't':
           case 'е':

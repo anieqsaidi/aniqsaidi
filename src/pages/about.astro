@@ -1,32 +1,58 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Frame from '../components/Frame.astro';
+import AnimatedText from '../components/AnimatedText.astro';
+import { education, profile } from '../data/cv';
 ---
 
-<Layout title="ABOUT" description="About the author of this blog.">
+<Layout title="ABOUT" description="About Muhammad Amrun Aniq bin Mohamed Saidi, software engineer.">
   <Frame title="PROFILE">
-    <dl class="records">
-      <dt>NAME</dt>
-      <dd>[YOUR NAME]</dd>
-      <dt>ROLE</dt>
-      <dd>[WHAT YOU DO]</dd>
-      <dt>LOCATION</dt>
-      <dd>[CITY, COUNTRY]</dd>
-      <dt>CONTACT</dt>
-      <dd><a href="mailto:user@example.com">user@example.com</a></dd>
-    </dl>
-  </Frame>
-
-  <Frame title="ABOUT">
-    <div class="prose">
-      <p>
-        Hi! This is the about page. Replace this text with a few words about
-        yourself: what you do, what you write about, and how to reach you.
-      </p>
-      <p>
-        Links: <a href="https://github.com/">GitHub</a> //
-        <a href="/rss.xml">RSS</a>
-      </p>
+    <div class="profile-grid">
+      <img
+        class="profile-avatar"
+        src="/images/aniq-pixel.png"
+        alt="Pixel-art portrait of Aniq Saidi"
+        width="512"
+        height="512"
+      />
+      <dl class="records">
+        <dt>NAME</dt>
+        <dd>{profile.name}</dd>
+        <dt>ROLE</dt>
+        <dd><AnimatedText text={profile.role} word="Engineer" effect="decode" delay={-2.2} alt="ENG1N33R" /></dd>
+        <dt>LOCATION</dt>
+        <dd>{profile.location}</dd>
+        <dt>CONTACT</dt>
+        <dd><a href={`mailto:${profile.email}`}>{profile.email}</a></dd>
+        <dt>LINKEDIN</dt>
+        <dd><a href={profile.linkedin} rel="me">linkedin.com/in/aniqsaidi</a></dd>
+      </dl>
     </div>
   </Frame>
+
+  <details class="mobile-more" open>
+    <summary>
+      <span class="details-closed">[+] SHOW EDUCATION</span>
+      <span class="details-open">[-] HIDE EDUCATION</span>
+    </summary>
+    <Frame title="EDUCATION">
+      <div class="credential-list">
+        {education.map((item, index) => (
+          <article class="credential">
+            <div>
+              <h2>
+                {index === 0
+                  ? <AnimatedText text={item.qualification} word="Software" effect="wave" delay={-3.6} />
+                  : index === 1
+                    ? <AnimatedText text={item.qualification} word="Engineering" effect="jitter" delay={-5.1} />
+                    : <AnimatedText text={item.qualification} word="Education" effect="invert" delay={-2.7} />}
+              </h2>
+              <p>{item.institution}</p>
+            </div>
+            <p>{item.period}</p>
+          </article>
+        ))}
+      </div>
+    </Frame>
+  </details>
 </Layout>
