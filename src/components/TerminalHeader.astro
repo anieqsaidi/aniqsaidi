@@ -1,6 +1,6 @@
 ---
-import { SITE_TITLE, SITE_TAGLINE, SITE_VERSION, SITE_BUILD_ID } from '../consts';
-import TerminalToggles from './TerminalToggles.astro';
+import { SITE_TITLE, SITE_VERSION, SITE_BUILD_ID } from '../consts';
+import AnimatedWord from './AnimatedWord.astro';
 
 const buildDate = new Date()
   .toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
@@ -9,17 +9,23 @@ const buildDate = new Date()
 const { pathname } = Astro.url;
 const current = (path: string) =>
   pathname === path || pathname === path.replace(/\/$/, '') ? 'page' : undefined;
+const currentSection = (path: string) => pathname.startsWith(path) ? 'page' : undefined;
 ---
 
 <header class="t-header">
-  <a class="logo" href="/" aria-label="На главную">
+  <a class="logo" href="/" aria-label="Home">
     <span class="logo-glyph" aria-hidden="true">&gt;_</span>
     <span class="logo-name">{SITE_TITLE}</span>
   </a>
   <div class="h-info">
     <div class="h-line h-line-top">
-      <span>{SITE_TAGLINE}</span>
-      <span class="tagline-cursor" aria-hidden="true">_</span>
+      <span class="header-command" aria-label="aniq at system, home, who am I">
+        <span class="header-command-user">aniq@system</span>
+        <span class="header-command-path">~/home</span>
+        <span aria-hidden="true">%</span>
+        <AnimatedWord text="whoami" effect="decode" delay={-2.4} alt="wh0am1" />
+        <span class="tagline-cursor" aria-hidden="true">_</span>
+      </span>
       <time class="header-clock" id="header-clock" aria-label="Current time in Malaysia">
         <span id="clock-hour">--</span><span class="clock-separator" aria-hidden="true">:</span><span id="clock-minute">--</span> MYT
       </time>
@@ -34,13 +40,22 @@ const current = (path: string) =>
     <nav class="h-nav" aria-label="Primary navigation">
       <a href="/" aria-current={current('/')}>&gt; HOME</a>
       <a href="/about/" aria-current={current('/about/')}>&gt; ABOUT</a>
-      <a href="/experience/" aria-current={current('/experience/')}>&gt; EXPERIENCE</a>
+      <a href="/projects/" aria-current={currentSection('/projects')}>
+        &gt;&nbsp;<span class="nav-label-full">PROJECTS</span><span class="nav-label-short">WORK</span>
+      </a>
+      <a href="/experience/" aria-current={current('/experience/')}>
+        &gt;&nbsp;<span class="nav-label-full">EXPERIENCE</span><span class="nav-label-short">EXP</span>
+      </a>
       <a href="/certifications/" aria-current={current('/certifications/')}>
         &gt;&nbsp;<span class="nav-label-full">CERTIFICATIONS</span><span class="nav-label-short">CERTS</span>
       </a>
       <a href="/awards/" aria-current={current('/awards/')}>&gt; AWARDS</a>
-      <a href="/leadership/" aria-current={current('/leadership/')}>&gt; LEADERSHIP</a>
-      <TerminalToggles class="toggles--header" />
+      <a href="/leadership/" aria-current={current('/leadership/')}>
+        &gt;&nbsp;<span class="nav-label-full">LEADERSHIP</span><span class="nav-label-short">LEAD</span>
+      </a>
+      <a href="/archives/" aria-current={currentSection('/archives')}>
+        &gt;&nbsp;<span class="nav-label-full">ARCHIVES</span><span class="nav-label-short">PRESS</span>
+      </a>
     </nav>
   </div>
 </header>

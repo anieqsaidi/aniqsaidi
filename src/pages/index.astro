@@ -2,109 +2,256 @@
 import Layout from '../layouts/Layout.astro';
 import Frame from '../components/Frame.astro';
 import AnimatedText from '../components/AnimatedText.astro';
-import { profile } from '../data/cv';
+import AnimatedWord from '../components/AnimatedWord.astro';
+import { defaultHomeContent } from '../data/homeContent';
+
+const { profile, queue } = defaultHomeContent;
 ---
 
 <Layout>
-  <Frame title="WELCOME">
-    <div class="home-summary">
-      <p class="home-role">{profile.role} // {profile.location}</p>
-      <p class="home-copy">
-        <AnimatedText text={profile.summary} word="systems" effect="scan" delay={-1.4} />
-      </p>
-      <p class="home-detail">
-        <AnimatedText text={profile.summaryDetail} word="reliable" effect="pulse" delay={-3.1} />
-      </p>
-      <p class="home-note">
-        <AnimatedText text={profile.summaryNote} word="brewing" effect="flicker" delay={-4.6} />
-      </p>
-      <p class="home-signoff">
-        <AnimatedText text={profile.summarySignoff} word="debugging" effect="glitch" />
-      </p>
+  <div class="home-system is-content-loading" data-home-content aria-busy="true">
+    <Frame title="WELCOME" class="home-console">
+      <div class="home-console-grid">
+        <section class="home-console-identity" aria-labelledby="home-greeting">
+          <h1 id="home-greeting" data-home-greeting>
+            <AnimatedWord text={profile.greeting} effect="pulse" delay={-3.6} />.
+          </h1>
 
-      <div class="home-overview">
-          <section aria-labelledby="home-now">
-            <h2 id="home-now">&gt; ONGOING PRIORITIES</h2>
-            <ul class="terminal-list">
-              <li><AnimatedText text="Healthcare systems" word="Healthcare" effect="pulse" delay={-5.2} /></li>
-              <li><AnimatedText text="Cloud data and analytics" word="Cloud" effect="scan" delay={-2.8} /></li>
-              <li><AnimatedText text="Practical AI and automation" word="AI" effect="decode" delay={-4.1} alt="A1" /></li>
-            </ul>
-          </section>
+          <div class="home-core" aria-hidden="true">
+            <span class="home-core-orbit"></span>
+            <span class="home-core-mark">&gt;_</span>
+            <span class="home-core-ping"></span>
+          </div>
 
-          <section aria-labelledby="home-connect">
-          <h2 id="home-connect">&gt; CONNECT</h2>
-          <p class="home-connect-copy">
+          <p class="home-core-caption" data-home-identity>
+            {profile.role} // {profile.location}<br />
+            <span data-home-node>NODE: {profile.node} // STATUS: {profile.status}</span>
+          </p>
+        </section>
+
+        <section class="home-launch" aria-labelledby="home-start">
+          <h2 id="home-start">&gt; START HERE</h2>
+          <p data-home-start-copy>
+            {profile.startCopy}
+          </p>
+          <div class="home-actions">
+            <a class="home-action" href="/about/" data-sfx>
+              VIEW PROFILE <span aria-hidden="true">&nbsp;›</span>
+            </a>
+            <a class="home-action" href={`mailto:${profile.email}`} data-home-email data-sfx>
+              EMAIL <span aria-hidden="true">&nbsp;↗</span>
+            </a>
+            <a class="home-action" href={profile.linkedin} data-home-linkedin target="_blank" rel="noopener noreferrer" data-sfx>
+              LINKEDIN <span aria-hidden="true">&nbsp;↗</span>
+            </a>
+          </div>
+
+          <div class="home-console-rule"></div>
+
+          <h2>&gt; CURRENT JOB</h2>
+          <p class="home-build-note" data-home-progress>
             <AnimatedText
-              text="Have something useful to build or a problem worth solving?"
-              word="build"
+              text={profile.progress}
+              word="healthcare"
+              effect="scan"
+              delay={-4.8}
+            />
+          </p>
+        </section>
+      </div>
+    </Frame>
+
+    <Frame title={`ACTIVE QUEUE // ${String(queue.length).padStart(2, '0')}`} class="home-progress-frame">
+      <div class="home-progress-grid">
+        <article class="home-progress-item" data-queue-id={queue[0].id}>
+          <span class="home-progress-number" data-queue-label>01 // {queue[0].label}</span>
+          <p data-queue-description>
+            <AnimatedText
+              text={queue[0].description}
+              word="appointments"
+              effect="pulse"
+              delay={-5.2}
+            />
+          </p>
+        </article>
+
+        <article class="home-progress-item" data-queue-id={queue[1].id}>
+          <span class="home-progress-number" data-queue-label>02 // {queue[1].label}</span>
+          <p data-queue-description>
+            <AnimatedText
+              text={queue[1].description}
+              word="doctors"
+              effect="scan"
+              delay={-2.8}
+            />
+          </p>
+        </article>
+
+        <article class="home-progress-item" data-queue-id={queue[2].id}>
+          <span class="home-progress-number" data-queue-label>03 // {queue[2].label}</span>
+          <p data-queue-description>
+            <AnimatedText
+              text={queue[2].description}
+              word="payroll"
               effect="wave"
+              delay={-4.1}
+            />
+          </p>
+        </article>
+
+        <article class="home-progress-item" data-queue-id={queue[3].id}>
+          <span class="home-progress-number" data-queue-label>04 // {queue[3].label}</span>
+          <p data-queue-description>
+            <AnimatedText
+              text={queue[3].description}
+              word="clearer"
+              effect="decode"
+              delay={-3.4}
+              alt="CL34R3R"
+            />
+          </p>
+        </article>
+
+        <article class="home-progress-item" data-queue-id={queue[4].id}>
+          <span class="home-progress-number" data-queue-label>05 // {queue[4].label}</span>
+          <p data-queue-description>
+            <AnimatedText
+              text={queue[4].description}
+              word="locums"
+              effect="pulse"
               delay={-5.7}
             />
           </p>
-          <ul class="terminal-list home-connect-list">
-            <li>
-              <a class="home-email" href={`mailto:${profile.email}`} data-sfx>
-                EMAIL <span aria-hidden="true">↗</span>
-              </a>
-            </li>
-            <li>
-              <a class="home-email" href={profile.linkedin} rel="me" data-sfx>
-                LINKEDIN <span aria-hidden="true">↗</span>
-              </a>
-            </li>
-          </ul>
-          </section>
+        </article>
       </div>
-
-      <p class="home-status">
-        <span class="status-light" aria-hidden="true"></span>
-        <span class="identity-rotator" aria-hidden="true">
-          <span id="identity-word">SELANGOREAN</span><span class="identity-cursor">_</span>
-        </span>
-        <span class="sr-only">Selangorean, thinker, builder, and problem solver.</span>
-      </p>
-    </div>
-  </Frame>
+    </Frame>
+  </div>
 </Layout>
 
 <script>
-  const identityWord = document.querySelector<HTMLElement>('#identity-word');
-  const identityWords = ['SELANGOREAN', 'THINKER', 'BUILDER', 'PROBLEM SOLVER'];
+  import { HOME_PUBLISHED_KEY, normalizeHomeContent, type HomeContent } from '../data/homeContent';
+  import type { CmsPages } from '../data/cmsSchema';
+  import { firebaseConfigured, getFirebaseServices } from '../lib/firebase';
 
-  if (identityWord && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    let wordIndex = 0;
-    let characterIndex = identityWords[0].length;
-    let deleting = false;
+  type DynamicHome = CmsPages['home']['data'];
 
-    const typeIdentity = () => {
-      const word = identityWords[wordIndex];
+  const effects = {
+    'patient-management': { word: 'appointments', effect: 'pulse', delay: '-5.2s' },
+    'electronic-manuals': { word: 'doctors', effect: 'scan', delay: '-2.8s' },
+    recruitment: { word: 'payroll', effect: 'wave', delay: '-4.1s' },
+    'corporate-web': { word: 'clearer', effect: 'decode', delay: '-3.4s', alt: 'CL34R3R' },
+    'workforce-portal': { word: 'locums', effect: 'pulse', delay: '-5.7s' },
+  } as const;
 
-      if (!deleting && characterIndex < word.length) {
-        characterIndex += 1;
-        identityWord.textContent = word.slice(0, characterIndex);
-        window.setTimeout(typeIdentity, 90);
-        return;
-      }
-
-      if (!deleting) {
-        deleting = true;
-        window.setTimeout(typeIdentity, 1400);
-        return;
-      }
-
-      if (characterIndex > 0) {
-        characterIndex -= 1;
-        identityWord.textContent = word.slice(0, characterIndex);
-        window.setTimeout(typeIdentity, 55);
-        return;
-      }
-
-      deleting = false;
-      wordIndex = (wordIndex + 1) % identityWords.length;
-      window.setTimeout(typeIdentity, 250);
-    };
-
-    window.setTimeout(typeIdentity, 1400);
+  function animatedText(element: Element | null, text: string, word: string, effect: string, delay: string, alt?: string) {
+    if (!element) return;
+    const index = text.toLowerCase().indexOf(word.toLowerCase());
+    if (index < 0) {
+      element.textContent = text;
+      return;
+    }
+    const match = text.slice(index, index + word.length);
+    const span = document.createElement('span');
+    span.className = `word-fx word-fx--${effect}`;
+    span.dataset.text = match;
+    span.dataset.alt = alt ?? match.replace(/[A-Za-z]/g, (character) =>
+      String.fromCharCode(33 + (character.charCodeAt(0) % 60)));
+    span.style.setProperty('--word-fx-delay', delay);
+    element.replaceChildren(text.slice(0, index), span, text.slice(index + word.length));
+    span.textContent = match;
   }
+
+  function applyHome(content: DynamicHome) {
+    const greeting = document.querySelector('[data-home-greeting]');
+    animatedText(greeting, `${content.profile.greeting}.`, content.profile.greeting, 'pulse', '-3.6s');
+    const identity = document.querySelector('[data-home-identity]');
+    if (identity) {
+      identity.firstChild!.textContent = `${content.profile.role} // ${content.profile.location}`;
+    }
+    const node = document.querySelector('[data-home-node]');
+    if (node) node.textContent = `NODE: ${content.profile.node} // STATUS: ${content.profile.status}`;
+    const copy = document.querySelector('[data-home-start-copy]');
+    if (copy) copy.textContent = content.profile.startCopy;
+    animatedText(document.querySelector('[data-home-progress]'), content.profile.progress, 'healthcare', 'scan', '-4.8s');
+
+    const actions = document.querySelector<HTMLElement>('.home-actions');
+    const publishedActions = [...content.callsToAction].filter((item) => item.status === 'published').sort((a, b) => a.sortOrder - b.sortOrder);
+    if (actions) actions.replaceChildren(...publishedActions.map((item) => {
+      const link = document.createElement('a');
+      link.className = 'home-action'; link.href = item.url; link.dataset.sfx = '';
+      link.append(item.label, document.createTextNode(item.external ? '  ↗' : '  ›'));
+      if (item.external && /^https?:\/\//i.test(item.url)) { link.target = '_blank'; link.rel = 'noopener noreferrer'; }
+      return link;
+    }));
+
+    const queue = [...content.queue].filter((item) => item.status === 'published').sort((a, b) => a.sortOrder - b.sortOrder);
+    const grid = document.querySelector<HTMLElement>('.home-progress-grid');
+    if (grid) grid.replaceChildren(...queue.map((item, index) => {
+      const article = document.createElement('article'); article.className = 'home-progress-item'; article.dataset.queueId = item.id;
+      const label = document.createElement('span'); label.className = 'home-progress-number'; label.dataset.queueLabel = '';
+      label.textContent = `${String(index + 1).padStart(2, '0')} // ${item.label}`;
+      const description = document.createElement('p'); description.dataset.queueDescription = '';
+      const effect = effects[item.id as keyof typeof effects];
+      if (effect) animatedText(description, item.description, effect.word, effect.effect, effect.delay, 'alt' in effect ? effect.alt : undefined);
+      else description.textContent = item.description;
+      article.append(label, description); return article;
+    }));
+    const frameTitle = document.querySelector<HTMLElement>('.home-progress-frame .frame-title');
+    if (frameTitle) frameTitle.textContent = `ACTIVE QUEUE // ${String(queue.length).padStart(2, '0')}`;
+  }
+
+  const legacyHome = (value: HomeContent): DynamicHome => ({
+    profile: value.profile,
+    queue: value.queue.map((item, index) => ({ ...item, sortOrder: index, status: 'published' })),
+    callsToAction: [
+      { id: 'cta-profile', label: 'VIEW PROFILE', url: '/about/', external: false, sortOrder: 0, status: 'published' },
+      { id: 'cta-email', label: 'EMAIL', url: `mailto:${value.profile.email}`, external: true, sortOrder: 1, status: 'published' },
+      { id: 'cta-linkedin', label: 'LINKEDIN', url: value.profile.linkedin, external: true, sortOrder: 2, status: 'published' },
+    ],
+  });
+
+  const homeRoot = document.querySelector<HTMLElement>('[data-home-content]');
+  const revealHome = () => {
+    homeRoot?.classList.remove('is-content-loading');
+    homeRoot?.removeAttribute('aria-busy');
+  };
+
+  const isDraftPreview = new URLSearchParams(location.search).get('cms-preview') === 'draft';
+  if (isDraftPreview) {
+    try {
+      const payload = JSON.parse(sessionStorage.getItem('aniq-cms-public-preview') ?? '{}') as { home?: HomeContent; pages?: { home?: CmsPages['home'] } };
+      if (payload.pages?.home) applyHome(payload.pages.home.data);
+      else if (payload.home) applyHome(legacyHome(normalizeHomeContent(payload.home)));
+    } catch (error) {
+      console.warn('HOME draft preview could not be loaded.', error);
+    } finally { revealHome(); }
+  }
+
+  if (!isDraftPreview && firebaseConfigured) {
+    Promise.all([getFirebaseServices(), import('firebase/firestore')])
+      .then(([services, firestore]) => {
+        if (!services) return;
+        return Promise.all([
+          firestore.getDocFromServer(firestore.doc(services.db, 'cmsPublished', 'home')),
+          firestore.getDocFromServer(firestore.doc(services.db, 'siteContent', 'home')),
+        ]);
+      })
+      .then((snapshots) => {
+        if (!snapshots) return;
+        const [structured, legacy] = snapshots;
+        if (structured.exists()) {
+          const page = structured.data() as CmsPages['home'];
+          if (page.schemaVersion === 2 && page.pageId === 'home') applyHome(page.data);
+          return;
+        }
+        if (!legacy.exists()) return;
+        const content = normalizeHomeContent(legacy.data());
+        applyHome(legacyHome(content));
+        localStorage.setItem(HOME_PUBLISHED_KEY, JSON.stringify(content));
+      })
+      .catch((error) => console.warn('Published HOME content could not be loaded.', error))
+      .finally(revealHome);
+  }
+
+  if (!isDraftPreview && !firebaseConfigured) revealHome();
 </script>

@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Frame from '../components/Frame.astro';
 import AnimatedText from '../components/AnimatedText.astro';
-import { education, profile } from '../data/cv';
+import { education, profile, undergraduateThesis } from '../data/cv';
 ---
 
 <Layout title="ABOUT" description="About Muhammad Amrun Aniq bin Mohamed Saidi, software engineer.">
@@ -17,42 +17,159 @@ import { education, profile } from '../data/cv';
       />
       <dl class="records">
         <dt>NAME</dt>
-        <dd>{profile.name}</dd>
+        <dd data-cms-field="about.name">{profile.name}</dd>
         <dt>ROLE</dt>
-        <dd><AnimatedText text={profile.role} word="Engineer" effect="decode" delay={-2.2} alt="ENG1N33R" /></dd>
+        <dd data-cms-field="about.role"><AnimatedText text={profile.role} word="Engineer" effect="decode" delay={-2.2} alt="ENG1N33R" /></dd>
         <dt>LOCATION</dt>
-        <dd>{profile.location}</dd>
+        <dd data-cms-field="about.location">{profile.location}</dd>
         <dt>CONTACT</dt>
-        <dd><a href={`mailto:${profile.email}`}>{profile.email}</a></dd>
+        <dd><a href={`mailto:${profile.email}`} data-cms-field="about.email" data-cms-attribute="mailto">{profile.email}</a></dd>
         <dt>LINKEDIN</dt>
-        <dd><a href={profile.linkedin} rel="me">linkedin.com/in/aniqsaidi</a></dd>
+        <dd><a href={profile.linkedin} rel="me" data-cms-field="about.linkedin" data-cms-attribute="href">linkedin.com/in/aniqsaidi</a></dd>
+        <dt>RÉSUMÉ</dt>
+        <dd><a href="/resume/" data-cms-resume-link>VIEW CURRENT PDF ↗</a></dd>
       </dl>
     </div>
   </Frame>
 
-  <details class="mobile-more" open>
-    <summary>
-      <span class="details-closed">[+] SHOW EDUCATION</span>
-      <span class="details-open">[-] HIDE EDUCATION</span>
-    </summary>
-    <Frame title="EDUCATION">
-      <div class="credential-list">
-        {education.map((item, index) => (
-          <article class="credential">
-            <div>
-              <h2>
-                {index === 0
-                  ? <AnimatedText text={item.qualification} word="Software" effect="wave" delay={-3.6} />
-                  : index === 1
-                    ? <AnimatedText text={item.qualification} word="Engineering" effect="jitter" delay={-5.1} />
-                    : <AnimatedText text={item.qualification} word="Education" effect="invert" delay={-2.7} />}
-              </h2>
-              <p>{item.institution}</p>
-            </div>
-            <p>{item.period}</p>
-          </article>
-        ))}
-      </div>
-    </Frame>
-  </details>
+  <Frame title="EDUCATION">
+    <div class="credential-list" data-cms-collection="about.education">
+      {education.map((item, index) => (
+        <article class:list={['credential', index === 0 && 'credential--with-thesis']}>
+          <div>
+            <h2 data-cms-field={`about.education.${index}.qualification`}>
+              {index === 0
+                ? <AnimatedText text={item.qualification} word="Software" effect="wave" delay={-3.6} />
+                : index === 1
+                  ? <AnimatedText text={item.qualification} word="Engineering" effect="jitter" delay={-5.1} />
+                  : <AnimatedText text={item.qualification} word="Education" effect="invert" delay={-2.7} />}
+            </h2>
+            <p data-cms-field={`about.education.${index}.institution`}>{item.institution}</p>
+          </div>
+          <p data-cms-field={`about.education.${index}.period`}>{item.period}</p>
+          {index === 0 && (
+            <aside class="education-thesis" aria-labelledby="undergraduate-thesis-title">
+              <div class="education-thesis-copy">
+                <span>{undergraduateThesis.label}</span>
+                <h3 id="undergraduate-thesis-title">{undergraduateThesis.title}</h3>
+                <p>
+                  <AnimatedText
+                    text={undergraduateThesis.summary}
+                    word="Android"
+                    effect="scan"
+                    delay={-3.1}
+                  />
+                </p>
+              </div>
+              <div class="education-thesis-meta">
+                <ul aria-label="Project technologies">
+                  {undergraduateThesis.technologies.map((technology) => <li>{technology}</li>)}
+                </ul>
+                <div class="education-thesis-links">
+                  <a href={undergraduateThesis.repositoryUrl} target="_blank" rel="noopener noreferrer">VIEW REPOSITORY ↗</a>
+                  <a href={undergraduateThesis.pdfUrl} target="_blank" rel="noopener noreferrer">READ THESIS PDF ↗</a>
+                  <a href={undergraduateThesis.catalogueUrl} target="_blank" rel="noopener noreferrer">VIEW LIBRARY CATALOGUE ↗</a>
+                </div>
+              </div>
+            </aside>
+          )}
+        </article>
+      ))}
+    </div>
+  </Frame>
 </Layout>
+
+<style>
+  .education-thesis {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+    grid-column: 1 / -1;
+    gap: clamp(20px, 4vw, 48px);
+    align-items: center;
+    width: 100%;
+    margin-top: 2px;
+    padding: clamp(16px, 2.2vw, 24px);
+    border-top: 1px dashed var(--fg-dim);
+    background: color-mix(in srgb, var(--fg) 4%, transparent);
+  }
+
+  .credential--with-thesis {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 14px clamp(24px, 4vw, 48px);
+  }
+
+  .credential--with-thesis > div { min-width: 0; }
+
+  .education-thesis-copy { min-width: 0; }
+
+  .education-thesis-meta {
+    min-width: 0;
+    padding-left: clamp(18px, 3vw, 32px);
+    border-left: 1px dashed var(--fg-dim);
+  }
+
+  .education-thesis-copy > span {
+    color: var(--fg);
+    font-size: .7rem;
+    letter-spacing: .1em;
+  }
+
+  .education-thesis h3 {
+    margin: 6px 0 7px;
+    color: var(--fg-bright);
+    font-size: clamp(.9rem, 2.2vw, 1.05rem);
+  }
+
+  .education-thesis-copy p {
+    max-width: 64ch;
+    color: var(--fg-dim);
+    line-height: 1.55;
+  }
+
+  .education-thesis ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .education-thesis li {
+    padding: 3px 6px;
+    border: 1px solid var(--fg-dim);
+    color: var(--fg);
+    font-size: .65rem;
+  }
+
+  .education-thesis-links {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .education-thesis-links a {
+    color: var(--fg-bright);
+    font-size: .72rem;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  @media (max-width: 900px) {
+    .education-thesis { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .education-thesis-meta {
+      padding: 16px 0 0;
+      border-top: 1px dashed var(--fg-dim);
+      border-left: 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .credential--with-thesis { display: flex; flex-direction: column; gap: 4px; }
+    .education-thesis { display: block; margin-top: 12px; padding: 12px 10px; }
+    .education-thesis-meta { margin-top: 14px; padding-top: 14px; }
+    .education-thesis ul { margin-bottom: 12px; }
+  }
+</style>

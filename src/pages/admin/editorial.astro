@@ -1,0 +1,76 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { defaultSeoDocument } from '../../data/cmsEditorial';
+import { getCollection } from 'astro:content';
+import { defaultHomeContent } from '../../data/homeContent';
+import { defaultSiteFields } from '../../data/siteFields';
+import { migrateV1ToV2 } from '../../data/cmsSchema';
+
+const archivePosts = (await getCollection('blog', ({ data }) => !data.draft)).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const archiveFields = {
+  'archives.lede': 'Published coverage preserved from the original portfolio. Select an entry to open its full clipping.',
+  ...Object.fromEntries(archivePosts.flatMap((post) => [
+    [`archives.${post.id}.title`, post.data.title], [`archives.${post.id}.publication`, post.data.publication ?? ''],
+    [`archives.${post.id}.date`, post.data.pubDate.toISOString().slice(0, 10)], [`archives.${post.id}.description`, post.data.description],
+  ])),
+};
+const defaultPages = migrateV1ToV2(defaultHomeContent, { ...defaultSiteFields, ...archiveFields });
+---
+
+<AdminLayout title="EDITORIAL ADMIN">
+  <div class="phase-d-admin" id="editorial-admin" data-seo-defaults={JSON.stringify(defaultSeoDocument)} data-page-defaults={JSON.stringify(defaultPages)}>
+    <section class="phase-d-auth" id="editorial-auth" hidden>
+      <p class="phase-d-kicker">SECURITY GATE // UID REQUIRED</p>
+      <h1>AUTHORIZED GOOGLE ACCOUNT REQUIRED.</h1>
+      <button class="phase-d-button is-primary" id="editorial-sign-in" type="button">&gt; SIGN IN WITH GOOGLE</button>
+    </section>
+
+    <div class="phase-d-shell">
+      <nav class="phase-d-nav" aria-label="Admin areas">
+        <a href="/admin/dashboard/">DASHBOARD</a>
+        <a href="/admin/">CONTENT</a>
+        <a href="/admin/media/">MEDIA + RESUME</a>
+        <a href="/admin/editorial/" aria-current="page">SEO + QUALITY</a>
+      </nav>
+      <header class="phase-d-heading">
+        <div><p class="phase-d-kicker">DISCOVERY // VALIDATION // SEARCH</p><h1>EDITORIAL CONTROL</h1></div>
+        <button class="phase-d-button" id="editorial-sign-out" type="button" hidden>&gt; SIGN OUT</button>
+      </header>
+
+      <section class="phase-d-panel" aria-labelledby="search-title">
+        <div class="phase-d-section-head"><div><p class="phase-d-kicker">01 // ALL DRAFT CONTENT</p><h2 id="search-title">CONTENT SEARCH</h2></div></div>
+        <input class="phase-d-search" id="content-search" type="search" placeholder="SEARCH TITLES, ROLES, SKILLS, ARTICLES..." />
+        <div id="content-results" class="content-results" aria-live="polite"></div>
+      </section>
+
+      <section class="phase-d-panel" aria-labelledby="seo-title">
+        <div class="phase-d-section-head">
+          <div><p class="phase-d-kicker">02 // SEARCH + SOCIAL</p><h2 id="seo-title">PAGE METADATA</h2></div>
+          <div><button class="phase-d-button" id="seo-save" type="button">SAVE DRAFT</button> <button class="phase-d-button is-primary" id="seo-publish" type="button">PUBLISH SEO</button></div>
+        </div>
+        <div class="seo-tabs" id="seo-tabs" role="tablist"></div>
+        <form id="seo-form" class="phase-d-form seo-form"></form>
+        <div class="preview-pair">
+          <article class="search-preview"><small>SEARCH PREVIEW</small><h3 id="search-preview-title"></h3><p id="search-preview-url"></p><div id="search-preview-description"></div></article>
+          <article class="social-preview"><small>SOCIAL PREVIEW</small><div id="social-preview-image"></div><h3 id="social-preview-title"></h3><p id="social-preview-description"></p></article>
+        </div>
+      </section>
+
+      <section class="phase-d-panel" aria-labelledby="quality-title">
+        <div class="phase-d-section-head"><div><p class="phase-d-kicker">03 // PUBLICATION READINESS</p><h2 id="quality-title">COMPLETENESS REPORT</h2></div><button class="phase-d-button" id="quality-refresh">REFRESH REPORT</button></div>
+        <div class="quality-summary" id="quality-summary"></div>
+        <div class="quality-list" id="quality-list"></div>
+      </section>
+    </div>
+    <div class="phase-d-command"><p id="editorial-message" role="status" aria-live="polite">CHECKING ACCESS...</p></div>
+  </div>
+</AdminLayout>
+
+<script>
+  import { initializeEditorialAdmin } from '../../scripts/adminEditorial';
+  initializeEditorialAdmin().catch((error) => {
+    console.error(error);
+    const message = document.querySelector('#editorial-message');
+    if (message) message.textContent = 'EDITORIAL ADMIN FAILED TO INITIALIZE.';
+  });
+</script>

@@ -9,9 +9,12 @@ const { post } = Astro.props;
 const date = post.data.pubDate.toISOString().slice(0, 10);
 ---
 
-<a class="menu-item" href={`/blog/${post.id}/`}>
+<a class="menu-item" href={`/archives/${post.id}/`}>
   <span class="mi-marker" aria-hidden="true">▪ &gt;</span>
-  <span class="mi-title">{post.data.title}</span>
+  <span class="mi-copy">
+    <span class="mi-title">{post.data.title}</span>
+    {post.data.publication && <span class="mi-publication">{post.data.publication}</span>}
+  </span>
   <time class="mi-date" datetime={date}>{date}</time>
   <span class="mi-arrow" aria-hidden="true">›</span>
 </a>

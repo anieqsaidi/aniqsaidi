@@ -21,9 +21,8 @@ function readEnabled() {
   } catch {
     // Private browsing — treat as "no choice made yet".
   }
-  // Default off on phones: there is no hovering there, which is most of what
-  // the sound exists for, and an unexpected beep from a pocket is annoying.
-  return !window.matchMedia?.('(max-width: 640px)').matches;
+  // New visitors begin with the terminal audio enabled on every device.
+  return true;
 }
 
 const samples = new Map<string, AudioBuffer>();

@@ -1,0 +1,64 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import Frame from '../../components/Frame.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: post,
+  }));
+}
+
+const post = Astro.props;
+const { title, description, pubDate, heroImage, publication } = post.data;
+const date = pubDate.toISOString().slice(0, 10);
+---
+
+<Layout title={title} description={description}>
+  <article class="archive-page archive-entry">
+    <Frame title="PRESS ARCHIVE">
+      <h1 class="post-title">{title}</h1>
+      <p class="post-meta">
+        DATE: <time datetime={date}>{date}</time>
+        {publication && <> // PUBLICATION: {publication}</>}
+      </p>
+      <p class="press-description">{description}</p>
+      {heroImage && (
+        <figure class="press-reader">
+          <div class="press-clipping-preview">
+            <Image
+              class="press-clipping"
+              src={heroImage}
+              alt={`Press clipping: ${title}`}
+              width={Math.min(heroImage.width, 1800)}
+              loading="eager"
+              quality={88}
+            />
+          </div>
+          <figcaption>
+            <a
+              class="press-full-button"
+              href={heroImage.src}
+              target="_blank"
+              rel="noopener"
+              data-sfx
+              aria-label={`View the full-resolution clipping for ${title}`}
+            >
+              [ VIEW FULL IMAGE ↗ ]
+            </a>
+          </figcaption>
+        </figure>
+      )}
+    </Frame>
+
+    <nav class="post-nav">
+      <a class="menu-item" href="/archives/">
+        <span class="mi-marker" aria-hidden="true">▪ ‹</span>
+        <span class="mi-title">BACK TO PRESS ARCHIVES</span>
+      </a>
+    </nav>
+  </article>
+</Layout>

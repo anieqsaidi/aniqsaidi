@@ -1,0 +1,59 @@
+---
+interface HighlightRecord {
+  index: number;
+  signal: string;
+  title: string;
+  description: string;
+  meta?: string;
+  featured: boolean;
+}
+
+interface Props {
+  page: 'certifications' | 'awards' | 'leadership';
+  records: HighlightRecord[];
+}
+
+const { page, records } = Astro.props;
+const visibleCount = records.filter((record) => record.featured).slice(0, 3).length;
+---
+
+<section class="record-highlights" data-cms-highlights={page} aria-labelledby={`${page}-highlights-title`}>
+  <header class="record-highlights__head">
+    <div>
+      <h2 id={`${page}-highlights-title`}>HIGHLIGHTS <span>// <span data-highlight-count>{String(visibleCount).padStart(2, '0')}</span></span></h2>
+    </div>
+    <p>CURATED SIGNALS // NOT JUST THE LATEST</p>
+  </header>
+
+  <div class="record-highlights__grid">
+    {records.map((record) => (
+      <article
+        class="record-highlight"
+        data-highlight-item
+        data-record-index={record.index}
+        hidden={!record.featured}
+      >
+        <span class="record-highlight__signal">{record.signal}</span>
+        <h3 data-cms-field={`${page}.${record.index}.title`}>
+          {record.title}
+        </h3>
+        <p data-cms-field={`${page}.${record.index}.${page === 'certifications' ? 'issuer' : 'detail'}`}>
+          {record.description}
+        </p>
+        {record.meta && (
+          <span
+            class="record-highlight__meta"
+            data-cms-field={page === 'certifications' ? `${page}.${record.index}.date` : undefined}
+          >
+            {record.meta}
+          </span>
+        )}
+      </article>
+    ))}
+  </div>
+</section>
+
+<div class="record-ledger-heading" aria-hidden="true">
+  <span>FULL RECORD // {String(records.length).padStart(2, '0')}</span>
+  <span>COMPLETE INDEX</span>
+</div>

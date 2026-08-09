@@ -1,0 +1,54 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.uid == '1Mhzu5HmjdU82yzGlph6gQHX1843';
+    }
+
+    function isAllowedMediaUpload() {
+      return request.resource != null
+        && (
+          request.resource.size > 0
+            && request.resource.size <= 12 * 1024 * 1024
+            && request.resource.contentType.matches('image/(jpeg|png|webp)')
+          ||
+          request.resource.size > 0
+            && request.resource.size <= 10 * 1024 * 1024
+            && request.resource.contentType == 'application/pdf'
+        );
+    }
+
+    match /public/media/{mediaId}/{fileName} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isAllowedMediaUpload();
+      allow delete: if isAdmin();
+    }
+
+    match /public/resume/{fileName} {
+      allow read: if true;
+      allow create, update: if isAdmin()
+        && request.resource.size > 0
+        && request.resource.size <= 10 * 1024 * 1024
+        && request.resource.contentType == 'application/pdf';
+      allow delete: if isAdmin();
+    }
+
+    match /public/resume/versions/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin()
+        && (
+          request.resource == null
+          || resource == null
+            && request.resource.size > 0
+            && request.resource.size <= 10 * 1024 * 1024
+            && request.resource.contentType == 'application/pdf'
+        );
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,90 @@
+---
+import { getCollection } from 'astro:content';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { defaultHomeContent } from '../../data/homeContent';
+import { defaultSiteFields } from '../../data/siteFields';
+import { migrateV1ToV2 } from '../../data/cmsSchema';
+
+const archivePosts = (await getCollection('blog', ({ data }) => !data.draft)).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const archiveFields = {
+  'archives.lede': 'Published coverage preserved from the original portfolio. Select an entry to open its full clipping.',
+  ...Object.fromEntries(archivePosts.flatMap((post) => [
+    [`archives.${post.id}.title`, post.data.title], [`archives.${post.id}.publication`, post.data.publication ?? ''],
+    [`archives.${post.id}.date`, post.data.pubDate.toISOString().slice(0, 10)], [`archives.${post.id}.description`, post.data.description],
+  ])),
+};
+const defaultPages = migrateV1ToV2(defaultHomeContent, { ...defaultSiteFields, ...archiveFields });
+---
+
+<AdminLayout title="OPERATIONS DASHBOARD">
+  <div class="phase-d-admin" id="operations-admin" data-page-defaults={JSON.stringify(defaultPages)}>
+    <section class="phase-d-auth" id="operations-auth" hidden>
+      <p class="phase-d-kicker">SECURITY GATE // UID REQUIRED</p>
+      <h1>AUTHORIZED GOOGLE ACCOUNT REQUIRED.</h1>
+      <button class="phase-d-button is-primary" id="operations-sign-in" type="button">&gt; SIGN IN WITH GOOGLE</button>
+    </section>
+
+    <div class="phase-d-shell">
+      <nav class="phase-d-nav" aria-label="Admin areas">
+        <a href="/admin/dashboard/" aria-current="page">DASHBOARD</a>
+        <a href="/admin/">CONTENT</a>
+        <a href="/admin/media/">MEDIA + RESUME</a>
+        <a href="/admin/editorial/">SEO + QUALITY</a>
+      </nav>
+      <header class="phase-d-heading">
+        <div><p class="phase-d-kicker">CMS PHASE E // OPERATIONS</p><h1>CONTROL DASHBOARD</h1></div>
+        <button class="phase-d-button" id="operations-sign-out" type="button" hidden>&gt; SIGN OUT</button>
+      </header>
+
+      <section class="ops-status-grid" id="ops-status" aria-live="polite"></section>
+
+      <section class="phase-d-panel" aria-labelledby="health-title">
+        <div class="phase-d-section-head"><div><p class="phase-d-kicker">01 // SYSTEM HEALTH</p><h2 id="health-title">PUBLICATION READINESS</h2></div><button class="phase-d-button" id="ops-refresh" type="button">REFRESH</button></div>
+        <div class="quality-summary" id="ops-health-summary"></div>
+        <div class="quality-list" id="ops-health-list"></div>
+      </section>
+
+      <section class="phase-d-panel" aria-labelledby="transfer-title">
+        <div class="phase-d-section-head"><div><p class="phase-d-kicker">02 // PORTABILITY</p><h2 id="transfer-title">BACKUP, EXPORT + IMPORT</h2></div></div>
+        <div class="ops-export-grid">
+          <button class="phase-d-button is-primary" data-export-scope="complete">EXPORT COMPLETE CMS</button>
+          <button class="phase-d-button" data-export-scope="published">EXPORT PUBLISHED SNAPSHOT</button>
+          <button class="phase-d-button" data-export-scope="media">EXPORT MEDIA MANIFEST</button>
+          <label>PAGE EXPORT<select id="ops-page-export"></select></label>
+          <button class="phase-d-button" data-export-scope="page">EXPORT SELECTED PAGE</button>
+        </div>
+        <div class="ops-import">
+          <label>IMPORT JSON <input id="ops-import-file" type="file" accept="application/json,.json" /></label>
+          <p>Imports are validated and compared first. A server-side backup and revisions are created before imported content becomes a draft. Live content is never overwritten.</p>
+          <div id="ops-import-preview" aria-live="polite"></div>
+          <button class="phase-d-button is-primary" id="ops-import-commit" type="button" disabled>IMPORT AS DRAFTS</button>
+        </div>
+      </section>
+
+      <section class="phase-d-panel" aria-labelledby="activity-title">
+        <div class="phase-d-section-head"><div><p class="phase-d-kicker">03 // IMMUTABLE HISTORY</p><h2 id="activity-title">RECENT ACTIVITY</h2></div></div>
+        <div class="ops-audit-list" id="ops-audit-list"></div>
+      </section>
+
+      <section class="phase-d-panel" aria-labelledby="shortcuts-title">
+        <div class="phase-d-section-head"><div><p class="phase-d-kicker">04 // PRODUCTIVITY</p><h2 id="shortcuts-title">KEYBOARD MAP</h2></div></div>
+        <div class="ops-shortcuts">
+          <kbd>⌘/CTRL + S</kbd><span>SAVE CURRENT DRAFT</span><kbd>⌘/CTRL + SHIFT + S</kbd><span>SAVE ALL DRAFTS</span>
+          <kbd>⌘/CTRL + P</kbd><span>PREVIEW CURRENT PAGE</span><kbd>ALT + 1…8</kbd><span>SWITCH CONTENT PAGE</span>
+          <kbd>ALT + E</kbd><span>EXPAND ALL RECORDS</span><kbd>ALT + C</kbd><span>COLLAPSE ALL RECORDS</span>
+          <kbd>/</kbd><span>FOCUS EDITORIAL SEARCH</span>
+        </div>
+      </section>
+    </div>
+    <div class="phase-d-command"><p id="operations-message" role="status" aria-live="polite">CHECKING ACCESS...</p></div>
+  </div>
+</AdminLayout>
+
+<script>
+  import { initializeOperationsDashboard } from '../../scripts/adminDashboard';
+  initializeOperationsDashboard().catch((error) => {
+    console.error(error);
+    const message = document.querySelector('#operations-message');
+    if (message) message.textContent = 'OPERATIONS DASHBOARD FAILED TO INITIALIZE.';
+  });
+</script>

@@ -1,0 +1,238 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import Frame from '../../components/Frame.astro';
+import AnimatedText from '../../components/AnimatedText.astro';
+import AnimatedWord from '../../components/AnimatedWord.astro';
+
+type WordEffect = 'glitch' | 'scan' | 'pulse' | 'flicker' | 'decode' | 'wave' | 'invert' | 'jitter';
+type ArchiveEffect = {
+  titleWord: string;
+  titleEffect: WordEffect;
+  descriptionWord: string;
+  descriptionEffect: WordEffect;
+  alt?: string;
+  delay: number;
+};
+
+const archiveEffects: Record<string, ArchiveEffect> = {
+  bantuan: { titleWord: 'Bantuan', titleEffect: 'pulse', descriptionWord: 'financial', descriptionEffect: 'flicker', delay: -1.2 },
+  harapan: { titleWord: 'Harapan', titleEffect: 'flicker', descriptionWord: 'priorities', descriptionEffect: 'pulse', delay: -2.1 },
+  bandung: { titleWord: 'Universiti', titleEffect: 'scan', descriptionWord: 'Bandung', descriptionEffect: 'wave', delay: -3.4 },
+  bill: { titleWord: 'Monitor', titleEffect: 'scan', descriptionWord: 'electricity', descriptionEffect: 'pulse', delay: -4.3 },
+  inovasi: { titleWord: 'Inovasi', titleEffect: 'wave', descriptionWord: 'innovation', descriptionEffect: 'scan', delay: -5.1 },
+  tnb: { titleWord: 'Talian', titleEffect: 'scan', descriptionWord: 'electricity', descriptionEffect: 'decode', alt: '3L3CTRICITY', delay: -2.8 },
+  gandingan: { titleWord: 'Kredibiliti', titleEffect: 'decode', descriptionWord: 'capability', descriptionEffect: 'wave', alt: 'KR3DIBILITI', delay: -4.7 },
+  kabinet: { titleWord: 'Amanah', titleEffect: 'invert', descriptionWord: 'mandate', descriptionEffect: 'pulse', delay: -1.9 },
+  watikah: { titleWord: 'Pelantikan', titleEffect: 'jitter', descriptionWord: 'appointment', descriptionEffect: 'scan', delay: -3.7 },
+  award: { titleWord: 'Award', titleEffect: 'pulse', descriptionWord: 'recognition', descriptionEffect: 'wave', delay: -2.3 },
+  leadership: { titleWord: 'Kampus', titleEffect: 'scan', descriptionWord: 'leadership', descriptionEffect: 'pulse', delay: -3.9 },
+  heart: { titleWord: 'Heart', titleEffect: 'pulse', descriptionWord: 'Council', descriptionEffect: 'scan', delay: -4.8 },
+};
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const byYear = new Map<number, typeof posts>();
+for (const post of posts) {
+  const year = post.data.pubDate.getFullYear();
+  if (!byYear.has(year)) byYear.set(year, []);
+  byYear.get(year)!.push(post);
+}
+---
+
+<Layout title="ARCHIVES" description="Press clippings and published coverage featuring Aniq Saidi.">
+  <div class="archive-page archive-index">
+    <Frame title="PRESS ARCHIVES">
+      <p class="archive-lede" data-cms-field="archives.lede">
+        <AnimatedText
+          text="Published coverage preserved from the original portfolio. Select an entry to open its full clipping."
+          word="preserved"
+          effect="scan"
+          delay={-2.6}
+        />
+      </p>
+      <div class="archive-year-buttons" aria-label="Select an archive year">
+        {[...byYear.entries()].map(([year, yearPosts]) => (
+          <button
+            class="archive-year-button"
+            type="button"
+            data-archive-year={year}
+            data-sfx="hover"
+            aria-controls={`archive-year-${year}`}
+            aria-expanded="false"
+          >
+            &gt; <AnimatedWord
+              text={String(year)}
+              effect={year === 2018 ? 'pulse' : 'flicker'}
+              delay={year === 2018 ? -3.2 : -4.4}
+            /> <span>[{yearPosts.length}]</span>
+          </button>
+        ))}
+      </div>
+
+      <div data-archive-panels>
+      {[...byYear.entries()].map(([year, yearPosts]) => (
+        <section class="archive-year-panel" id={`archive-year-${year}`} hidden>
+          <h3 class="sr-only">Press archive entries from {year}</h3>
+          <div class="menu-list archive-entry-list">
+            {yearPosts.map((post) => {
+              const date = post.data.pubDate.toISOString().slice(0, 10);
+              const panelId = `archive-entry-${post.id}`;
+              const effect = archiveEffects[post.id];
+
+              return (
+                <article class="archive-entry-record">
+                  <button
+                    class="menu-item archive-entry-button"
+                    type="button"
+                    data-archive-entry
+                    data-sfx="hover"
+                    aria-controls={panelId}
+                    aria-expanded="false"
+                  >
+                    <span class="mi-marker" aria-hidden="true">▪ &gt;</span>
+                    <span class="mi-copy">
+                      <span class="mi-title" data-cms-field={`archives.${post.id}.title`}>
+                        {effect ? (
+                          <AnimatedText
+                            text={post.data.title}
+                            word={effect.titleWord}
+                            effect={effect.titleEffect}
+                            delay={effect.delay}
+                            alt={effect.alt}
+                          />
+                        ) : post.data.title}
+                      </span>
+                      {post.data.publication && (
+                        <span class="mi-publication" data-cms-field={`archives.${post.id}.publication`}>{post.data.publication}</span>
+                      )}
+                    </span>
+                    <time class="mi-date" datetime={date} data-cms-field={`archives.${post.id}.date`}>{date}</time>
+                    <span class="archive-toggle-symbol" aria-hidden="true"></span>
+                  </button>
+
+                  <div class="archive-entry-panel" id={panelId} hidden>
+                    <p class="press-description" data-cms-field={`archives.${post.id}.description`}>
+                      {effect ? (
+                        <AnimatedText
+                          text={post.data.description}
+                          word={effect.descriptionWord}
+                          effect={effect.descriptionEffect}
+                          delay={effect.delay - 1.3}
+                          alt={effect.descriptionEffect === 'decode' ? effect.alt : undefined}
+                        />
+                      ) : post.data.description}
+                    </p>
+                    {post.data.heroImage && (
+                      <figure class="press-reader">
+                        <div class="press-clipping-preview">
+                          <Image
+                            class="press-clipping"
+                            src={post.data.heroImage}
+                            alt={`Press clipping: ${post.data.title}`}
+                            width={Math.min(post.data.heroImage.width, 1800)}
+                            loading="lazy"
+                            quality={88}
+                          />
+                        </div>
+                        <figcaption>
+                          <a
+                            class="press-full-button"
+                            href={post.data.heroImage.src}
+                            target="_blank"
+                            rel="noopener"
+                            data-sfx
+                            aria-label={`View the full-resolution clipping for ${post.data.title}`}
+                          >
+                            [ <AnimatedText
+                              text="VIEW FULL IMAGE"
+                              word="FULL"
+                              effect="scan"
+                              delay={effect ? effect.delay - 2.1 : -3.8}
+                            /> ↗ ]
+                          </a>
+                        </figcaption>
+                      </figure>
+                    )}
+                    {post.data.sources.length > 0 && (
+                      <nav class="archive-source-links" aria-label={`Sources for ${post.data.title}`}>
+                        {post.data.sources.map((source) => (
+                          <a href={source.url} target="_blank" rel="noopener noreferrer" data-sfx>
+                            {source.label} ↗
+                          </a>
+                        ))}
+                      </nav>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      ))}
+      </div>
+    </Frame>
+  </div>
+</Layout>
+
+<script>
+  const archive = document.querySelector<HTMLElement>('.archive-index');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const closeEntries = () => {
+    archive?.querySelectorAll<HTMLButtonElement>('[data-archive-entry]').forEach((item) => item.setAttribute('aria-expanded', 'false'));
+    archive?.querySelectorAll<HTMLElement>('.archive-entry-panel').forEach((panel) => { panel.hidden = true; });
+  };
+
+  archive?.addEventListener('click', (event) => {
+    const button = (event.target as Element).closest<HTMLButtonElement>('button');
+    if (!button || !archive.contains(button)) return;
+
+    if (button.matches('[data-archive-year]')) {
+      const wasOpen = button.getAttribute('aria-expanded') === 'true';
+      const panelId = button.getAttribute('aria-controls');
+
+      archive.querySelectorAll<HTMLButtonElement>('[data-archive-year]').forEach((item) => {
+        item.setAttribute('aria-expanded', 'false');
+        item.classList.remove('is-active');
+      });
+      archive.querySelectorAll<HTMLElement>('.archive-year-panel').forEach((panel) => { panel.hidden = true; });
+      closeEntries();
+
+      if (!wasOpen && panelId) {
+        const panel = document.getElementById(panelId);
+        if (panel) panel.hidden = false;
+        button.setAttribute('aria-expanded', 'true');
+        button.classList.add('is-active');
+      }
+      return;
+    }
+
+    if (button.matches('[data-archive-entry]')) {
+      const wasOpen = button.getAttribute('aria-expanded') === 'true';
+      const panelId = button.getAttribute('aria-controls');
+
+      closeEntries();
+
+      if (!wasOpen && panelId) {
+        const panel = document.getElementById(panelId);
+        if (panel) panel.hidden = false;
+        button.setAttribute('aria-expanded', 'true');
+      }
+
+      // Closing the previous clipping changes the list height. Wait for that
+      // reflow, then place the selected title at the top of the content panel.
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          button.scrollIntoView({
+            behavior: reduceMotion ? 'auto' : 'smooth',
+            block: 'start',
+          });
+        });
+      });
+    }
+  });
+</script>

@@ -1,0 +1,85 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Frame from '../components/Frame.astro';
+import AnimatedText from '../components/AnimatedText.astro';
+import { defaultHomeContent } from '../data/homeContent';
+import { defaultSiteFields } from '../data/siteFields';
+import { migrateV1ToV2 } from '../data/cmsSchema';
+
+const projectPage = migrateV1ToV2(defaultHomeContent, defaultSiteFields).projects;
+const publicAliases = [
+  { slug: 'patient-management-platform', title: 'Patient Management Platform' },
+  { slug: 'healthcare-corporate-website', title: 'Healthcare Corporate Website' },
+  { slug: 'enterprise-analytics-platform', title: 'Enterprise Analytics Platform' },
+  { slug: 'naturel-kiss-online-shopping', title: 'Naturel Kiss Online Shopping (NKOS)' },
+  { slug: 'sprint-management-platform', title: 'Sprint Management Platform' },
+  { slug: 'cost-management-automation', title: 'Cost Management Automation' },
+  { slug: 'e-aduan-hygiene-system', title: 'E-Aduan Hygiene System' },
+  { slug: 'centralized-hospital-information-system', title: 'Centralized Hospital Information System' },
+  { slug: 'human-resource-management-system', title: 'Human Resource Management System' },
+  { slug: 'healthcare-workforce-portal', title: 'Healthcare Workforce Portal' },
+];
+const projects = projectPage.data.projects.map((project, index) => ({
+  ...project,
+  slug: publicAliases[index]?.slug ?? `confidential-project-${index + 1}`,
+  title: publicAliases[index]?.title ?? 'Confidential Engineering Project',
+  organisation: '',
+})).sort((a, b) => a.sortOrder - b.sortOrder);
+const publicProjectPage = { ...projectPage, data: { projects } };
+const tags = (items: typeof projects[number]['technologies']) => items.map((item) => item.label).join(' // ');
+---
+
+<Layout title="PROJECTS" description="Selected healthcare, web, and enterprise engineering projects by Aniq Saidi.">
+  <div class="projects-page" id="projects-page" data-projects={JSON.stringify(publicProjectPage)}>
+    <Frame title="PROJECTS // CASE FILES">
+      <header class="projects-intro">
+        <div>
+          <h1><AnimatedText text="Production work, without the production secrets." word="Production" effect="scan" delay={-1.8} /></h1>
+        </div>
+        <p>Healthcare platforms, public-facing systems, and enterprise analytics—documented around the problem, my contribution, and the engineering decisions that can be shared safely.</p>
+      </header>
+
+      <div class="project-grid" id="project-grid" aria-live="polite">
+        {projects.map((project, index) => (
+          <article class="project-card" id={`project-${project.slug}`} data-project-card={project.slug}>
+            <header>
+              <span>{String(index + 1).padStart(2, '0')} // {project.category}</span>
+              <span class="project-card-state">
+                <time>{project.period}</time>
+                <strong>{project.projectStatus}</strong>
+              </span>
+            </header>
+            <div class="project-card-copy">
+              <h2>{project.title}</h2>
+              <p>{project.shortDescription}</p>
+              <dl>
+                <div><dt>ROLE</dt><dd>{project.role}</dd></div>
+                <div><dt>STACK</dt><dd>{tags(project.technologies)}</dd></div>
+                <div><dt>PLATFORM</dt><dd>{tags(project.platforms)}</dd></div>
+              </dl>
+              <button
+                type="button"
+                class="project-open"
+                data-project-open={project.slug}
+                aria-controls={`project-case-${project.slug}`}
+                aria-expanded="false"
+              >&gt; OPEN CASE FILE</button>
+            </div>
+            <section
+              class="project-case"
+              id={`project-case-${project.slug}`}
+              data-project-case={project.slug}
+              aria-live="polite"
+              hidden
+            ></section>
+          </article>
+        ))}
+      </div>
+    </Frame>
+  </div>
+</Layout>
+
+<script>
+  import { initializeProjectExplorer } from '../scripts/projectExplorer';
+  initializeProjectExplorer().catch((error) => console.error('Project explorer failed to initialize.', error));
+</script>

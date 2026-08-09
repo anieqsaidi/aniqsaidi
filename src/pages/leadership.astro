@@ -2,21 +2,36 @@
 import Layout from '../layouts/Layout.astro';
 import Frame from '../components/Frame.astro';
 import AnimatedText from '../components/AnimatedText.astro';
+import RecordHighlights from '../components/RecordHighlights.astro';
 import { leadership } from '../data/cv';
 
-const featuredLeadership = leadership.slice(0, 5);
-const moreLeadership = leadership.slice(5);
+const highlightedIndexes = new Set([0, 1, 4]);
+const highlightRecords = leadership.map(([title, detail], index) => ({
+  index,
+  signal: index === 0 ? 'CAMPUS // PRESIDENT' : index === 1 ? 'NATIONAL // COUNCIL' : 'GLOBAL // SERVICE',
+  title,
+  description: detail,
+  featured: highlightedIndexes.has(index),
+}));
 ---
 
 <Layout title="LEADERSHIP" description="Leadership experience of Aniq Saidi.">
   <Frame title="LEADERSHIP">
-    <div data-fit-group data-mobile-min="1" data-desktop-count="5">
-    <div class="credential-list" data-fit-visible>
-      {featuredLeadership.map(([title, detail], index) => (
-        <article class="credential credential--stacked" data-fit-item data-order={index}>
+    <RecordHighlights page="leadership" records={highlightRecords} />
+    <div class="credential-list" data-cms-collection="leadership.leadership">
+      {leadership.map(([title, detail], index) => (
+        <article class="credential credential--stacked">
           <div>
-            <h2>{title}</h2>
-            <p>
+            <h2 data-cms-field={`leadership.${index}.title`}>
+              {index === 5
+                ? <AnimatedText text={title} word="Safety" effect="pulse" delay={-4.7} />
+                : index === 6
+                  ? <AnimatedText text={title} word="Secretary" effect="jitter" delay={-2.5} />
+                  : index === 7
+                    ? <AnimatedText text={title} word="President" effect="scan" delay={-5.4} />
+                    : title}
+            </h2>
+            <p data-cms-field={`leadership.${index}.detail`}>
               {index === 0
                 ? <AnimatedText text={detail} word="advocated" effect="wave" delay={-2.6} />
                 : index === 1
@@ -26,29 +41,6 @@ const moreLeadership = leadership.slice(5);
           </div>
         </article>
       ))}
-    </div>
-    <details class="career-details" data-fit-details>
-      <summary>
-        <span class="details-closed">[+] READ MORE LEADERSHIP</span>
-        <span class="details-open">[-] SHOW FEWER LEADERSHIP</span>
-      </summary>
-      <div class="credential-list credential-list--continued" data-fit-overflow>
-        {moreLeadership.map(([title, detail], index) => (
-          <article class="credential credential--stacked" data-fit-item data-order={featuredLeadership.length + index}>
-            <div>
-              <h2>
-                {index === 0
-                  ? <AnimatedText text={title} word="Safety" effect="pulse" delay={-4.7} />
-                  : index === 1
-                    ? <AnimatedText text={title} word="Secretary" effect="jitter" delay={-2.5} />
-                    : <AnimatedText text={title} word="President" effect="scan" delay={-5.4} />}
-              </h2>
-              <p>{detail}</p>
-            </div>
-          </article>
-        ))}
-      </div>
-    </details>
     </div>
   </Frame>
 </Layout>

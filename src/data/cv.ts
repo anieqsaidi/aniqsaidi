@@ -23,9 +23,9 @@ export const experience = [
     start: '2026-05',
     summary: 'Building web and mobile patient and workforce-management products for public healthcare operations.',
     highlights: [
-      'Develop web and mobile patient-management systems for healthcare operations.',
-      'Maintain and support medical workforce-management systems.',
-      'Support HR and employee-management platforms.',
+      'Develop patient-management workflows across web, Android, and iOS for healthcare operations.',
+      'Maintain healthcare workforce and recruitment systems, resolving production issues and improving day-to-day reliability.',
+      'Build and support employee-management and corporate web platforms across PHP, JavaScript, SQL, and Linux environments.',
     ],
     skills: ['PHP', 'JavaScript', 'SQL', 'HTML', 'CSS', 'Bootstrap', 'AI Integration', 'WebNative', 'Android', 'iOS', 'Linux'],
   },
@@ -37,10 +37,10 @@ export const experience = [
     start: '2022-09',
     summary: 'Led cloud analytics and BI work across AWS, ETL, Qlik Sense, and Tableau, delivering cost and employee insights.',
     highlights: [
-      'Developed and optimized SQL scripts for analytics and reporting with AWS Redshift.',
-      'Built and migrated analytics dashboards using Qlik Sense and Tableau.',
-      'Led ETL work and the migration of visualization frameworks from Qlik Sense to Tableau.',
-      'Developed cost-management and employee-analytics dashboards.',
+      'Optimized analytical SQL workloads in AWS Redshift for enterprise reporting.',
+      'Built and migrated dashboards from Qlik Sense to Tableau while preserving reporting continuity.',
+      'Led ETL and visualization-framework migration work across Redshift, Glue, S3, and Lake Formation.',
+      'Delivered cost-management and employee-analytics views that strengthened operational visibility.',
       'Received a Certificate of Excellence and Best Performer Award for FY2023 contributions.',
     ],
     skills: ['SQL', 'AWS Redshift', 'AWS Glue', 'Lake Formation', 'S3', 'Qlik Sense', 'Tableau', 'Python', 'Azure DevOps', 'Agile'],
@@ -103,6 +103,16 @@ export const education = [
     period: '2009 - 2013',
   },
 ] as const;
+
+export const undergraduateThesis = {
+  title: 'Naturel Kiss Online Shopping (NKOS)',
+  label: 'FINAL YEAR PROJECT // 2019',
+  summary: 'Designed and developed an Android e-commerce prototype using Java and Rapid Application Development, then validated its core purchasing flows through UAT.',
+  technologies: ['JAVA', 'ANDROID STUDIO', 'RAD', 'UAT'],
+  repositoryUrl: 'https://umpir.ump.edu.my/id/eprint/26655/',
+  pdfUrl: 'https://umpir.ump.edu.my/id/eprint/26655/1/Naturel%20kiss%20online%20shopping%20%28NKOS%29.pdf',
+  catalogueUrl: 'https://neuseal.mod.gov.my/neuseal/Record/ump-26655',
+} as const;
 
 export const certifications = [
   { title: 'AWS: Storage and Data Management', issuer: 'LinkedIn', date: 'May 2023', datetime: '2023-05' },

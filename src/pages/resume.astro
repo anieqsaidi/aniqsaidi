@@ -1,0 +1,39 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Frame from '../components/Frame.astro';
+---
+
+<Layout title="RÉSUMÉ" description="Current professional résumé for Aniq Saidi.">
+  <Frame title="RÉSUMÉ">
+    <div class="resume-route" id="resume-route">
+      <p class="prompt">&gt; RESOLVING CURRENT PUBLISHED VERSION...</p>
+      <p>The stable link is online, but no published résumé could be loaded yet.</p>
+      <a href="/about/">&lt; RETURN TO PROFILE</a>
+    </div>
+  </Frame>
+</Layout>
+
+<script>
+  import { firebaseConfigured, getFirebaseServices } from '../lib/firebase';
+  async function resolveResume() {
+    const route = document.querySelector<HTMLElement>('#resume-route');
+    if (!route || !firebaseConfigured) return;
+    try {
+      const [services, firestore] = await Promise.all([getFirebaseServices(), import('firebase/firestore')]);
+      if (!services) return;
+      const snapshot = await firestore.getDoc(firestore.doc(services.db, 'cmsResume', 'published'));
+      const publicUrl = snapshot.data()?.publicUrl;
+      if (snapshot.exists() && typeof publicUrl === 'string' && publicUrl.startsWith('https://')) {
+        route.innerHTML = `<p class="prompt">&gt; OPENING PUBLISHED RÉSUMÉ...</p><p><a href="${publicUrl.replace(/[&<>'"]/g, (character: string) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character] ?? character)}">OPEN PDF MANUALLY ↗</a></p>`;
+        window.location.replace(publicUrl);
+      }
+    } catch (error) { console.warn('Published résumé could not be resolved.', error); }
+  }
+  resolveResume();
+</script>
+
+<style>
+  .resume-route { display: grid; gap: 14px; min-height: 180px; place-content: center; text-align: center; }
+  .resume-route p { margin: 0; }
+  .resume-route .prompt { color: var(--fg-bright); }
+</style>

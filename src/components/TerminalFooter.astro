@@ -5,8 +5,56 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="t-footer">
-  <p class="t-colophon">
-    {SITE_TITLE} &copy; {year} // POWERED BY MATCHA
-  </p>
-  <TerminalToggles class="toggles--footer" />
+  <div class="t-meta">
+    <p class="footer-identity">
+      <span class="status-light" aria-hidden="true"></span>
+      <span class="identity-rotator" aria-hidden="true">
+        <span id="identity-word">SELANGOREAN</span><span class="identity-cursor">_</span>
+      </span>
+      <span class="sr-only">Selangorean, thinker, builder, and problem solver.</span>
+    </p>
+    <TerminalToggles class="toggles--footer" />
+  </div>
+  <p class="t-colophon">{SITE_TITLE} &copy; {year} // POWERED BY AYAM GEPUK</p>
 </footer>
+
+<script>
+  const identityWord = document.querySelector<HTMLElement>('#identity-word');
+  const identityWords = ['SELANGOREAN', 'THINKER', 'BUILDER', 'PROBLEM SOLVER'];
+
+  if (identityWord && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let wordIndex = 0;
+    let characterIndex = identityWords[0].length;
+    let deleting = false;
+
+    const typeIdentity = () => {
+      const word = identityWords[wordIndex];
+
+      if (!deleting && characterIndex < word.length) {
+        characterIndex += 1;
+        identityWord.textContent = word.slice(0, characterIndex);
+        window.setTimeout(typeIdentity, 90);
+        return;
+      }
+
+      if (!deleting) {
+        deleting = true;
+        window.setTimeout(typeIdentity, 1400);
+        return;
+      }
+
+      if (characterIndex > 0) {
+        characterIndex -= 1;
+        identityWord.textContent = word.slice(0, characterIndex);
+        window.setTimeout(typeIdentity, 55);
+        return;
+      }
+
+      deleting = false;
+      wordIndex = (wordIndex + 1) % identityWords.length;
+      window.setTimeout(typeIdentity, 250);
+    };
+
+    window.setTimeout(typeIdentity, 1400);
+  }
+</script>

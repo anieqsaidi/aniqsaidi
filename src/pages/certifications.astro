@@ -2,13 +2,12 @@
 import Layout from '../layouts/Layout.astro';
 import Frame from '../components/Frame.astro';
 import AnimatedText from '../components/AnimatedText.astro';
+import RecordHighlights from '../components/RecordHighlights.astro';
 import { certifications } from '../data/cv';
 
 const sortedCertifications = [...certifications].sort((a, b) =>
   b.datetime.localeCompare(a.datetime),
 );
-const featuredCertifications = sortedCertifications.slice(0, 5);
-const moreCertifications = sortedCertifications.slice(5);
 const certificationEffects = [
   { match: 'Power BI', word: 'Power BI', effect: 'pulse', delay: -1.1 },
   { match: 'Azure', word: 'Azure', effect: 'decode', delay: -2.4, alt: 'AZUR3' },
@@ -23,16 +22,35 @@ const certificationEffects = [
 
 const effectForCertification = (title: string) =>
   certificationEffects.find(({ match }) => title.includes(match));
+
+const highlightedTitles = new Set([
+  'Professional Scrum Master I',
+  'Tableau 2024.1: Essential Training',
+  'AWS Partner: Security Best Practices (Technical)',
+]);
+
+const highlightRecords = certifications.map((certification, index) => ({
+  index,
+  signal: certification.title.includes('Scrum')
+    ? 'DELIVERY // AGILE'
+    : certification.title.includes('Tableau')
+      ? 'DATA // VISUALISATION'
+      : 'CLOUD // SECURITY',
+  title: certification.title,
+  description: certification.issuer,
+  meta: certification.date,
+  featured: highlightedTitles.has(certification.title),
+}));
 ---
 
 <Layout title="CERTIFICATIONS" description="Professional certifications earned by Aniq Saidi.">
   <Frame title="CERTIFICATIONS">
-    <div data-fit-group data-mobile-min="1" data-desktop-count="5">
-    <div class="credential-list" data-fit-visible>
-      {featuredCertifications.map((certification, index) => (
-        <article class="credential certification" data-fit-item data-order={index}>
+    <RecordHighlights page="certifications" records={highlightRecords} />
+    <div class="credential-list" data-cms-collection="certifications.certifications">
+      {sortedCertifications.map((certification) => (
+        <article class="credential certification">
           <div>
-            <h2>
+            <h2 data-cms-field={`certifications.${certifications.indexOf(certification)}.title`}>
               {effectForCertification(certification.title) ? (
                 <AnimatedText
                   text={certification.title}
@@ -45,41 +63,11 @@ const effectForCertification = (title: string) =>
                 />
               ) : certification.title}
             </h2>
-            <p>{certification.issuer}</p>
+            <p data-cms-field={`certifications.${certifications.indexOf(certification)}.issuer`}>{certification.issuer}</p>
           </div>
-          <time datetime={certification.datetime}>{certification.date}</time>
+          <time datetime={certification.datetime} data-cms-field={`certifications.${certifications.indexOf(certification)}.date`}>{certification.date}</time>
         </article>
       ))}
-    </div>
-    <details class="career-details" data-fit-details>
-      <summary>
-        <span class="details-closed">[+] READ MORE CERTIFICATIONS</span>
-        <span class="details-open">[-] SHOW FEWER CERTIFICATIONS</span>
-      </summary>
-      <div class="credential-list credential-list--continued" data-fit-overflow>
-        {moreCertifications.map((certification, index) => (
-          <article class="credential certification" data-fit-item data-order={featuredCertifications.length + index}>
-            <div>
-              <h2>
-                {effectForCertification(certification.title) ? (
-                  <AnimatedText
-                    text={certification.title}
-                    word={effectForCertification(certification.title)!.word}
-                    effect={effectForCertification(certification.title)!.effect}
-                    delay={effectForCertification(certification.title)!.delay}
-                    alt={'alt' in effectForCertification(certification.title)!
-                      ? effectForCertification(certification.title)!.alt
-                      : undefined}
-                  />
-                ) : certification.title}
-              </h2>
-              <p>{certification.issuer}</p>
-            </div>
-            <time datetime={certification.datetime}>{certification.date}</time>
-          </article>
-        ))}
-      </div>
-    </details>
     </div>
   </Frame>
 </Layout>

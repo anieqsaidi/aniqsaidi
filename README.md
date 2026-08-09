@@ -126,6 +126,20 @@ regenerates the board.
 | `npm run build`   | Build the site into `./dist/`             |
 | `npm run preview` | Preview the built site before deploying   |
 
+## Google Analytics
+
+Create a GA4 web data stream for the production domain, then set its
+measurement ID in the production environment:
+
+```env
+PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+```
+
+The Google tag is included on public production pages only. It is omitted
+from `/admin` and from the development server, preventing local and admin
+activity from contaminating portfolio traffic reports. Standard page views
+are collected automatically after the production site is rebuilt and deployed.
+
 ## Font license
 
 The font is "WebPlus IBM VGA 8x16" from

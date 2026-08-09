@@ -4,8 +4,6 @@ import Frame from '../components/Frame.astro';
 import AnimatedText from '../components/AnimatedText.astro';
 import { experience, skillGroups } from '../data/cv';
 
-const recentExperience = experience.slice(0, 1);
-const earlierExperience = experience.slice(1);
 const earlierRoleEffects = [
   { word: 'Senior', effect: 'pulse', delay: -4.8, alt: undefined },
   { word: 'Systems', effect: 'flicker', delay: -2.4, alt: undefined },
@@ -27,101 +25,69 @@ const toolkitEffects = [
 
 <Layout title="EXPERIENCE" description="Professional experience and technical toolkit of Aniq Saidi.">
   <Frame title="WORK EXPERIENCE">
-    <div class="timeline">
-      {recentExperience.map((job) => (
+    <div class="timeline" data-cms-collection="experience.jobs">
+      {experience.map((job, jobIndex) => (
         <article class="timeline-item">
           <header class="timeline-head">
             <div>
-              <h2>{job.role}</h2>
-              <p>{job.company}</p>
+              <h2 data-cms-field={`experience.jobs.${jobIndex}.role`}>
+                {jobIndex === 0
+                  ? job.role
+                  : <AnimatedText
+                      text={job.role}
+                      word={earlierRoleEffects[jobIndex - 1].word}
+                      effect={earlierRoleEffects[jobIndex - 1].effect}
+                      delay={earlierRoleEffects[jobIndex - 1].delay}
+                      alt={earlierRoleEffects[jobIndex - 1].alt}
+                    />}
+              </h2>
+              <p data-cms-field={`experience.jobs.${jobIndex}.company`}>{job.company}</p>
             </div>
-            <time datetime={job.start}>{job.period}</time>
+            <time datetime={job.start} data-cms-field={`experience.jobs.${jobIndex}.period`}>{job.period}</time>
           </header>
-          <p class="timeline-location">{job.location}</p>
+          <p class="timeline-location" data-cms-field={`experience.jobs.${jobIndex}.location`}>{job.location}</p>
           <ul>
-            {job.highlights.map((highlight, index) => (
-              <li>
-                {index === 0
+            {job.highlights.map((highlight, highlightIndex) => (
+              <li data-cms-field={`experience.jobs.${jobIndex}.highlights.${highlightIndex}`}>
+                {jobIndex === 0 && highlightIndex === 0
                   ? <AnimatedText text={highlight} word="patient-management" effect="scan" delay={-1.2} />
-                  : index === 1
+                  : jobIndex === 0 && highlightIndex === 1
                     ? <AnimatedText text={highlight} word="workforce-management" effect="wave" delay={-3.7} />
-                    : highlight}
+                    : jobIndex > 0 && highlightIndex === 0
+                      ? <AnimatedText
+                          text={highlight}
+                          word={earlierHighlightEffects[jobIndex - 1].word}
+                          effect={earlierHighlightEffects[jobIndex - 1].effect}
+                          delay={earlierHighlightEffects[jobIndex - 1].delay}
+                        />
+                      : highlight}
               </li>
             ))}
           </ul>
-          <p class="skill-line"><span>STACK:</span> {job.skills.join(' // ')}</p>
+          <p class="skill-line"><span>STACK:</span> <span data-cms-field={`experience.jobs.${jobIndex}.skills`}>{job.skills.join(' // ')}</span></p>
         </article>
       ))}
     </div>
 
-    <details class="career-details">
-      <summary>
-        <span class="details-closed">[+] READ MORE EXPERIENCE</span>
-        <span class="details-open">[-] SHOW LESS EXPERIENCE</span>
-      </summary>
-      <div class="timeline timeline--continued">
-        {earlierExperience.map((job, jobIndex) => (
-          <article class="timeline-item">
-            <header class="timeline-head">
-              <div>
-                <h2>
-                  <AnimatedText
-                    text={job.role}
-                    word={earlierRoleEffects[jobIndex].word}
-                    effect={earlierRoleEffects[jobIndex].effect}
-                    delay={earlierRoleEffects[jobIndex].delay}
-                    alt={earlierRoleEffects[jobIndex].alt}
-                  />
-                </h2>
-                <p>{job.company}</p>
-              </div>
-              <time datetime={job.start}>{job.period}</time>
-            </header>
-            <p class="timeline-location">{job.location}</p>
-            <ul>
-              {job.highlights.map((highlight, highlightIndex) => (
-                <li>
-                  {highlightIndex === 0
-                    ? <AnimatedText
-                        text={highlight}
-                        word={earlierHighlightEffects[jobIndex].word}
-                        effect={earlierHighlightEffects[jobIndex].effect}
-                        delay={earlierHighlightEffects[jobIndex].delay}
-                      />
-                    : highlight}
-                </li>
-              ))}
-            </ul>
-            <p class="skill-line"><span>STACK:</span> {job.skills.join(' // ')}</p>
-          </article>
-        ))}
-      </div>
-    </details>
   </Frame>
 
-  <details class="mobile-more" open>
-    <summary>
-      <span class="details-closed">[+] SHOW TOOLKIT</span>
-      <span class="details-open">[-] HIDE TOOLKIT</span>
-    </summary>
-    <Frame title="TOOLKIT">
-      <dl class="records skill-records">
-        {skillGroups.map(([group, skills], index) => (
-          <>
-            <dt>{group}</dt>
-            <dd>
-              <AnimatedText
-                text={skills}
-                word={toolkitEffects[index].word}
-                effect={toolkitEffects[index].effect}
-                delay={toolkitEffects[index].delay}
-                alt={'alt' in toolkitEffects[index] ? toolkitEffects[index].alt : undefined}
-              />
-            </dd>
-          </>
-        ))}
-      </dl>
-    </Frame>
-  </details>
+  <Frame title="TOOLKIT">
+    <dl class="records skill-records" data-cms-collection="experience.toolkit">
+      {skillGroups.map(([group, skills], index) => (
+        <>
+          <dt data-cms-field={`experience.toolkit.${index}.group`}>{group}</dt>
+          <dd data-cms-field={`experience.toolkit.${index}.skills`}>
+            <AnimatedText
+              text={skills}
+              word={toolkitEffects[index].word}
+              effect={toolkitEffects[index].effect}
+              delay={toolkitEffects[index].delay}
+              alt={'alt' in toolkitEffects[index] ? toolkitEffects[index].alt : undefined}
+            />
+          </dd>
+        </>
+      ))}
+    </dl>
+  </Frame>
 
 </Layout>

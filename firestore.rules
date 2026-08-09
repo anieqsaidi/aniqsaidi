@@ -1,0 +1,573 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.uid == '1Mhzu5HmjdU82yzGlph6gQHX1843';
+    }
+
+    function hasValidTimestamps(data) {
+      return (!data.keys().hasAny(['publishedAt']) || data.publishedAt is timestamp)
+        && (!data.keys().hasAny(['updatedAt']) || data.updatedAt is timestamp);
+    }
+
+    function isValidQueueItem(item) {
+      return item is map
+        && item.keys().hasAll(['id', 'label', 'description'])
+        && item.keys().hasOnly(['id', 'label', 'description'])
+        && item.id is string
+        && item.label is string
+        && item.label.size() > 0
+        && item.label.size() <= 50
+        && item.description is string
+        && item.description.size() > 0
+        && item.description.size() <= 180;
+    }
+
+    function isValidHome(data) {
+      return data is map
+        && data.keys().hasAll(['schemaVersion', 'profile', 'queue'])
+        && data.keys().hasOnly(['schemaVersion', 'profile', 'queue', 'publishedAt', 'updatedAt'])
+        && data.schemaVersion == 1
+        && data.profile is map
+        && data.profile.keys().hasAll([
+          'greeting', 'role', 'location', 'node', 'status',
+          'startCopy', 'progress', 'email', 'linkedin'
+        ])
+        && data.profile.keys().hasOnly([
+          'greeting', 'role', 'location', 'node', 'status',
+          'startCopy', 'progress', 'email', 'linkedin'
+        ])
+        && data.profile.greeting is string
+        && data.profile.greeting.size() > 0
+        && data.profile.greeting.size() <= 60
+        && data.profile.role is string
+        && data.profile.role.size() > 0
+        && data.profile.role.size() <= 80
+        && data.profile.location is string
+        && data.profile.location.size() > 0
+        && data.profile.location.size() <= 100
+        && data.profile.node is string
+        && data.profile.node.size() > 0
+        && data.profile.node.size() <= 30
+        && data.profile.status is string
+        && data.profile.status.size() > 0
+        && data.profile.status.size() <= 30
+        && data.profile.startCopy is string
+        && data.profile.startCopy.size() > 0
+        && data.profile.startCopy.size() <= 320
+        && data.profile.progress is string
+        && data.profile.progress.size() > 0
+        && data.profile.progress.size() <= 180
+        && data.profile.email is string
+        && data.profile.email.size() > 0
+        && data.profile.email.size() <= 120
+        && data.profile.linkedin is string
+        && data.profile.linkedin.size() > 0
+        && data.profile.linkedin.size() <= 200
+        && data.queue is list
+        && data.queue.size() == 4
+        && isValidQueueItem(data.queue[0])
+        && isValidQueueItem(data.queue[1])
+        && isValidQueueItem(data.queue[2])
+        && isValidQueueItem(data.queue[3])
+        && data.queue[0].id == 'patient-management'
+        && data.queue[1].id == 'electronic-manuals'
+        && data.queue[2].id == 'recruitment'
+        && data.queue[3].id == 'corporate-web'
+        && hasValidTimestamps(data);
+    }
+
+    function allowedPageKeys() {
+      return [
+      'about.education.0.institution',
+      'about.education.0.period',
+      'about.education.0.qualification',
+      'about.education.1.institution',
+      'about.education.1.period',
+      'about.education.1.qualification',
+      'about.education.2.institution',
+      'about.education.2.period',
+      'about.education.2.qualification',
+      'about.email',
+      'about.linkedin',
+      'about.location',
+      'about.name',
+      'about.role',
+      'archives.bandung.date',
+      'archives.bandung.description',
+      'archives.bandung.publication',
+      'archives.bandung.title',
+      'archives.bantuan.date',
+      'archives.bantuan.description',
+      'archives.bantuan.publication',
+      'archives.bantuan.title',
+      'archives.bill.date',
+      'archives.bill.description',
+      'archives.bill.publication',
+      'archives.bill.title',
+      'archives.gandingan.date',
+      'archives.gandingan.description',
+      'archives.gandingan.publication',
+      'archives.gandingan.title',
+      'archives.harapan.date',
+      'archives.harapan.description',
+      'archives.harapan.publication',
+      'archives.harapan.title',
+      'archives.inovasi.date',
+      'archives.inovasi.description',
+      'archives.inovasi.publication',
+      'archives.inovasi.title',
+      'archives.kabinet.date',
+      'archives.kabinet.description',
+      'archives.kabinet.publication',
+      'archives.kabinet.title',
+      'archives.lede',
+      'archives.tnb.date',
+      'archives.tnb.description',
+      'archives.tnb.publication',
+      'archives.tnb.title',
+      'archives.watikah.date',
+      'archives.watikah.description',
+      'archives.watikah.publication',
+      'archives.watikah.title',
+      'awards.0.detail',
+      'awards.0.title',
+      'awards.1.detail',
+      'awards.1.title',
+      'awards.2.detail',
+      'awards.2.title',
+      'awards.3.detail',
+      'awards.3.title',
+      'awards.4.detail',
+      'awards.4.title',
+      'awards.5.detail',
+      'awards.5.title',
+      'awards.6.detail',
+      'awards.6.title',
+      'awards.7.detail',
+      'awards.7.title',
+      'awards.8.detail',
+      'awards.8.title',
+      'certifications.0.date',
+      'certifications.0.issuer',
+      'certifications.0.title',
+      'certifications.1.date',
+      'certifications.1.issuer',
+      'certifications.1.title',
+      'certifications.2.date',
+      'certifications.2.issuer',
+      'certifications.2.title',
+      'certifications.3.date',
+      'certifications.3.issuer',
+      'certifications.3.title',
+      'certifications.4.date',
+      'certifications.4.issuer',
+      'certifications.4.title',
+      'certifications.5.date',
+      'certifications.5.issuer',
+      'certifications.5.title',
+      'certifications.6.date',
+      'certifications.6.issuer',
+      'certifications.6.title',
+      'certifications.7.date',
+      'certifications.7.issuer',
+      'certifications.7.title',
+      'certifications.8.date',
+      'certifications.8.issuer',
+      'certifications.8.title',
+      'certifications.9.date',
+      'certifications.9.issuer',
+      'certifications.9.title',
+      'experience.jobs.0.company',
+      'experience.jobs.0.highlights.0',
+      'experience.jobs.0.highlights.1',
+      'experience.jobs.0.highlights.2',
+      'experience.jobs.0.location',
+      'experience.jobs.0.period',
+      'experience.jobs.0.role',
+      'experience.jobs.0.skills',
+      'experience.jobs.1.company',
+      'experience.jobs.1.highlights.0',
+      'experience.jobs.1.highlights.1',
+      'experience.jobs.1.highlights.2',
+      'experience.jobs.1.highlights.3',
+      'experience.jobs.1.highlights.4',
+      'experience.jobs.1.location',
+      'experience.jobs.1.period',
+      'experience.jobs.1.role',
+      'experience.jobs.1.skills',
+      'experience.jobs.2.company',
+      'experience.jobs.2.highlights.0',
+      'experience.jobs.2.highlights.1',
+      'experience.jobs.2.highlights.2',
+      'experience.jobs.2.highlights.3',
+      'experience.jobs.2.highlights.4',
+      'experience.jobs.2.location',
+      'experience.jobs.2.period',
+      'experience.jobs.2.role',
+      'experience.jobs.2.skills',
+      'experience.jobs.3.company',
+      'experience.jobs.3.highlights.0',
+      'experience.jobs.3.highlights.1',
+      'experience.jobs.3.highlights.2',
+      'experience.jobs.3.highlights.3',
+      'experience.jobs.3.location',
+      'experience.jobs.3.period',
+      'experience.jobs.3.role',
+      'experience.jobs.3.skills',
+      'experience.toolkit.0.group',
+      'experience.toolkit.0.skills',
+      'experience.toolkit.1.group',
+      'experience.toolkit.1.skills',
+      'experience.toolkit.2.group',
+      'experience.toolkit.2.skills',
+      'experience.toolkit.3.group',
+      'experience.toolkit.3.skills',
+      'experience.toolkit.4.group',
+      'experience.toolkit.4.skills',
+      'leadership.0.detail',
+      'leadership.0.title',
+      'leadership.1.detail',
+      'leadership.1.title',
+      'leadership.2.detail',
+      'leadership.2.title',
+      'leadership.3.detail',
+      'leadership.3.title',
+      'leadership.4.detail',
+      'leadership.4.title',
+      'leadership.5.detail',
+      'leadership.5.title',
+      'leadership.6.detail',
+      'leadership.6.title',
+      'leadership.7.detail',
+      'leadership.7.title'
+      ];
+    }
+
+    function isValidPages(data) {
+      return data is map
+        && data.keys().hasAll(['schemaVersion', 'fields'])
+        && data.keys().hasOnly(['schemaVersion', 'fields', 'publishedAt', 'updatedAt'])
+        && data.schemaVersion == 1
+        && data.fields is map
+        && data.fields.keys().size() == 162
+        && data.fields.keys().hasOnly(allowedPageKeys())
+        && hasValidTimestamps(data);
+    }
+
+    function isValidContentDocument(document, data) {
+      return (document == 'home' && isValidHome(data))
+        || (document == 'pages' && isValidPages(data));
+    }
+
+    function isCmsPage(pageId) {
+      return pageId in [
+        'home', 'about', 'projects', 'experience',
+        'certifications', 'awards', 'leadership', 'archives'
+      ];
+    }
+
+    function isValidV2PageData(pageId, data) {
+      return data is map
+        && (
+          (pageId == 'home'
+            && data.keys().hasAll(['profile', 'queue', 'callsToAction'])
+            && data.keys().hasOnly(['profile', 'queue', 'callsToAction'])
+            && data.profile is map
+            && data.queue is list && data.queue.size() <= 50
+            && data.callsToAction is list && data.callsToAction.size() <= 20)
+          || (pageId == 'about'
+            && data.keys().hasAll(['name', 'role', 'location', 'email', 'linkedin', 'education'])
+            && data.keys().hasOnly(['name', 'role', 'location', 'email', 'linkedin', 'education'])
+            && data.name is string && data.role is string && data.email is string
+            && data.education is list && data.education.size() <= 30)
+          || (pageId == 'projects'
+            && data.keys().hasAll(['projects']) && data.keys().hasOnly(['projects'])
+            && data.projects is list && data.projects.size() <= 50)
+          || (pageId == 'experience'
+            && data.keys().hasAll(['jobs', 'toolkit']) && data.keys().hasOnly(['jobs', 'toolkit'])
+            && data.jobs is list && data.jobs.size() <= 50
+            && data.toolkit is list && data.toolkit.size() <= 50)
+          || (pageId == 'certifications'
+            && data.keys().hasAll(['certifications']) && data.keys().hasOnly(['certifications'])
+            && data.certifications is list && data.certifications.size() <= 200)
+          || (pageId == 'awards'
+            && data.keys().hasAll(['awards']) && data.keys().hasOnly(['awards'])
+            && data.awards is list && data.awards.size() <= 200)
+          || (pageId == 'leadership'
+            && data.keys().hasAll(['leadership']) && data.keys().hasOnly(['leadership'])
+            && data.leadership is list && data.leadership.size() <= 200)
+          || (pageId == 'archives'
+            && data.keys().hasAll(['lede', 'articles']) && data.keys().hasOnly(['lede', 'articles'])
+            && data.lede is string
+            && data.articles is list && data.articles.size() <= 200)
+        );
+    }
+
+    function isValidV2Page(pageId, data) {
+      return isCmsPage(pageId)
+        && data is map
+        && data.keys().hasAll(['schemaVersion', 'pageId', 'title', 'data'])
+        && data.schemaVersion == 2
+        && data.pageId == pageId
+        && data.title is string
+        && data.title.size() > 0 && data.title.size() <= 40
+        && isValidV2PageData(pageId, data.data);
+    }
+
+    function isValidV2Document(pageId, data) {
+      return isValidV2Page(pageId, data)
+        && data.keys().hasAll(['updatedBy'])
+        && data.keys().hasOnly([
+          'schemaVersion', 'pageId', 'title', 'data',
+          'updatedAt', 'publishedAt', 'updatedBy', 'version',
+          'draftRevisionId', 'publishedRevisionId'
+        ])
+        && data.updatedBy is string
+        && data.updatedBy == request.auth.uid
+        && (!data.keys().hasAny(['version']) || (data.version is int && data.version >= 1))
+        && (!data.keys().hasAny(['draftRevisionId']) || data.draftRevisionId is string)
+        && (!data.keys().hasAny(['publishedRevisionId']) || data.publishedRevisionId is string)
+        && hasValidTimestamps(data)
+        ;
+    }
+
+    function isValidRevision(pageId, revisionId, data) {
+      return isCmsPage(pageId)
+        && data is map
+        && data.keys().hasAll([
+          'revisionId', 'pageId', 'state', 'content', 'summary', 'note',
+          'editorUid', 'editorEmail', 'createdAt', 'previousPublishedRevisionId'
+        ])
+        && data.keys().hasOnly([
+          'revisionId', 'pageId', 'state', 'content', 'summary', 'note',
+          'editorUid', 'editorEmail', 'createdAt', 'previousPublishedRevisionId'
+        ])
+        && data.revisionId == revisionId
+        && data.pageId == pageId
+        && data.state in ['draft', 'published']
+        && isValidV2Page(pageId, data.content)
+        && data.summary is string && data.summary.size() > 0 && data.summary.size() <= 500
+        && data.note is string && data.note.size() <= 1000
+        && data.editorUid == request.auth.uid
+        && data.editorEmail is string && data.editorEmail.size() <= 320
+        && data.createdAt is timestamp
+        && data.previousPublishedRevisionId is string;
+    }
+
+    function isValidMedia(data, mediaId) {
+      return data is map
+        && data.keys().hasAll([
+          'id', 'kind', 'fileName', 'storagePath', 'originalStoragePath', 'thumbnailStoragePath',
+          'publicUrl', 'originalUrl', 'thumbnailUrl', 'mimeType', 'originalMimeType',
+          'fileSize', 'originalFileSize', 'width', 'height', 'altText', 'caption', 'credit',
+          'usageReferences', 'uploadedAt', 'uploadedBy', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id', 'kind', 'fileName', 'storagePath', 'originalStoragePath', 'thumbnailStoragePath',
+          'publicUrl', 'originalUrl', 'thumbnailUrl', 'mimeType', 'originalMimeType',
+          'fileSize', 'originalFileSize', 'width', 'height', 'altText', 'caption', 'credit',
+          'usageReferences', 'uploadedAt', 'uploadedBy', 'updatedAt'
+        ])
+        && data.id == mediaId
+        && data.kind in ['project', 'archive', 'award', 'certification', 'profile', 'social', 'architecture', 'resume', 'document']
+        && data.fileName is string && data.fileName.size() > 0 && data.fileName.size() <= 240
+        && data.storagePath is string && data.storagePath.size() > 0 && data.storagePath.size() <= 500
+        && data.originalStoragePath is string && data.originalStoragePath.size() <= 500
+        && data.thumbnailStoragePath is string && data.thumbnailStoragePath.size() <= 500
+        && data.publicUrl is string && data.publicUrl.size() > 0 && data.publicUrl.size() <= 2000
+        && data.originalUrl is string && data.originalUrl.size() <= 2000
+        && data.thumbnailUrl is string && data.thumbnailUrl.size() <= 2000
+        && data.mimeType is string && data.originalMimeType is string
+        && data.fileSize is int && data.fileSize > 0 && data.fileSize <= 12 * 1024 * 1024
+        && data.originalFileSize is int && data.originalFileSize > 0 && data.originalFileSize <= 12 * 1024 * 1024
+        && data.width is int && data.width >= 0 && data.width <= 20000
+        && data.height is int && data.height >= 0 && data.height <= 20000
+        && data.altText is string && data.altText.size() <= 300
+        && data.caption is string && data.caption.size() <= 1000
+        && data.credit is string && data.credit.size() <= 500
+        && data.usageReferences is list && data.usageReferences.size() <= 100
+        && data.uploadedAt is timestamp && data.updatedAt is timestamp
+        && data.uploadedBy == request.auth.uid;
+    }
+
+    function isValidSeoEntry(data) {
+      return data is map
+        && data.keys().hasAll(['seoTitle', 'seoDescription', 'canonicalPath', 'socialTitle', 'socialDescription', 'socialImage'])
+        && data.keys().size() == 6
+        && data.seoTitle is string
+        && data.seoDescription is string
+        && data.canonicalPath is string
+        && data.socialTitle is string
+        && data.socialDescription is string
+        && data.socialImage is string;
+    }
+
+    function isValidSeoDocument(data) {
+      return data is map
+        && data.keys().hasAll(['schemaVersion', 'pages', 'updatedAt', 'updatedBy', 'version'])
+        && data.keys().hasOnly(['schemaVersion', 'pages', 'updatedAt', 'publishedAt', 'updatedBy', 'version'])
+        && data.schemaVersion == 1
+        && data.pages is map
+        && data.pages.keys().hasAll(['home', 'about', 'projects', 'experience', 'certifications', 'awards', 'leadership', 'archives'])
+        && data.pages.keys().size() == 8
+        && isValidSeoEntry(data.pages.home)
+        && isValidSeoEntry(data.pages.about)
+        && isValidSeoEntry(data.pages.projects)
+        && isValidSeoEntry(data.pages.experience)
+        && isValidSeoEntry(data.pages.certifications)
+        && isValidSeoEntry(data.pages.awards)
+        && isValidSeoEntry(data.pages.leadership)
+        && isValidSeoEntry(data.pages.archives)
+        && data.updatedAt is timestamp
+        && (!data.keys().hasAny(['publishedAt']) || data.publishedAt is timestamp)
+        && data.updatedBy == request.auth.uid
+        && data.version is int && data.version >= 1;
+    }
+
+    function isValidResumeDocument(data) {
+      return data is map
+        && data.keys().hasAll(['schemaVersion', 'mediaId', 'fileName', 'publicUrl', 'fileSize', 'versionLabel', 'updatedDate', 'updatedAt', 'updatedBy', 'version'])
+        && data.keys().hasOnly(['schemaVersion', 'mediaId', 'fileName', 'publicUrl', 'fileSize', 'versionLabel', 'updatedDate', 'updatedAt', 'publishedAt', 'updatedBy', 'version'])
+        && data.schemaVersion == 1
+        && data.mediaId is string && data.mediaId.size() <= 200
+        && data.fileName is string && data.fileName.size() <= 240
+        && data.publicUrl is string && data.publicUrl.size() <= 2000
+        && data.fileSize is int && data.fileSize >= 0 && data.fileSize <= 10 * 1024 * 1024
+        && data.versionLabel is string && data.versionLabel.size() <= 100
+        && data.updatedDate is string && data.updatedDate.size() <= 20
+        && data.updatedAt is timestamp
+        && (!data.keys().hasAny(['publishedAt']) || data.publishedAt is timestamp)
+        && data.updatedBy == request.auth.uid
+        && data.version is int && data.version >= 1;
+    }
+
+    function isNextVersion(data) {
+      return (data.version == 1 && !resource.data.keys().hasAny(['version']))
+        || (resource.data.version is int && data.version == resource.data.version + 1);
+    }
+
+    function isValidAudit(data, auditId) {
+      return data is map
+        && data.keys().hasAll(['id', 'action', 'entityType', 'entityId', 'actorUid', 'actorEmail', 'summary', 'revisionId', 'timestamp'])
+        && data.keys().hasOnly(['id', 'action', 'entityType', 'entityId', 'actorUid', 'actorEmail', 'summary', 'revisionId', 'timestamp'])
+        && data.id == auditId
+        && data.action in [
+          'admin.session', 'draft.save', 'page.publish', 'site.publish',
+          'revision.restore', 'revision.republish', 'record.archive', 'record.restore', 'record.delete',
+          'media.upload', 'media.update', 'media.delete', 'resume.select', 'resume.publish',
+          'seo.save', 'seo.publish', 'content.import', 'content.export'
+        ]
+        && data.entityType is string && data.entityType.size() > 0 && data.entityType.size() <= 80
+        && data.entityId is string && data.entityId.size() <= 240
+        && data.actorUid == request.auth.uid
+        && data.actorEmail is string && data.actorEmail.size() <= 320
+        && data.summary is string && data.summary.size() > 0 && data.summary.size() <= 500
+        && data.revisionId is string && data.revisionId.size() <= 240
+        && data.timestamp is timestamp;
+    }
+
+    function isValidBackup(data, backupId) {
+      return data is map
+        && data.keys().hasAll(['id', 'schemaVersion', 'createdAt', 'actorUid', 'actorEmail', 'reason', 'pages', 'seo', 'resume', 'mediaManifest', 'sourceVersions'])
+        && data.keys().hasOnly(['id', 'schemaVersion', 'createdAt', 'actorUid', 'actorEmail', 'reason', 'pages', 'seo', 'resume', 'mediaManifest', 'sourceVersions'])
+        && data.id == backupId
+        && data.schemaVersion == 1
+        && data.createdAt is timestamp
+        && data.actorUid == request.auth.uid
+        && data.actorEmail is string && data.actorEmail.size() <= 320
+        && data.reason is string && data.reason.size() > 0 && data.reason.size() <= 500
+        && data.pages is map && data.pages.size() <= 8
+        && data.seo is map
+        && data.resume is map
+        && data.mediaManifest is list && data.mediaManifest.size() <= 1000
+        && data.sourceVersions is map;
+    }
+
+    match /siteContent/{document} {
+      allow read: if document in ['home', 'pages'];
+      allow create, update: if isAdmin()
+        && isValidContentDocument(document, request.resource.data);
+    }
+
+    match /siteDrafts/{document} {
+      allow read: if isAdmin() && document in ['home', 'pages'];
+      allow create, update: if isAdmin()
+        && isValidContentDocument(document, request.resource.data);
+    }
+
+    match /cmsPublished/{pageId} {
+      // Project records may contain internal application names and are kept
+      // admin-only. The public site ships an explicitly anonymised projection.
+      allow read: if isCmsPage(pageId) && (pageId != 'projects' || isAdmin());
+      allow create: if isAdmin()
+        && request.resource.data.version == 1
+        && isValidV2Document(pageId, request.resource.data);
+      allow update: if isAdmin()
+        && isNextVersion(request.resource.data)
+        && isValidV2Document(pageId, request.resource.data);
+    }
+
+    match /cmsDrafts/{pageId} {
+      allow read: if isAdmin() && isCmsPage(pageId);
+      allow create: if isAdmin()
+        && request.resource.data.version == 1
+        && isValidV2Document(pageId, request.resource.data);
+      allow update: if isAdmin()
+        && isNextVersion(request.resource.data)
+        && isValidV2Document(pageId, request.resource.data);
+    }
+
+    match /cmsRevisions/{pageId}/items/{revisionId} {
+      allow read: if isAdmin() && isCmsPage(pageId);
+      allow create: if isAdmin()
+        && isValidRevision(pageId, revisionId, request.resource.data);
+    }
+
+    match /cmsMedia/{mediaId} {
+      allow read: if isAdmin();
+      allow create, update: if isAdmin() && isValidMedia(request.resource.data, mediaId);
+      allow delete: if isAdmin();
+    }
+
+    match /cmsSeo/{state} {
+      allow read: if state == 'published' || (state == 'draft' && isAdmin());
+      allow create: if isAdmin()
+        && request.resource.data.version == 1
+        && state in ['draft', 'published']
+        && isValidSeoDocument(request.resource.data);
+      allow update: if isAdmin()
+        && isNextVersion(request.resource.data)
+        && state in ['draft', 'published']
+        && isValidSeoDocument(request.resource.data);
+    }
+
+    match /cmsResume/{state} {
+      allow read: if state == 'published' || (state == 'draft' && isAdmin());
+      allow create: if isAdmin()
+        && request.resource.data.version == 1
+        && state in ['draft', 'published']
+        && isValidResumeDocument(request.resource.data);
+      allow update: if isAdmin()
+        && isNextVersion(request.resource.data)
+        && state in ['draft', 'published']
+        && isValidResumeDocument(request.resource.data);
+    }
+
+    match /cmsAudit/{auditId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() && isValidAudit(request.resource.data, auditId);
+    }
+
+    match /cmsBackups/{backupId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() && isValidBackup(request.resource.data, backupId);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

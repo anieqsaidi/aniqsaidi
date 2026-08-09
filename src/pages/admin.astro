@@ -1,0 +1,245 @@
+---
+import { getCollection } from 'astro:content';
+import AdminLayout from '../layouts/AdminLayout.astro';
+import { defaultHomeContent } from '../data/homeContent';
+import { defaultSiteFields } from '../data/siteFields';
+import { migrateV1ToV2, CMS_PAGE_IDS } from '../data/cmsSchema';
+import { ADMIN_EMAIL, ADMIN_UID } from '../data/admin';
+
+const archivePosts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const archiveFields = {
+  'archives.lede': 'Published coverage preserved from the original portfolio. Select an entry to open its full clipping.',
+  ...Object.fromEntries(archivePosts.flatMap((post) => [
+    [`archives.${post.id}.title`, post.data.title],
+    [`archives.${post.id}.publication`, post.data.publication ?? ''],
+    [`archives.${post.id}.date`, post.data.pubDate.toISOString().slice(0, 10)],
+    [`archives.${post.id}.description`, post.data.description],
+  ])),
+};
+const defaultPages = migrateV1ToV2(defaultHomeContent, { ...defaultSiteFields, ...archiveFields });
+const labels: Record<(typeof CMS_PAGE_IDS)[number], string> = {
+  home: 'HOME', about: 'ABOUT', projects: 'PROJECTS', experience: 'EXPERIENCE',
+  certifications: 'CERTIFICATIONS', awards: 'AWARDS', leadership: 'LEADERSHIP', archives: 'ARCHIVES',
+};
+---
+
+<AdminLayout title="ADMIN CMS">
+  <div
+    class="admin-cms"
+    id="admin-app"
+    data-defaults={JSON.stringify(defaultPages)}
+    data-admin-email={ADMIN_EMAIL}
+    data-admin-uid={ADMIN_UID}
+  >
+    <section class="admin-auth" id="admin-auth" hidden aria-labelledby="admin-auth-title">
+      <p class="admin-kicker">SECURITY GATE // UID REQUIRED</p>
+      <h1 id="admin-auth-title">AUTHORIZED GOOGLE ACCOUNT REQUIRED.</h1>
+      <p>Structured content is loaded only after Firebase confirms the approved administrator.</p>
+      <button class="admin-button admin-button--primary" id="admin-sign-in" type="button">&gt; SIGN IN WITH GOOGLE</button>
+    </section>
+
+    <div class="admin-workspace">
+      <aside class="admin-sidebar" aria-label="CMS sections">
+        <div class="admin-sidebar-head">
+          <span>CMS.SYS // V2</span>
+          <small id="admin-mode">CHECKING ACCESS...</small>
+        </div>
+        <nav>
+          {CMS_PAGE_IDS.map((pageId) => (
+            <button type="button" data-admin-page={pageId} aria-current={pageId === 'home' ? 'page' : 'false'}>
+              <span aria-hidden="true">&gt;</span> {labels[pageId]}
+            </button>
+          ))}
+        </nav>
+        <div class="admin-tool-links">
+          <a href="/admin/dashboard/">&gt; DASHBOARD</a>
+          <a href="/admin/media/">&gt; MEDIA + RESUME</a>
+          <a href="/admin/editorial/">&gt; SEO + QUALITY</a>
+        </div>
+        <div class="admin-identity">
+          <span>EDITOR</span>
+          <strong id="admin-identity">VERIFYING...</strong>
+        </div>
+      </aside>
+
+      <section class="admin-content">
+        <header class="admin-content-head">
+          <div>
+            <p class="admin-kicker">STRUCTURED CONTENT // SCHEMA 2</p>
+            <h1 id="admin-page-title">LOADING EDITOR...</h1>
+          </div>
+          <span class="admin-state" id="admin-page-state">AUTHENTICATING</span>
+        </header>
+        <p class="admin-help">Records use stable IDs and can be added, duplicated, reordered, archived, restored, or deleted from the draft.</p>
+        <div class="admin-editor" id="admin-editor"></div>
+      </section>
+
+      <aside class="admin-preview-panel" aria-label="Content status preview">
+        <header>
+          <span>PAGE STATUS</span>
+          <small>DRAFT // LIVE // REVISIONS</small>
+        </header>
+        <div id="admin-preview" aria-live="polite"></div>
+      </aside>
+    </div>
+
+    <div class="admin-command-bar">
+      <p class="admin-message" id="admin-message" role="status" aria-live="polite">READY.</p>
+      <div>
+        <button class="admin-button" id="admin-sign-out" type="button" hidden>&gt; SIGN OUT</button>
+        <button class="admin-button" id="admin-preview-draft" type="button">&gt; PREVIEW</button>
+        <button class="admin-button" id="admin-save" type="button">&gt; SAVE DRAFT</button>
+        <button class="admin-button admin-button--primary" id="admin-publish-page" type="button">&gt; PUBLISH PAGE</button>
+        <button class="admin-button" id="admin-save-all" type="button">&gt; SAVE ALL</button>
+        <button class="admin-button admin-button--primary" id="admin-publish" type="button">&gt; PUBLISH ALL</button>
+      </div>
+    </div>
+
+    <dialog class="admin-preview-dialog" id="admin-preview-dialog" aria-labelledby="admin-preview-title">
+      <header>
+        <div>
+          <p class="admin-kicker">SECURE CMS PREVIEW</p>
+          <h2 id="admin-preview-title">DRAFT PREVIEW</h2>
+        </div>
+        <button class="admin-button" id="admin-preview-close" type="button">× CLOSE</button>
+      </header>
+      <div class="admin-preview-tools" role="toolbar" aria-label="Preview controls">
+        <button class="admin-button is-active" type="button" data-preview-source="draft">DRAFT</button>
+        <button class="admin-button" type="button" data-preview-source="live">LIVE</button>
+        <span aria-hidden="true">//</span>
+        <button class="admin-button is-active" type="button" data-preview-width="desktop">DESKTOP</button>
+        <button class="admin-button" type="button" data-preview-width="tablet">TABLET</button>
+        <button class="admin-button" type="button" data-preview-width="mobile">MOBILE</button>
+      </div>
+      <div class="admin-preview-stage" id="admin-preview-stage" data-width="desktop">
+        <iframe id="admin-public-preview" title="Public page preview" loading="eager"></iframe>
+      </div>
+    </dialog>
+  </div>
+</AdminLayout>
+
+<script>
+  import { initializeAdminCms } from '../scripts/adminCms';
+  initializeAdminCms().catch((error) => {
+    console.error(error);
+    const message = document.querySelector('#admin-message');
+    if (message) message.textContent = 'ADMIN INITIALIZATION FAILED. RELOAD OR CHECK THE CONSOLE.';
+  });
+</script>
+
+<style>
+  .admin-cms { min-height: 0; }
+  .admin-workspace, .admin-command-bar { display: none; }
+  .admin-cms.is-authorized .admin-workspace { display: grid; }
+  .admin-cms.is-authorized .admin-command-bar { display: flex; }
+  .admin-auth { max-width: 680px; margin: clamp(40px, 12vh, 110px) auto; padding: 28px; border: 1px solid var(--fg); }
+  .admin-auth h1 { margin: 8px 0 12px; color: var(--fg-bright); font-size: clamp(1.05rem, 3vw, 1.45rem); }
+  .admin-auth p { margin-bottom: 18px; color: var(--fg-dim); }
+  .admin-kicker { color: var(--fg); font-size: .72rem; letter-spacing: .12em; }
+  .admin-workspace { grid-template-columns: 210px minmax(0, 1fr) 245px; min-height: calc(100dvh - 154px); border: 1px solid var(--fg-dim); }
+  .admin-sidebar { position: sticky; top: 0; align-self: start; min-width: 0; min-height: calc(100dvh - 154px); border-right: 1px solid var(--fg-dim); background: var(--bg-deep); }
+  .admin-sidebar-head, .admin-preview-panel > header { display: grid; gap: 3px; padding: 14px; border-bottom: 1px solid var(--fg-dim); color: var(--fg-bright); }
+  .admin-sidebar-head small, .admin-preview-panel small { color: var(--fg-dim); font-size: .66rem; }
+  .admin-sidebar nav { display: grid; padding: 8px; }
+  .admin-sidebar nav button { min-height: 42px; padding: 8px 9px; text-align: left; color: var(--fg-dim); }
+  .admin-sidebar nav button:hover, .admin-sidebar nav button:focus-visible, .admin-sidebar nav button.is-active { background: var(--fg); color: var(--bg); text-shadow: none; }
+  .admin-tool-links { display: grid; gap: 5px; padding: 8px; border-top: 1px solid var(--fg-dim); }
+  .admin-tool-links a { padding: 8px; border: 1px dashed var(--fg-dim); color: var(--fg-bright); font-size: .65rem; }
+  .admin-tool-links a:hover, .admin-tool-links a:focus-visible { background: var(--fg); color: var(--bg); text-shadow: none; }
+  .admin-identity { display: grid; gap: 3px; margin: 10px; padding: 10px; border-top: 1px dashed var(--fg-dim); color: var(--fg-dim); font-size: .65rem; overflow-wrap: anywhere; }
+  .admin-identity strong { color: var(--fg-bright); font-weight: 400; }
+  .admin-content { min-width: 0; padding: 18px; }
+  .admin-content-head { display: flex; align-items: start; justify-content: space-between; gap: 14px; margin-bottom: 8px; }
+  .admin-content-head h1 { margin-top: 5px; color: var(--fg-bright); font-size: 1.05rem; }
+  .admin-state { flex: none; padding: 5px 7px; border: 1px solid var(--fg-dim); color: var(--fg); font-size: .66rem; }
+  .admin-help { margin-bottom: 16px; color: var(--fg-dim); font-size: .76rem; }
+  .admin-editor { display: grid; gap: 14px; }
+  :global(.admin-single-fields), :global(.admin-collection) { min-width: 0; border: 1px solid var(--fg-dim); }
+  :global(.admin-single-fields > h3), :global(.admin-collection > header) { min-height: 44px; padding: 11px 12px; border-bottom: 1px dashed var(--fg-dim); color: var(--fg-bright); }
+  :global(.admin-collection > header) { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  :global(.admin-collection h3), :global(.admin-single-fields h3) { font-size: .78rem; }
+  :global(.admin-single-fields > .admin-record-fields) { padding: 12px; }
+  :global(.admin-record) { border-bottom: 1px solid color-mix(in srgb, var(--fg-dim) 55%, transparent); }
+  :global(.admin-record:last-child) { border-bottom: 0; }
+  :global(.admin-record summary) { display: flex; justify-content: space-between; gap: 12px; padding: 11px 12px; color: var(--fg-bright); cursor: pointer; list-style: none; overflow-wrap: anywhere; }
+  :global(.admin-record summary::-webkit-details-marker) { display: none; }
+  :global(.admin-record summary span) { flex: none; color: var(--fg); font-size: .65rem; }
+  :global(.admin-record[open] summary) { background: color-mix(in srgb, var(--fg) 5%, transparent); border-bottom: 1px dashed var(--fg-dim); }
+  :global(.admin-record-body) { padding: 12px; }
+  :global(.admin-record-meta), :global(.admin-record-fields), :global(.admin-section-grid) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
+  :global(.admin-record-meta) { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed var(--fg-dim); }
+  :global(.admin-field) { display: grid; min-width: 0; gap: 5px; color: var(--fg-dim); font-size: .68rem; letter-spacing: .06em; }
+  :global(.admin-field:has(textarea)), :global(.admin-nested-field) { grid-column: 1 / -1; }
+  :global(.admin-field input), :global(.admin-field textarea), :global(.admin-field select) { width: 100%; min-width: 0; padding: 9px 10px; border: 1px solid var(--fg-dim); border-radius: 0; outline: none; background: var(--bg-deep); color: var(--fg-bright); font: inherit; font-size: .84rem; letter-spacing: 0; resize: vertical; }
+  :global(.admin-field input:focus), :global(.admin-field textarea:focus), :global(.admin-field select:focus) { border-color: var(--fg-bright); box-shadow: 0 0 7px var(--glow); }
+  :global(.admin-field [aria-invalid="true"]) { border-color: #ff7b72; box-shadow: 0 0 0 1px rgb(255 123 114 / .3); }
+  :global(.admin-field-error) { display: block; color: #ff9a91; font-size: .65rem; line-height: 1.35; letter-spacing: 0; }
+  :global(.admin-field--check) { display: flex; align-items: center; gap: 8px; min-height: 38px; padding: 8px; border: 1px dashed var(--fg-dim); }
+  :global(.admin-field--check input) { order: -1; width: 18px; height: 18px; padding: 0; }
+  :global(.admin-nested-field) { min-width: 0; padding: 10px; border: 1px dashed var(--fg-dim); }
+  :global(.admin-nested-field legend) { padding: 0 6px; color: var(--fg); font-size: .68rem; }
+  :global(.admin-nested) { display: grid; gap: 7px; }
+  :global(.admin-nested-row) { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 7px; padding: 7px; border: 1px solid color-mix(in srgb, var(--fg-dim) 55%, transparent); }
+  :global(.admin-nested-actions) { display: flex; flex-direction: column; gap: 3px; }
+  :global(.admin-section-grid) { grid-column: 2; }
+  :global(.admin-section-grid > .admin-nested) { grid-column: 1 / -1; }
+  :global(.admin-record-actions) { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--fg-dim); }
+  :global(.admin-mini-button), .admin-button { min-height: 38px; padding: 7px 10px; border: 1px solid var(--fg-dim); color: var(--fg-bright); font: inherit; font-size: .7rem; }
+  :global(.admin-mini-button:hover), :global(.admin-mini-button:focus-visible), .admin-button:hover, .admin-button:focus-visible, .admin-button--primary { background: var(--fg); color: var(--bg); text-shadow: none; }
+  .admin-preview-panel { position: sticky; top: 0; align-self: start; min-width: 0; min-height: calc(100dvh - 154px); border-left: 1px solid var(--fg-dim); background: var(--bg-deep); }
+  #admin-preview { display: grid; gap: 8px; padding: 12px; }
+  :global(.admin-preview-status), :global(#admin-preview article), :global(#admin-preview ul) { padding: 9px; border: 1px solid var(--fg-dim); color: var(--fg-dim); font-size: .68rem; }
+  :global(#admin-preview strong) { color: var(--fg-bright); }
+  :global(#admin-preview p), :global(#admin-preview li) { margin-top: 4px; overflow-wrap: anywhere; }
+  .admin-command-bar { position: sticky; bottom: 0; z-index: 8; align-items: center; justify-content: space-between; gap: 14px; min-height: 62px; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); border: 1px solid var(--fg-dim); border-top: 2px solid var(--fg); background: color-mix(in srgb, var(--bg-deep) 94%, transparent); backdrop-filter: blur(8px); }
+  .admin-command-bar > div { display: flex; flex-wrap: wrap; justify-content: end; gap: 7px; }
+  .admin-message { color: var(--fg-dim); font-size: .7rem; }
+  .admin-message.is-error { color: var(--fg-bright); }
+  .admin-button:disabled { opacity: .45; cursor: wait; }
+  .admin-button.is-active { background: var(--fg); color: var(--bg); text-shadow: none; }
+  :global(.admin-revisions) { display: grid; gap: 6px; }
+  :global(.admin-revision) { display: grid; gap: 5px; padding: 8px; border: 1px solid var(--fg-dim); }
+  :global(.admin-revision > div) { display: flex; flex-wrap: wrap; gap: 5px; }
+  :global(.admin-revision small) { color: var(--fg-dim); overflow-wrap: anywhere; }
+  .admin-preview-dialog { width: min(1180px, calc(100vw - 24px)); height: min(880px, calc(100dvh - 24px)); padding: 0; border: 1px solid var(--fg); background: var(--bg-deep); color: var(--fg-bright); }
+  .admin-preview-dialog::backdrop { background: rgb(0 0 0 / .76); backdrop-filter: blur(4px); }
+  .admin-preview-dialog > header, .admin-preview-tools { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px; border-bottom: 1px solid var(--fg-dim); }
+  .admin-preview-dialog h2 { margin-top: 4px; font-size: 1rem; }
+  .admin-preview-tools { justify-content: center; flex-wrap: wrap; }
+  .admin-preview-stage { height: calc(100% - 125px); padding: 18px; overflow: auto; background: color-mix(in srgb, var(--bg) 88%, black); }
+  .admin-preview-stage > iframe { display: block; width: 100%; height: 100%; min-height: 560px; margin: 0 auto; border: 1px solid var(--fg-dim); background: var(--bg); transition: width .2s ease; }
+  .admin-preview-stage[data-width="tablet"] > iframe { width: min(760px, 100%); }
+  .admin-preview-stage[data-width="mobile"] > iframe { width: min(390px, 100%); }
+  :global(.cms-preview-head) { margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--fg); }
+  :global(.cms-preview-head h3) { margin-top: 6px; font-size: clamp(1.3rem, 4vw, 2.2rem); }
+  :global(.cms-preview-block) { margin-top: 14px; padding: 14px; border: 1px solid var(--fg-dim); }
+  :global(.cms-preview-block h4) { margin-bottom: 8px; color: var(--fg-bright); }
+  :global(.cms-preview-block p), :global(.cms-preview-block li) { color: var(--fg-dim); line-height: 1.65; overflow-wrap: anywhere; }
+  :global(.cms-preview-block ul) { margin: 8px 0 0 20px; }
+  @media (max-width: 1050px) {
+    .admin-workspace { grid-template-columns: 190px minmax(0, 1fr); }
+    .admin-preview-panel { position: static; grid-column: 1 / -1; min-height: 0; border-top: 1px solid var(--fg-dim); border-left: 0; }
+    #admin-preview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 720px) {
+    .admin-workspace { display: block !important; min-height: 0; }
+    .admin-sidebar { position: static; min-height: 0; border-right: 0; border-bottom: 1px solid var(--fg-dim); }
+    .admin-sidebar nav { display: flex; overflow-x: auto; scrollbar-width: thin; }
+    .admin-sidebar nav button { flex: 0 0 auto; min-height: 44px; }
+    .admin-identity { display: none; }
+    .admin-content { padding: 12px; }
+    .admin-content-head { display: grid; }
+    :global(.admin-record-meta), :global(.admin-record-fields), :global(.admin-section-grid) { grid-template-columns: 1fr; }
+    :global(.admin-section-grid) { grid-column: 2; }
+    #admin-preview { grid-template-columns: 1fr; }
+    .admin-command-bar { align-items: stretch; flex-direction: column; }
+    .admin-command-bar > div { display: grid; grid-template-columns: 1fr 1fr; }
+    .admin-command-bar #admin-sign-out { grid-column: 1 / -1; }
+    .admin-button { min-height: 44px; }
+    .admin-preview-dialog { width: 100vw; height: 100dvh; max-width: none; max-height: none; }
+    .admin-preview-stage { padding: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
+</style>

@@ -1,0 +1,1615 @@
+{
+  "exportedAt": "2026-08-05T10:29:15.890Z",
+  "source": "Firestore siteContent v1 backup",
+  "schemaVersion": 2,
+  "documents": {
+    "cmsDrafts/home": {
+      "schemaVersion": 2,
+      "pageId": "home",
+      "title": "HOME",
+      "data": {
+        "profile": {
+          "progress": "Brewing software for public healthcare.",
+          "node": "MY-KUL",
+          "location": "Sungai Buloh, Selangor, Malaysia",
+          "email": "aniqsaidi.official@gmail.com",
+          "role": "Software Engineer",
+          "status": "OUT OF OFFICE",
+          "greeting": "HELLO, I’M ANIQ",
+          "startCopy": "Browse the system for the full record, or send me a direct signal. Every route is live. Nothing goes to junk — except expired matcha.",
+          "linkedin": "https://www.linkedin.com/in/aniqsaidi/"
+        },
+        "queue": [
+          {
+            "id": "patient-management",
+            "description": "Building smoother clinical workflows.",
+            "label": "PATIENT MGMT",
+            "sortOrder": 0,
+            "status": "published"
+          },
+          {
+            "id": "electronic-manuals",
+            "description": "Making hospital knowledge and data easier to maintain.",
+            "label": "E-MANUALS",
+            "sortOrder": 1,
+            "status": "published"
+          },
+          {
+            "description": "Keeping workforce applications moving.",
+            "label": "RECRUITMENT",
+            "id": "recruitment",
+            "sortOrder": 2,
+            "status": "published"
+          },
+          {
+            "description": "Building a clearer digital front door.",
+            "label": "CORPORATE WEB",
+            "id": "corporate-web",
+            "sortOrder": 3,
+            "status": "published"
+          }
+        ],
+        "callsToAction": [
+          {
+            "id": "cta-profile",
+            "label": "VIEW PROFILE",
+            "url": "/about/",
+            "external": false,
+            "sortOrder": 0,
+            "status": "published"
+          },
+          {
+            "id": "cta-email",
+            "label": "EMAIL",
+            "url": "mailto:aniqsaidi.official@gmail.com",
+            "external": true,
+            "sortOrder": 1,
+            "status": "published"
+          },
+          {
+            "id": "cta-linkedin",
+            "label": "LINKEDIN",
+            "url": "https://www.linkedin.com/in/aniqsaidi/",
+            "external": true,
+            "sortOrder": 2,
+            "status": "published"
+          }
+        ]
+      }
+    },
+    "cmsDrafts/about": {
+      "schemaVersion": 2,
+      "pageId": "about",
+      "title": "ABOUT",
+      "data": {
+        "name": "Muhammad Amrun Aniq Bin Mohamed Saidi",
+        "role": "Software Engineer",
+        "location": "Sungai Buloh, Selangor, Malaysia",
+        "email": "aniqsaidi.official@gmail.com",
+        "linkedin": "https://www.linkedin.com/in/aniqsaidi/",
+        "education": [
+          {
+            "id": "education-1uufn68",
+            "qualification": "Bachelor of Computer Science (Software Engineering) with Honors",
+            "institution": "Universiti Malaysia Pahang Al-Sultan Abdullah (UMPSA)",
+            "period": "2015 - 2020",
+            "earlierRecord": false,
+            "sortOrder": 0,
+            "status": "published"
+          },
+          {
+            "id": "education-7sjazz",
+            "qualification": "Certificate of Engineering Science",
+            "institution": "Kelantan Matriculation College",
+            "period": "2014 - 2015",
+            "earlierRecord": true,
+            "sortOrder": 1,
+            "status": "published"
+          },
+          {
+            "id": "education-1rw6lvl",
+            "qualification": "Malaysian Certificate of Education (SPM)",
+            "institution": "SMK Bandar Baru Sungai Buloh",
+            "period": "2009 - 2013",
+            "earlierRecord": true,
+            "sortOrder": 2,
+            "status": "published"
+          }
+        ]
+      }
+    },
+    "cmsDrafts/projects": {
+      "schemaVersion": 2,
+      "pageId": "projects",
+      "title": "PROJECTS",
+      "data": {
+        "projects": [
+          {
+            "id": "project-patient-management-platform",
+            "slug": "patient-management-platform",
+            "title": "Patient Management Platform",
+            "shortDescription": "A mobile-first patient management platform connecting healthcare workflows across web, Android, and iOS.",
+            "category": "Patient Management Platform",
+            "role": "Software Engineer",
+            "organisation": "",
+            "period": "2026 - Present",
+            "projectStatus": "ACTIVE DEVELOPMENT",
+            "featured": true,
+            "thumbnail": "",
+            "platforms": [
+              {
+                "id": "tag-b8k2j2",
+                "label": "Web",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "tag-bvlwso",
+                "label": "Android",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "tag-51z7ab",
+                "label": "iOS",
+                "sortOrder": 2,
+                "status": "published"
+              }
+            ],
+            "technologies": [
+              {
+                "id": "tag-xjuj3o",
+                "label": "PHP",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "tag-ifg8p4",
+                "label": "JavaScript",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "tag-v7114a",
+                "label": "SQL",
+                "sortOrder": 2,
+                "status": "published"
+              },
+              {
+                "id": "tag-qrlsen",
+                "label": "Bootstrap",
+                "sortOrder": 3,
+                "status": "published"
+              },
+              {
+                "id": "tag-1u1wkys",
+                "label": "Capacitor",
+                "sortOrder": 4,
+                "status": "published"
+              }
+            ],
+            "confidentialityNote": "Screens and workflows must use synthetic or redacted data. No patient or internal infrastructure data may be published.",
+            "sections": [
+              {
+                "id": "section-1p6iyps",
+                "type": "problem",
+                "heading": "The problem",
+                "body": "",
+                "points": [],
+                "sortOrder": 0,
+                "status": "draft"
+              },
+              {
+                "id": "section-19hlyel",
+                "type": "role",
+                "heading": "My role",
+                "body": "",
+                "points": [],
+                "sortOrder": 1,
+                "status": "draft"
+              },
+              {
+                "id": "section-1kpuxg7",
+                "type": "constraints",
+                "heading": "Constraints",
+                "body": "",
+                "points": [],
+                "sortOrder": 2,
+                "status": "draft"
+              },
+              {
+                "id": "section-5u6say",
+                "type": "solution",
+                "heading": "Solution",
+                "body": "",
+                "points": [],
+                "sortOrder": 3,
+                "status": "draft"
+              },
+              {
+                "id": "section-c90b9v",
+                "type": "challenges",
+                "heading": "Technical challenges",
+                "body": "",
+                "points": [],
+                "sortOrder": 4,
+                "status": "draft"
+              },
+              {
+                "id": "section-2yqfmk",
+                "type": "outcomes",
+                "heading": "Outcome",
+                "body": "",
+                "points": [],
+                "sortOrder": 5,
+                "status": "draft"
+              },
+              {
+                "id": "section-1fxxntk",
+                "type": "reflection",
+                "heading": "Reflection",
+                "body": "",
+                "points": [],
+                "sortOrder": 6,
+                "status": "draft"
+              }
+            ],
+            "sortOrder": 0,
+            "status": "draft"
+          },
+          {
+            "id": "project-healthcare-corporate-web",
+            "slug": "healthcare-corporate-website",
+            "title": "Healthcare Corporate Website",
+            "shortDescription": "A responsive bilingual healthcare corporate site built as a maintainable Astro frontend.",
+            "category": "Corporate Website",
+            "role": "Software Engineer",
+            "organisation": "",
+            "period": "2026",
+            "projectStatus": "IN DEVELOPMENT",
+            "featured": true,
+            "thumbnail": "",
+            "platforms": [
+              {
+                "id": "tag-1y9j7f",
+                "label": "Web",
+                "sortOrder": 0,
+                "status": "published"
+              }
+            ],
+            "technologies": [
+              {
+                "id": "tag-24kd86",
+                "label": "Astro",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "tag-eiqufx",
+                "label": "HTML",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "tag-dy2d6c",
+                "label": "CSS",
+                "sortOrder": 2,
+                "status": "published"
+              },
+              {
+                "id": "tag-xu7cs9",
+                "label": "JavaScript",
+                "sortOrder": 3,
+                "status": "published"
+              },
+              {
+                "id": "tag-rj5k1t",
+                "label": "Nginx",
+                "sortOrder": 4,
+                "status": "published"
+              },
+              {
+                "id": "tag-y3d48g",
+                "label": "Linux",
+                "sortOrder": 5,
+                "status": "published"
+              }
+            ],
+            "confidentialityNote": "Only public brand assets and approved corporate content may be shown.",
+            "sections": [
+              {
+                "id": "section-bidi9g",
+                "type": "problem",
+                "heading": "The problem",
+                "body": "",
+                "points": [],
+                "sortOrder": 0,
+                "status": "draft"
+              },
+              {
+                "id": "section-m5zl01",
+                "type": "role",
+                "heading": "My role",
+                "body": "",
+                "points": [],
+                "sortOrder": 1,
+                "status": "draft"
+              },
+              {
+                "id": "section-jjs2bq",
+                "type": "solution",
+                "heading": "Solution",
+                "body": "",
+                "points": [],
+                "sortOrder": 2,
+                "status": "draft"
+              },
+              {
+                "id": "section-1qsfolk",
+                "type": "outcomes",
+                "heading": "Outcome",
+                "body": "",
+                "points": [],
+                "sortOrder": 3,
+                "status": "draft"
+              },
+              {
+                "id": "section-1e5qr7g",
+                "type": "reflection",
+                "heading": "Reflection",
+                "body": "",
+                "points": [],
+                "sortOrder": 4,
+                "status": "draft"
+              }
+            ],
+            "sortOrder": 1,
+            "status": "draft"
+          },
+          {
+            "id": "project-enterprise-analytics",
+            "slug": "enterprise-analytics",
+            "title": "Enterprise Analytics at Fujitsu",
+            "shortDescription": "An anonymised record of enterprise data pipelines, SQL optimisation, and dashboard migration work.",
+            "category": "Enterprise Analytics",
+            "role": "Senior Systems Engineer",
+            "organisation": "Fujitsu",
+            "period": "2022 - 2026",
+            "projectStatus": "COMPLETED",
+            "featured": true,
+            "thumbnail": "",
+            "platforms": [
+              {
+                "id": "tag-9m97x3",
+                "label": "Enterprise Web",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "tag-pzoeas",
+                "label": "Cloud",
+                "sortOrder": 1,
+                "status": "published"
+              }
+            ],
+            "technologies": [
+              {
+                "id": "tag-1csupik",
+                "label": "AWS Redshift",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "tag-7t9bjj",
+                "label": "S3",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "tag-113s48m",
+                "label": "AWS Glue",
+                "sortOrder": 2,
+                "status": "published"
+              },
+              {
+                "id": "tag-261irz",
+                "label": "Lake Formation",
+                "sortOrder": 3,
+                "status": "published"
+              },
+              {
+                "id": "tag-14wklis",
+                "label": "Python",
+                "sortOrder": 4,
+                "status": "published"
+              },
+              {
+                "id": "tag-c8gua5",
+                "label": "SQL",
+                "sortOrder": 5,
+                "status": "published"
+              },
+              {
+                "id": "tag-1wjxhrb",
+                "label": "Qlik Sense",
+                "sortOrder": 6,
+                "status": "published"
+              },
+              {
+                "id": "tag-11r48qh",
+                "label": "Tableau",
+                "sortOrder": 7,
+                "status": "published"
+              }
+            ],
+            "confidentialityNote": "All visuals and datasets must be recreated or anonymised; no client dashboards or proprietary data may be shown.",
+            "sections": [
+              {
+                "id": "section-18nh8y2",
+                "type": "problem",
+                "heading": "The problem",
+                "body": "",
+                "points": [],
+                "sortOrder": 0,
+                "status": "draft"
+              },
+              {
+                "id": "section-1bagy7",
+                "type": "role",
+                "heading": "My role",
+                "body": "",
+                "points": [],
+                "sortOrder": 1,
+                "status": "draft"
+              },
+              {
+                "id": "section-1nl8hwk",
+                "type": "solution",
+                "heading": "Solution",
+                "body": "",
+                "points": [],
+                "sortOrder": 2,
+                "status": "draft"
+              },
+              {
+                "id": "section-1v3dify",
+                "type": "outcomes",
+                "heading": "Outcome",
+                "body": "",
+                "points": [],
+                "sortOrder": 3,
+                "status": "draft"
+              },
+              {
+                "id": "section-14a3r3y",
+                "type": "reflection",
+                "heading": "Reflection",
+                "body": "",
+                "points": [],
+                "sortOrder": 4,
+                "status": "draft"
+              }
+            ],
+            "sortOrder": 2,
+            "status": "draft"
+          }
+        ]
+      }
+    },
+    "cmsDrafts/experience": {
+      "schemaVersion": 2,
+      "pageId": "experience",
+      "title": "EXPERIENCE",
+      "data": {
+        "jobs": [
+          {
+            "id": "experience-vmei81",
+            "role": "Software Engineer",
+            "company": "Rakan KKM Sdn. Bhd.",
+            "location": "Taman Tun Dr. Ismail, Kuala Lumpur",
+            "period": "May 2026 - Present",
+            "startDate": "2026-05",
+            "endDate": "",
+            "current": true,
+            "featured": true,
+            "highlights": [
+              {
+                "id": "point-ha1q5j",
+                "text": "Develop web and mobile patient-management systems for healthcare operations.",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "point-1dd46yy",
+                "text": "Maintain and support medical workforce-management systems.",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "point-1nw98wa",
+                "text": "Support HR and employee-management platforms.",
+                "sortOrder": 2,
+                "status": "published"
+              }
+            ],
+            "technologies": [
+              {
+                "id": "tag-xk9jwk",
+                "label": "PHP",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "tag-5ir788",
+                "label": "JavaScript",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "tag-72umgq",
+                "label": "SQL",
+                "sortOrder": 2,
+                "status": "published"
+              },
+              {
+                "id": "tag-1bxg2d0",
+                "label": "HTML",
+                "sortOrder": 3,
+                "status": "published"
+              },
+              {
+                "id": "tag-1mkmhsn",
+                "label": "CSS",
+                "sortOrder": 4,
+                "status": "published"
+              },
+              {
+                "id": "tag-uyvmop",
+                "label": "Bootstrap",
+                "sortOrder": 5,
+                "status": "published"
+              },
+              {
+                "id": "tag-1bqogqy",
+                "label": "AI Integration",
+                "sortOrder": 6,
+                "status": "published"
+              },
+              {
+                "id": "tag-9o4orc",
+                "label": "WebNative",
+                "sortOrder": 7,
+                "status": "published"
+              },
+              {
+                "id": "tag-vdnc5v",
+                "label": "Android",
+                "sortOrder": 8,
+                "status": "published"
+              },
+              {
+                "id": "tag-1i1hxjy",
+                "label": "iOS",
+                "sortOrder": 9,
+                "status": "published"
+              },
+              {
+                "id": "tag-dcdmqn",
+                "label": "Linux",
+                "sortOrder": 10,
+                "status": "published"
+              }
+            ],
+            "sortOrder": 0,
+            "status": "published"
+          },
+          {
+            "id": "experience-19n3wcf",
+            "role": "Senior Systems Engineer",
+            "company": "Fujitsu Systems Global Solutions Management Sdn. Bhd.",
+            "location": "Jalan Pantai Baharu, Kuala Lumpur",
+            "period": "Sep 2022 - Apr 2026",
+            "startDate": "2022-09",
+            "endDate": "2026-04",
+            "current": false,
+            "featured": false,
+            "highlights": [
+              {
+                "id": "point-24i3in",
+                "text": "Developed and optimized SQL scripts for analytics and reporting with AWS Redshift.",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "point-k3vdwe",
+                "text": "Built and migrated analytics dashboards using Qlik Sense and Tableau.",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "point-u0dc9w",
+                "text": "Led ETL work and the migration of visualization frameworks from Qlik Sense to Tableau.",
+                "sortOrder": 2,
+                "status": "published"
+              },
+              {
+                "id": "point-19xb2lp",
+                "text": "Developed cost-management and employee-analytics dashboards.",
+                "sortOrder": 3,
+                "status": "published"
+              },
+              {
+                "id": "point-1oekklt",
+                "text": "Received a Certificate of Excellence and Best Performer Award for FY2023 contributions.",
+                "sortOrder": 4,
+                "status": "published"
+              }
+            ],
+            "technologies": [
+              {
+                "id": "tag-cuxorx",
+                "label": "SQL",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "tag-171va9i",
+                "label": "AWS Redshift",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "tag-1s2lxff",
+                "label": "AWS Glue",
+                "sortOrder": 2,
+                "status": "published"
+              },
+              {
+                "id": "tag-1gzwhny",
+                "label": "Lake Formation",
+                "sortOrder": 3,
+                "status": "published"
+              },
+              {
+                "id": "tag-l6cytp",
+                "label": "S3",
+                "sortOrder": 4,
+                "status": "published"
+              },
+              {
+                "id": "tag-t5pf6r",
+                "label": "Qlik Sense",
+                "sortOrder": 5,
+                "status": "published"
+              },
+              {
+                "id": "tag-15tbfp5",
+                "label": "Tableau",
+                "sortOrder": 6,
+                "status": "published"
+              },
+              {
+                "id": "tag-1iqvlhs",
+                "label": "Python",
+                "sortOrder": 7,
+                "status": "published"
+              },
+              {
+                "id": "tag-1vzipvf",
+                "label": "Azure DevOps",
+                "sortOrder": 8,
+                "status": "published"
+              },
+              {
+                "id": "tag-11kn6fy",
+                "label": "Agile",
+                "sortOrder": 9,
+                "status": "published"
+              }
+            ],
+            "sortOrder": 1,
+            "status": "published"
+          },
+          {
+            "id": "experience-s28gwr",
+            "role": "Systems Engineer",
+            "company": "Fujitsu Systems Global Solutions Management Sdn. Bhd.",
+            "location": "Jalan Pantai Baharu, Kuala Lumpur",
+            "period": "Jul 2021 - Aug 2022",
+            "startDate": "2021-07",
+            "endDate": "2022-08",
+            "current": false,
+            "featured": false,
+            "highlights": [
+              {
+                "id": "point-t7xm5y",
+                "text": "Conducted technical onboarding and hands-on training for new joiners.",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "point-1h6yhrp",
+                "text": "Mentored trainees in development, testing, and documentation workflows.",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "point-1y8i8jn",
+                "text": "Supported a centralized POS system for a Japan-based project using C#.",
+                "sortOrder": 2,
+                "status": "published"
+              },
+              {
+                "id": "point-nuug6k",
+                "text": "Developed sprint-management and project-tracking systems with Angular, Spring Boot, and VBA.",
+                "sortOrder": 3,
+                "status": "published"
+              },
+              {
+                "id": "point-5kcq5f",
+                "text": "Applied Agile and Scrum practices across internal development initiatives.",
+                "sortOrder": 4,
+                "status": "published"
+              }
+            ],
+            "technologies": [
+              {
+                "id": "tag-1xw8zfz",
+                "label": "C#",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "tag-23r4xb",
+                "label": "VBA",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "tag-1klnq9i",
+                "label": "HTML",
+                "sortOrder": 2,
+                "status": "published"
+              },
+              {
+                "id": "tag-8jt0sp",
+                "label": "CSS",
+                "sortOrder": 3,
+                "status": "published"
+              },
+              {
+                "id": "tag-o1bs4u",
+                "label": "JavaScript",
+                "sortOrder": 4,
+                "status": "published"
+              },
+              {
+                "id": "tag-1svk74m",
+                "label": "Java",
+                "sortOrder": 5,
+                "status": "published"
+              },
+              {
+                "id": "tag-1e3oj5a",
+                "label": "Spring Boot",
+                "sortOrder": 6,
+                "status": "published"
+              },
+              {
+                "id": "tag-1evdsj0",
+                "label": "Angular",
+                "sortOrder": 7,
+                "status": "published"
+              },
+              {
+                "id": "tag-1d6qvss",
+                "label": "AWS EC2",
+                "sortOrder": 8,
+                "status": "published"
+              },
+              {
+                "id": "tag-1rlhw4k",
+                "label": "Agile",
+                "sortOrder": 9,
+                "status": "published"
+              }
+            ],
+            "sortOrder": 2,
+            "status": "published"
+          },
+          {
+            "id": "experience-1ajzcs7",
+            "role": "IT Business Analyst (Platform Developer)",
+            "company": "Daikin Malaysia Sdn. Bhd.",
+            "location": "Sungai Buloh, Selangor",
+            "period": "Sep 2020 - Jun 2021",
+            "startDate": "2020-09",
+            "endDate": "2021-06",
+            "current": false,
+            "featured": false,
+            "highlights": [
+              {
+                "id": "point-14dmyzj",
+                "text": "Developed workflow systems to streamline internal departmental operations.",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "point-1fc8pjc",
+                "text": "Led the Capital Expenditure Request process for an IoT mobile-application project.",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "point-1usdchl",
+                "text": "Collaborated with Daikin and Acson teams to improve service-reporting workflows.",
+                "sortOrder": 2,
+                "status": "published"
+              },
+              {
+                "id": "point-1ctj0ch",
+                "text": "Performed testing and QA for mobile applications and service-reporting systems.",
+                "sortOrder": 3,
+                "status": "published"
+              }
+            ],
+            "technologies": [
+              {
+                "id": "tag-s5jjso",
+                "label": "Webparts360",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "tag-fba5hg",
+                "label": "Python",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "tag-14vcvo9",
+                "label": "Workflow Automation",
+                "sortOrder": 2,
+                "status": "published"
+              },
+              {
+                "id": "tag-1tymaa1",
+                "label": "Mobile App Testing",
+                "sortOrder": 3,
+                "status": "published"
+              },
+              {
+                "id": "tag-iajyuq",
+                "label": "IoT Development",
+                "sortOrder": 4,
+                "status": "published"
+              }
+            ],
+            "sortOrder": 3,
+            "status": "published"
+          }
+        ],
+        "toolkit": [
+          {
+            "id": "toolkit-4mnax7",
+            "group": "Frontend, Web & Mobile",
+            "technologies": [
+              {
+                "id": "tag-1b2pqg0",
+                "label": "HTML",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "tag-4tfbg3",
+                "label": "CSS",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "tag-3v8yck",
+                "label": "JavaScript",
+                "sortOrder": 2,
+                "status": "published"
+              },
+              {
+                "id": "tag-1sjq2v4",
+                "label": "Bootstrap",
+                "sortOrder": 3,
+                "status": "published"
+              },
+              {
+                "id": "tag-1e348c5",
+                "label": "Angular",
+                "sortOrder": 4,
+                "status": "published"
+              },
+              {
+                "id": "tag-d6n1mr",
+                "label": "Android",
+                "sortOrder": 5,
+                "status": "published"
+              },
+              {
+                "id": "tag-m700z8",
+                "label": "iOS",
+                "sortOrder": 6,
+                "status": "published"
+              },
+              {
+                "id": "tag-11tv0pz",
+                "label": "WebNative",
+                "sortOrder": 7,
+                "status": "published"
+              }
+            ],
+            "sortOrder": 0,
+            "status": "published"
+          },
+          {
+            "id": "toolkit-6vh6k0",
+            "group": "Backend & Programming",
+            "technologies": [
+              {
+                "id": "tag-1lzua50",
+                "label": "PHP",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "tag-11vzs6z",
+                "label": "Java",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "tag-7je1h",
+                "label": "Spring Boot",
+                "sortOrder": 2,
+                "status": "published"
+              },
+              {
+                "id": "tag-1jhyxbf",
+                "label": "Python",
+                "sortOrder": 3,
+                "status": "published"
+              },
+              {
+                "id": "tag-tjxin2",
+                "label": "C#",
+                "sortOrder": 4,
+                "status": "published"
+              },
+              {
+                "id": "tag-sbz9bw",
+                "label": "VBA",
+                "sortOrder": 5,
+                "status": "published"
+              },
+              {
+                "id": "tag-m6hkqm",
+                "label": "SQL",
+                "sortOrder": 6,
+                "status": "published"
+              }
+            ],
+            "sortOrder": 1,
+            "status": "published"
+          },
+          {
+            "id": "toolkit-1m7qw08",
+            "group": "Cloud, Data & Analytics",
+            "technologies": [
+              {
+                "id": "tag-1ezby6",
+                "label": "AWS Redshift",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "tag-75pcm6",
+                "label": "Glue",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "tag-xdylfa",
+                "label": "Lake Formation",
+                "sortOrder": 2,
+                "status": "published"
+              },
+              {
+                "id": "tag-h7xarb",
+                "label": "S3",
+                "sortOrder": 3,
+                "status": "published"
+              },
+              {
+                "id": "tag-36c31q",
+                "label": "EC2",
+                "sortOrder": 4,
+                "status": "published"
+              },
+              {
+                "id": "tag-157yi9k",
+                "label": "Qlik Sense",
+                "sortOrder": 5,
+                "status": "published"
+              },
+              {
+                "id": "tag-9upbyg",
+                "label": "Tableau",
+                "sortOrder": 6,
+                "status": "published"
+              },
+              {
+                "id": "tag-fqsaqb",
+                "label": "Power BI",
+                "sortOrder": 7,
+                "status": "published"
+              },
+              {
+                "id": "tag-vgsmh3",
+                "label": "ETL",
+                "sortOrder": 8,
+                "status": "published"
+              },
+              {
+                "id": "tag-13q48z3",
+                "label": "BI and data visualization",
+                "sortOrder": 9,
+                "status": "published"
+              }
+            ],
+            "sortOrder": 2,
+            "status": "published"
+          },
+          {
+            "id": "toolkit-13u4hwa",
+            "group": "DevOps & Platforms",
+            "technologies": [
+              {
+                "id": "tag-1ccle26",
+                "label": "Azure DevOps",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "tag-pw0yh7",
+                "label": "Linux",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "tag-r7zvwg",
+                "label": "Workflow Automation",
+                "sortOrder": 2,
+                "status": "published"
+              },
+              {
+                "id": "tag-ravic",
+                "label": "Webparts360",
+                "sortOrder": 3,
+                "status": "published"
+              },
+              {
+                "id": "tag-77o5yp",
+                "label": "Microsoft Power Apps",
+                "sortOrder": 4,
+                "status": "published"
+              }
+            ],
+            "sortOrder": 3,
+            "status": "published"
+          },
+          {
+            "id": "toolkit-wta461",
+            "group": "Methods & Practices",
+            "technologies": [
+              {
+                "id": "tag-1sc7d8s",
+                "label": "Agile/Scrum",
+                "sortOrder": 0,
+                "status": "published"
+              },
+              {
+                "id": "tag-u7kj0",
+                "label": "AI Integration",
+                "sortOrder": 1,
+                "status": "published"
+              },
+              {
+                "id": "tag-1vv6k27",
+                "label": "IoT",
+                "sortOrder": 2,
+                "status": "published"
+              },
+              {
+                "id": "tag-1p3di4i",
+                "label": "System Testing and QA",
+                "sortOrder": 3,
+                "status": "published"
+              },
+              {
+                "id": "tag-op2sm6",
+                "label": "Healthcare Systems",
+                "sortOrder": 4,
+                "status": "published"
+              }
+            ],
+            "sortOrder": 4,
+            "status": "published"
+          }
+        ]
+      }
+    },
+    "cmsDrafts/certifications": {
+      "schemaVersion": 2,
+      "pageId": "certifications",
+      "title": "CERTIFICATIONS",
+      "data": {
+        "certifications": [
+          {
+            "id": "certification-1neer6h",
+            "title": "AWS: Storage and Data Management",
+            "issuer": "LinkedIn",
+            "issuedAt": "May 2023",
+            "category": "learning",
+            "credentialUrl": "",
+            "featured": false,
+            "sortOrder": 0,
+            "status": "published"
+          },
+          {
+            "id": "certification-s6b050",
+            "title": "Qlik Sense Essential Training",
+            "issuer": "LinkedIn",
+            "issuedAt": "May 2023",
+            "category": "learning",
+            "credentialUrl": "",
+            "featured": false,
+            "sortOrder": 1,
+            "status": "published"
+          },
+          {
+            "id": "certification-4b30up",
+            "title": "Python Essential Training",
+            "issuer": "LinkedIn",
+            "issuedAt": "May 2023",
+            "category": "learning",
+            "credentialUrl": "",
+            "featured": false,
+            "sortOrder": 2,
+            "status": "published"
+          },
+          {
+            "id": "certification-1s28ouh",
+            "title": "Professional Scrum Master I",
+            "issuer": "Scrum.org",
+            "issuedAt": "Oct 2023",
+            "category": "professional",
+            "credentialUrl": "",
+            "featured": true,
+            "sortOrder": 3,
+            "status": "published"
+          },
+          {
+            "id": "certification-e7krvp",
+            "title": "Power BI Essential Training",
+            "issuer": "LinkedIn",
+            "issuedAt": "Jun 2024",
+            "category": "learning",
+            "credentialUrl": "",
+            "featured": false,
+            "sortOrder": 4,
+            "status": "published"
+          },
+          {
+            "id": "certification-ldcad0",
+            "title": "Azure Administration Essential Training",
+            "issuer": "LinkedIn",
+            "issuedAt": "Jun 2024",
+            "category": "learning",
+            "credentialUrl": "",
+            "featured": false,
+            "sortOrder": 5,
+            "status": "published"
+          },
+          {
+            "id": "certification-xznroq",
+            "title": "Tableau 2024.1: Essential Training",
+            "issuer": "LinkedIn",
+            "issuedAt": "Jun 2024",
+            "category": "learning",
+            "credentialUrl": "",
+            "featured": false,
+            "sortOrder": 6,
+            "status": "published"
+          },
+          {
+            "id": "certification-vtk7le",
+            "title": "AWS Knowledge: Cloud Essentials",
+            "issuer": "Amazon Web Services",
+            "issuedAt": "Nov 2024",
+            "category": "cloud",
+            "credentialUrl": "",
+            "featured": false,
+            "sortOrder": 7,
+            "status": "published"
+          },
+          {
+            "id": "certification-hplpzr",
+            "title": "AWS Partner: Security Essentials (Technical)",
+            "issuer": "Amazon Web Services",
+            "issuedAt": "Nov 2024",
+            "category": "cloud",
+            "credentialUrl": "",
+            "featured": false,
+            "sortOrder": 8,
+            "status": "published"
+          },
+          {
+            "id": "certification-h925iy",
+            "title": "AWS Partner: Security Best Practices (Technical)",
+            "issuer": "Amazon Web Services",
+            "issuedAt": "Nov 2024",
+            "category": "cloud",
+            "credentialUrl": "",
+            "featured": false,
+            "sortOrder": 9,
+            "status": "published"
+          }
+        ]
+      }
+    },
+    "cmsDrafts/awards": {
+      "schemaVersion": 2,
+      "pageId": "awards",
+      "title": "AWARDS",
+      "data": {
+        "awards": [
+          {
+            "id": "award-1yzba90",
+            "title": "Fujitsu Certificate of Excellence",
+            "issuer": "",
+            "date": "",
+            "description": "Outstanding performance and contributions in FY2023.",
+            "category": "",
+            "featured": true,
+            "sortOrder": 0,
+            "status": "published"
+          },
+          {
+            "id": "award-ek6mqs",
+            "title": "Fujitsu Best Performer Award",
+            "issuer": "",
+            "date": "",
+            "description": "Outstanding project contributions in Q2 FY2023.",
+            "category": "",
+            "featured": true,
+            "sortOrder": 1,
+            "status": "published"
+          },
+          {
+            "id": "award-1pa01rg",
+            "title": "Fujitsu Best Project Award",
+            "issuer": "",
+            "date": "",
+            "description": "Best Project in Q2 FY2023.",
+            "category": "",
+            "featured": false,
+            "sortOrder": 2,
+            "status": "published"
+          },
+          {
+            "id": "award-1yppouh",
+            "title": "Fujitsu Best Project Award",
+            "issuer": "",
+            "date": "",
+            "description": "Best Project in Q2 FY2022.",
+            "category": "",
+            "featured": false,
+            "sortOrder": 3,
+            "status": "published"
+          },
+          {
+            "id": "award-1t5i15c",
+            "title": "Fujitsu STARS Silver Award",
+            "issuer": "",
+            "date": "",
+            "description": "Commitment and contributions to the organization.",
+            "category": "",
+            "featured": false,
+            "sortOrder": 4,
+            "status": "published"
+          },
+          {
+            "id": "award-1wdghkb",
+            "title": "CITREx 2020 Silver Medal",
+            "issuer": "",
+            "date": "",
+            "description": "Naturel Kiss Online Shopping mobile application system.",
+            "category": "",
+            "featured": false,
+            "sortOrder": 5,
+            "status": "published"
+          },
+          {
+            "id": "award-4dvg5",
+            "title": "Deputy Vice-Chancellor Special Award",
+            "issuer": "",
+            "date": "",
+            "description": "Outstanding co-curricular and student-leadership achievements at UMPSA.",
+            "category": "",
+            "featured": false,
+            "sortOrder": 6,
+            "status": "published"
+          },
+          {
+            "id": "award-1cwxvgu",
+            "title": "Dean's List Award",
+            "issuer": "",
+            "date": "",
+            "description": "Academic excellence in Semester 2, Session 2016/2017.",
+            "category": "",
+            "featured": false,
+            "sortOrder": 7,
+            "status": "published"
+          },
+          {
+            "id": "award-8jj3bu",
+            "title": "iCE-CInno 2016 Bronze Medal",
+            "issuer": "",
+            "date": "",
+            "description": "E-Aduan hygiene complaint system for UMPSA residential-college cafeterias.",
+            "category": "",
+            "featured": false,
+            "sortOrder": 8,
+            "status": "published"
+          }
+        ]
+      }
+    },
+    "cmsDrafts/leadership": {
+      "schemaVersion": 2,
+      "pageId": "leadership",
+      "title": "LEADERSHIP",
+      "data": {
+        "leadership": [
+          {
+            "id": "leadership-yflu4x",
+            "role": "President, Student Representative Council - UMPSA",
+            "organisation": "",
+            "period": "",
+            "description": "Represented and advocated for student welfare and campus initiatives, 2017-2018.",
+            "scope": "",
+            "earlierRecord": false,
+            "featured": true,
+            "sortOrder": 0,
+            "status": "published"
+          },
+          {
+            "id": "leadership-1cesso",
+            "role": "Third Vice-President, National Student Consultative Council",
+            "organisation": "",
+            "period": "",
+            "description": "Supported student welfare initiatives across Malaysia's East Coast region, 2017-2018.",
+            "scope": "",
+            "earlierRecord": false,
+            "featured": true,
+            "sortOrder": 1,
+            "status": "published"
+          },
+          {
+            "id": "leadership-ue9krv",
+            "role": "Head of Volunteers - MASUM Sports Carnival",
+            "organisation": "",
+            "period": "",
+            "description": "Led volunteer activities for the 2019 university sports carnival.",
+            "scope": "",
+            "earlierRecord": false,
+            "featured": true,
+            "sortOrder": 2,
+            "status": "published"
+          },
+          {
+            "id": "leadership-j9utk7",
+            "role": "Director - National Kokuria Carnival",
+            "organisation": "",
+            "period": "",
+            "description": "Directed the national program in 2018.",
+            "scope": "",
+            "earlierRecord": false,
+            "featured": false,
+            "sortOrder": 3,
+            "status": "published"
+          },
+          {
+            "id": "leadership-1prsat0",
+            "role": "Director - SRC International Community Service Program",
+            "organisation": "",
+            "period": "",
+            "description": "Led the 2018 international program in Indonesia.",
+            "scope": "",
+            "earlierRecord": false,
+            "featured": false,
+            "sortOrder": 4,
+            "status": "published"
+          },
+          {
+            "id": "leadership-q6vxnj",
+            "role": "Safety & Health Coordinator - UMPSA",
+            "organisation": "",
+            "period": "",
+            "description": "Coordinated university safety and health initiatives from 2017 to 2019.",
+            "scope": "",
+            "earlierRecord": false,
+            "featured": false,
+            "sortOrder": 5,
+            "status": "published"
+          },
+          {
+            "id": "leadership-srsrl",
+            "role": "Vice-Secretary - Student Representative Committee",
+            "organisation": "",
+            "period": "",
+            "description": "Served the student body at Kelantan Matriculation College in 2014/2015.",
+            "scope": "",
+            "earlierRecord": true,
+            "featured": false,
+            "sortOrder": 6,
+            "status": "published"
+          },
+          {
+            "id": "leadership-ui9nx1",
+            "role": "Vice-President - Indoor Game Club",
+            "organisation": "",
+            "period": "",
+            "description": "Helped lead student club activities at SMK Bandar Baru Sungai Buloh in 2013.",
+            "scope": "",
+            "earlierRecord": true,
+            "featured": false,
+            "sortOrder": 7,
+            "status": "published"
+          }
+        ]
+      }
+    },
+    "cmsDrafts/archives": {
+      "schemaVersion": 2,
+      "pageId": "archives",
+      "title": "ARCHIVES",
+      "data": {
+        "lede": "Published coverage preserved from the original portfolio. Select an entry to open its full clipping.",
+        "articles": [
+          {
+            "id": "archive-xpeowi",
+            "slug": "bantuan",
+            "title": "Mahasiswa Minta Teruskan Bantuan",
+            "publication": "Berita Harian",
+            "publicationDate": "2018-10-28",
+            "description": "Archived press coverage by Berita Harian featuring student perspectives on continuing financial assistance.",
+            "sourceUrl": "",
+            "assetPath": "/archives/bantuan/",
+            "language": "English / Malay",
+            "featured": false,
+            "sortOrder": 0,
+            "status": "published"
+          },
+          {
+            "id": "archive-1hle5c2",
+            "slug": "harapan",
+            "title": "Harapan Mahasiswa Menjelang Bajet 2019",
+            "publication": "Harian Metro",
+            "publicationDate": "2018-10-26",
+            "description": "Archived Harian Metro coverage of student hopes and priorities ahead of Malaysia’s 2019 budget.",
+            "sourceUrl": "",
+            "assetPath": "/archives/harapan/",
+            "language": "English / Malay",
+            "featured": false,
+            "sortOrder": 1,
+            "status": "published"
+          },
+          {
+            "id": "archive-19y1lie",
+            "slug": "bandung",
+            "title": "TK Asri Dikunjungi Universiti Malaysia Pahang",
+            "publication": "Galamedianews",
+            "publicationDate": "2018-10-04",
+            "description": "Archived Galamedianews coverage of a Universiti Malaysia Pahang community visit in Bandung.",
+            "sourceUrl": "",
+            "assetPath": "/archives/bandung/",
+            "language": "English / Malay",
+            "featured": false,
+            "sortOrder": 2,
+            "status": "published"
+          },
+          {
+            "id": "archive-1fyyrrw",
+            "slug": "bill",
+            "title": "Easy Way To Monitor Electricity Usage",
+            "publication": "New Straits Times",
+            "publicationDate": "2018-04-08",
+            "description": "New Straits Times coverage featuring Aniq Saidi’s perspective on mobile electricity monitoring and online payments.",
+            "sourceUrl": "",
+            "assetPath": "/archives/bill/",
+            "language": "English / Malay",
+            "featured": false,
+            "sortOrder": 3,
+            "status": "published"
+          },
+          {
+            "id": "archive-1fwn2vj",
+            "slug": "tnb",
+            "title": "Lebih Selesa Bayar Bil Melalui Atas Talian",
+            "publication": "Sinar Harian",
+            "publicationDate": "2018-03-29",
+            "description": "Archived Sinar Harian coverage of student experiences with online electricity bill services.",
+            "sourceUrl": "",
+            "assetPath": "/archives/tnb/",
+            "language": "English / Malay",
+            "featured": false,
+            "sortOrder": 4,
+            "status": "published"
+          },
+          {
+            "id": "archive-1bz9egm",
+            "slug": "inovasi",
+            "title": "Inovasi Nilai 4.0, Matlamat Utama UMP",
+            "publication": "Astro Awani",
+            "publicationDate": "2018-03-29",
+            "description": "Archived Astro Awani coverage of Universiti Malaysia Pahang’s innovation and Industry 4.0 ambitions.",
+            "sourceUrl": "",
+            "assetPath": "/archives/inovasi/",
+            "language": "English / Malay",
+            "featured": false,
+            "sortOrder": 5,
+            "status": "published"
+          },
+          {
+            "id": "archive-4j2aaq",
+            "slug": "gandingan",
+            "title": "Universiti Fokus Kebolehan, Kredibiliti Pelajar",
+            "publication": "Berita Harian",
+            "publicationDate": "2017-11-09",
+            "description": "Archived Berita Harian coverage of university efforts to strengthen student capability and credibility.",
+            "sourceUrl": "",
+            "assetPath": "/archives/gandingan/",
+            "language": "English / Malay",
+            "featured": false,
+            "sortOrder": 6,
+            "status": "published"
+          },
+          {
+            "id": "archive-1e7tn8r",
+            "slug": "kabinet",
+            "title": "Kabinet MPP Sesi 2017/2018 Pikul Amanah Mandat",
+            "publication": "Berita Harian",
+            "publicationDate": "2017-11-09",
+            "description": "Archived Berita Harian coverage of the 2017/2018 Student Representative Council cabinet and its mandate.",
+            "sourceUrl": "",
+            "assetPath": "/archives/kabinet/",
+            "language": "English / Malay",
+            "featured": false,
+            "sortOrder": 7,
+            "status": "published"
+          },
+          {
+            "id": "archive-g74uja",
+            "slug": "watikah",
+            "title": "MPP UMP Terima Watikah Pelantikan",
+            "publication": "Sinar Harian",
+            "publicationDate": "2017-10-09",
+            "description": "Archived Sinar Harian coverage of the Universiti Malaysia Pahang Student Representative Council appointment ceremony.",
+            "sourceUrl": "",
+            "assetPath": "/archives/watikah/",
+            "language": "English / Malay",
+            "featured": false,
+            "sortOrder": 8,
+            "status": "published"
+          }
+        ]
+      }
+    }
+  }
+}

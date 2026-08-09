@@ -3,6 +3,7 @@ import '../styles/terminal.css';
 import TerminalHeader from '../components/TerminalHeader.astro';
 import TerminalFooter from '../components/TerminalFooter.astro';
 import HackGate from '../components/HackGate.astro';
+import GoogleAnalytics from '../components/GoogleAnalytics.astro';
 import {
   SITE_TITLE,
   SITE_DESCRIPTION,
@@ -19,28 +20,32 @@ interface Props {
 
 const { title, description = SITE_DESCRIPTION } = Astro.props;
 const pageTitle = title ? `${title} // ${SITE_TITLE}` : SITE_TITLE;
-const mobileViewportPages = new Set([
-  '/',
-  '/about',
-  '/about/',
-  '/experience',
-  '/experience/',
-  '/certifications',
-  '/certifications/',
-  '/awards',
-  '/awards/',
-  '/leadership',
-  '/leadership/',
-]);
-const isMobileViewportPage = mobileViewportPages.has(Astro.url.pathname);
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const socialImageUrl = new URL('/social/aniq-terminal-social.png', Astro.site);
 ---
 
 <!doctype html>
-<html lang="en" data-theme="amber">
+<html lang="en" data-theme="blue">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
+    <GoogleAnalytics />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="description" id="site-meta-description" content={description} />
+    <link rel="canonical" id="site-canonical" href={canonicalUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" id="site-og-title" content={pageTitle} />
+    <meta property="og:description" id="site-og-description" content={description} />
+    <meta property="og:url" id="site-og-url" content={canonicalUrl} />
+    <meta property="og:image" id="site-og-image" content={socialImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" id="site-twitter-title" content={pageTitle} />
+    <meta name="twitter:description" id="site-twitter-description" content={description} />
+    <meta name="twitter:image" id="site-twitter-image" content={socialImageUrl} />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -55,33 +60,23 @@ const isMobileViewportPage = mobileViewportPages.has(Astro.url.pathname);
       title={SITE_TITLE}
       href={new URL('rss.xml', Astro.site)}
     />
-    <title>{pageTitle}</title>
+    <title id="site-page-title">{pageTitle}</title>
     <!-- Apply the saved theme before first paint so it does not flash. -->
     <script is:inline>
+      document.documentElement.dataset.js = 'true';
       const saved = localStorage.getItem('theme');
       if (saved === 'green' || saved === 'amber' || saved === 'blue' || saved === 'black') {
         document.documentElement.dataset.theme = saved;
       }
 
-      // Detect compact screens before the body is painted. A temporary style
-      // prevents expanded desktop content from flashing during navigation.
-      if (window.matchMedia('(max-width: 640px)').matches) {
-        document.documentElement.dataset.viewport = 'mobile';
-        var mobilePreflightStyle = document.createElement('style');
-        mobilePreflightStyle.id = 'mobile-preflight-style';
-        mobilePreflightStyle.textContent =
-          '.mobile-viewport-page .crt { visibility: hidden !important; }';
-        document.head.appendChild(mobilePreflightStyle);
-      } else {
-        document.documentElement.dataset.viewport = 'desktop';
-      }
     </script>
   </head>
-  <body class:list={{ 'mobile-viewport-page': isMobileViewportPage }}>
-    <!-- Power-on screen: once per session, dismissed by any click or key. -->
-    <div class="crt-boot" id="crt-boot" aria-hidden="true">
+  <body>
+    <a class="skip-link" href="#main-content">SKIP TO CONTENT</a>
+    <!-- Power-on screen: once per session, followed by a brisk automatic countdown. -->
+    <div class="crt-boot" id="crt-boot" role="status" aria-label="System startup">
       <div class="crt-boot__screen">
-        <pre class="crt-boot__lines">{[
+        <pre class="crt-boot__lines" aria-hidden="true">{[
           `${SITE_VENDOR} (TM) ${SITE_SYSTEM} PROTOCOL`,
           `INITIALIZING ${SITE_MODEL}...`,
           '',
@@ -99,7 +94,14 @@ const isMobileViewportPage = mobileViewportPages.has(Astro.url.pathname);
         ].map((line, i) => (
           <span class="boot-line" style={`--i:${i}`}>{line + '\n'}</span>
         ))}</pre>
-        <div class="crt-boot__skip">[ PRESS ANY KEY ]</div>
+        <div class="crt-boot__skip" aria-live="polite">
+          <span>[ REDIRECTING IN <span class="crt-boot__count" id="crt-boot-count">3</span>... ]</span>
+        </div>
+      </div>
+      <div class="crt-boot__matrix" aria-hidden="true">
+        {['01A7//SYS','1100<>RUN','ANIQ0101','101//HOME','00110110','BOOT//01','11001010','SYS<>101','0101RUN','HOME//11','10110001','001<>SYS'].map((stream, index) => (
+          <span style={`--column:${index};--delay:${(index % 4) * -0.045}s`}>{stream}<br />{stream}<br />{stream}</span>
+        ))}
       </div>
     </div>
     <script is:inline>
@@ -109,9 +111,10 @@ const isMobileViewportPage = mobileViewportPages.has(Astro.url.pathname);
         if (!boot) return;
         var mq = window.matchMedia;
         var reduce = mq && mq('(prefers-reduced-motion: reduce)').matches;
-        var narrow = mq && mq('(max-width: 640px)').matches;
-        if (reduce || narrow || sessionStorage.getItem('booted')) {
+        if (reduce || sessionStorage.getItem('booted-v3')) {
           boot.classList.add('crt-boot--off');
+        } else {
+          document.body.classList.add('boot-active');
         }
       })();
     </script>
@@ -121,151 +124,27 @@ const isMobileViewportPage = mobileViewportPages.has(Astro.url.pathname);
     <div class="crt">
       <div class="container">
         <TerminalHeader />
-        <main>
+        <main id="main-content" class="site-content-loading" tabindex="-1" aria-busy="true">
           <slot />
         </main>
         <TerminalFooter />
       </div>
     </div>
 
-    <script is:inline>
-      // Resolve the initial compact layout synchronously, before first paint.
-      (function () {
-        var root = document.documentElement;
-        if (root.dataset.viewport === 'mobile') {
-          document.querySelectorAll('details.mobile-more[open]').forEach(function (details) {
-            details.removeAttribute('open');
-          });
-
-          var pageMain = document.querySelector('main');
-          if (pageMain) {
-            document.querySelectorAll('[data-fit-group]').forEach(function (group) {
-              var visible = group.querySelector('[data-fit-visible]');
-              var overflow = group.querySelector('[data-fit-overflow]');
-              var details = group.querySelector('[data-fit-details]');
-              if (!visible || !overflow || !details) return;
-
-              var items = Array.from(group.querySelectorAll('[data-fit-item]')).sort(
-                function (a, b) {
-                  return Number(a.getAttribute('data-order')) - Number(b.getAttribute('data-order'));
-                },
-              );
-              var minimum = Number(group.getAttribute('data-mobile-min') || 1);
-              // The disclosure must participate in measurement so it cannot
-              // be pushed below the clipped mobile viewport.
-              details.hidden = false;
-              items.forEach(function (item) { visible.appendChild(item); });
-
-              while (pageMain.scrollHeight > pageMain.clientHeight && visible.children.length > minimum) {
-                var last = visible.lastElementChild;
-                if (!last) break;
-                overflow.prepend(last);
-              }
-              details.hidden = overflow.children.length === 0;
-            });
-          }
-        }
-
-        root.dataset.fitReady = 'true';
-        document.getElementById('mobile-preflight-style')?.remove();
-      })();
-    </script>
-
     <script>
       import { sfx, bindSfx } from '../scripts/sfx';
+      import { loadSiteContent } from '../scripts/siteContent';
+
+      loadSiteContent().finally(() => {
+        const main = document.getElementById('main-content');
+        main?.classList.remove('site-content-loading');
+        main?.removeAttribute('aria-busy');
+      });
 
       // Every interactive link and button uses the terminal sound system.
-      bindSfx(document, 'a, button, summary');
+      bindSfx(document, 'a, button');
 
-      // Read-more disclosures unlock document scrolling on compact mobile
-      // views. The class fallback also supports browsers without CSS :has().
-      const disclosures = document.querySelectorAll<HTMLDetailsElement>('details');
-      const mobileDisclosureMedia = window.matchMedia('(max-width: 640px)');
-      const mobileOnlyDisclosures = document.querySelectorAll<HTMLDetailsElement>(
-        'details.mobile-more',
-      );
-
-      function syncMobileOnlyDisclosures() {
-        document.documentElement.dataset.viewport = mobileDisclosureMedia.matches
-          ? 'mobile'
-          : 'desktop';
-        mobileOnlyDisclosures.forEach((details) => {
-          details.open = !mobileDisclosureMedia.matches;
-        });
-      }
-
-      function syncDisclosures() {
-        document.body.classList.toggle(
-          'has-open-details',
-          Boolean(document.querySelector('details[open]')),
-        );
-        disclosures.forEach((details) => {
-          details
-            .closest('.frame-body')
-            ?.classList.toggle('has-open-details', details.open);
-        });
-      }
-      disclosures.forEach((details) => details.addEventListener('toggle', syncDisclosures));
-      mobileDisclosureMedia.addEventListener('change', syncMobileOnlyDisclosures);
-      syncMobileOnlyDisclosures();
-      syncDisclosures();
-
-      // Repeated credentials use the real rendered viewport height instead of
-      // one hard-coded mobile count. Show as many as fit, then move the rest
-      // into the existing disclosure without changing their order.
-      const fitGroups = document.querySelectorAll<HTMLElement>('[data-fit-group]');
-
-      function fitViewportLists() {
-        const mobile = mobileDisclosureMedia.matches;
-        const pageMain = document.querySelector<HTMLElement>('main');
-        if (!pageMain) return;
-
-        fitGroups.forEach((group) => {
-          const visible = group.querySelector<HTMLElement>('[data-fit-visible]');
-          const overflow = group.querySelector<HTMLElement>('[data-fit-overflow]');
-          const details = group.querySelector<HTMLDetailsElement>('[data-fit-details]');
-          if (!visible || !overflow || !details || (mobile && details.open)) return;
-
-          const items = [...group.querySelectorAll<HTMLElement>('[data-fit-item]')].sort(
-            (a, b) => Number(a.dataset.order) - Number(b.dataset.order),
-          );
-          const desktopCount = Number(group.dataset.desktopCount ?? items.length);
-          const minimum = Number(group.dataset.mobileMin ?? 1);
-
-          // Always reserve the disclosure's rendered height while fitting.
-          // Otherwise a previously hidden summary can make too many rows look
-          // like they fit, then appear below the clipped viewport.
-          details.hidden = false;
-          items.forEach((item) => visible.append(item));
-
-          if (mobile) {
-            while (
-              pageMain.scrollHeight > pageMain.clientHeight &&
-              visible.children.length > minimum
-            ) {
-              const last = visible.lastElementChild;
-              if (!last) break;
-              overflow.prepend(last);
-            }
-          } else {
-            items.slice(desktopCount).forEach((item) => overflow.append(item));
-          }
-
-          details.hidden = overflow.children.length === 0;
-        });
-      }
-
-      let fitTimer = 0;
-      function queueViewportFit() {
-        window.clearTimeout(fitTimer);
-        fitTimer = window.setTimeout(fitViewportLists, 60);
-      }
-
-      document.fonts?.ready.then(fitViewportLists);
-      window.addEventListener('resize', queueViewportFit);
-
-      // Two sound buttons exist (header and footer) and only one is ever
-      // visible, but both have to stay in sync.
+      // Keep the footer sound control in sync with the audio engine.
       const soundBtns = document.querySelectorAll<HTMLButtonElement>(
         '[data-action="sound"]',
       );
@@ -290,31 +169,43 @@ const isMobileViewportPage = mobileViewportPages.has(Astro.url.pathname);
       (function () {
         const boot = document.getElementById('crt-boot');
         if (!boot || boot.classList.contains('crt-boot--off')) return;
-        sessionStorage.setItem('booted', '1');
-        let done = false;
-        const dismiss = () => {
-          if (done) return;
-          done = true;
+        const countdown = document.getElementById('crt-boot-count');
+        let count = 3;
+        let finished = false;
+
+        const finishBoot = () => {
+          if (finished) return;
+          finished = true;
+          sessionStorage.setItem('booted-v3', '1');
           boot.classList.add('crt-boot--done');
-          setTimeout(() => boot.remove(), 400);
+          document.body.classList.remove('boot-active');
+          setTimeout(() => boot.remove(), 560);
         };
-        boot.addEventListener('click', dismiss);
-        // Catch the key before the nav hotkeys so it only dismisses boot.
-        window.addEventListener(
-          'keydown',
-          (e) => {
-            e.stopImmediatePropagation();
-            dismiss();
-          },
-          { once: true, capture: false },
-        );
-        setTimeout(dismiss, 2600);
+
+        const tick = () => {
+          if (!countdown) return finishBoot();
+          countdown.textContent = String(count);
+          countdown.classList.remove('is-ticking');
+          void countdown.offsetWidth;
+          countdown.classList.add('is-ticking');
+
+          if (count === 1) {
+            setTimeout(finishBoot, 650);
+            return;
+          }
+
+          count -= 1;
+          setTimeout(tick, 650);
+        };
+
+        // The diagnostic lines establish the scene, then a brisk 3–2–1 begins.
+        setTimeout(tick, 1450);
       })();
 
       function toggleTheme() {
         const el = document.documentElement;
         const themes = ['amber', 'green', 'blue', 'black'];
-        const currentTheme = el.dataset.theme ?? 'amber';
+        const currentTheme = el.dataset.theme ?? 'blue';
         const next = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
         el.dataset.theme = next;
         localStorage.setItem('theme', next);
@@ -323,7 +214,7 @@ const isMobileViewportPage = mobileViewportPages.has(Astro.url.pathname);
       }
 
       function drawTheme() {
-        const theme = document.documentElement.dataset.theme ?? 'amber';
+        const theme = document.documentElement.dataset.theme ?? 'blue';
         const names: Record<string, string> = {
           amber: 'amber',
           green: 'green',
@@ -369,6 +260,10 @@ const isMobileViewportPage = mobileViewportPages.has(Astro.url.pathname);
           case 'у':
             location.href = '/experience/';
             break;
+          case 'p':
+          case 'з':
+            location.href = '/projects/';
+            break;
           case 'c':
           case 'с':
             location.href = '/certifications/';
@@ -380,6 +275,10 @@ const isMobileViewportPage = mobileViewportPages.has(Astro.url.pathname);
           case 'l':
           case 'д':
             location.href = '/leadership/';
+            break;
+          case 'r':
+          case 'к':
+            location.href = '/archives/';
             break;
           case 't':
           case 'е':
