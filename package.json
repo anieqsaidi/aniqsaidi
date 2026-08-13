@@ -19,6 +19,9 @@
     "test:operations": "node --test tests/cms-operations.test.mjs",
     "test:accessibility": "node --test tests/accessibility.test.mjs",
     "test:public-cms": "node --test tests/public-cms-rendering.test.mjs",
+    "test:email": "node --test tests/cv-email-template.test.mjs",
+    "verify:prod": "npm run build && npm run test:cms && npm run test:editorial && npm run test:operations && npm run test:accessibility && npm run test:public-cms && npm run test:email",
+    "deploy:prod": "npm run verify:prod && firebase deploy --only functions,hosting --project aniqsaidi",
     "test:rules": "firebase emulators:exec --only firestore --project demo-aniqsaidi \"node --test tests/firestore.rules.test.mjs\"",
     "test:storage": "firebase emulators:exec --only storage --project demo-aniqsaidi \"node --test tests/storage.rules.test.mjs\""
   },

@@ -2,6 +2,7 @@
 import '../styles/terminal.css';
 import TerminalHeader from '../components/TerminalHeader.astro';
 import TerminalFooter from '../components/TerminalFooter.astro';
+import PrimaryNav from '../components/PrimaryNav.astro';
 import HackGate from '../components/HackGate.astro';
 import GoogleAnalytics from '../components/GoogleAnalytics.astro';
 import {
@@ -127,6 +128,15 @@ const socialImageUrl = new URL('/social/aniq-terminal-social.png', Astro.site);
         <main id="main-content" class="site-content-loading" tabindex="-1" aria-busy="true">
           <slot />
         </main>
+        <div class="mobile-nav-dock">
+          <PrimaryNav placement="mobile" />
+          <button class="scroll-control scroll-down" id="scroll-down" type="button" aria-label="Scroll down" title="More content below" data-enabled="false" hidden>
+            <span aria-hidden="true">↓</span>
+          </button>
+          <button class="scroll-control back-to-top" id="back-to-top" type="button" aria-label="Back to top" title="Back to top" hidden>
+            <span aria-hidden="true">↑</span>
+          </button>
+        </div>
         <TerminalFooter />
       </div>
     </div>
@@ -135,11 +145,51 @@ const socialImageUrl = new URL('/social/aniq-terminal-social.png', Astro.site);
       import { sfx, bindSfx } from '../scripts/sfx';
       import { loadSiteContent } from '../scripts/siteContent';
 
-      loadSiteContent().finally(() => {
+      const revealSiteContent = () => {
         const main = document.getElementById('main-content');
         main?.classList.remove('site-content-loading');
         main?.removeAttribute('aria-busy');
+      };
+      const contentSyncDeadline = window.setTimeout(revealSiteContent, 180);
+      loadSiteContent().finally(() => {
+        window.clearTimeout(contentSyncDeadline);
+        revealSiteContent();
       });
+
+      const scrollPane = document.getElementById('main-content');
+      const backToTop = document.getElementById('back-to-top') as HTMLButtonElement | null;
+      const scrollDown = document.getElementById('scroll-down') as HTMLButtonElement | null;
+
+      if (scrollPane && backToTop && scrollDown) {
+        const scrollDownEnabled = scrollDown.dataset.enabled === 'true';
+        const updateScrollControls = () => {
+          backToTop.hidden = scrollPane.scrollTop < 180;
+          const remaining = scrollPane.scrollHeight - scrollPane.clientHeight - scrollPane.scrollTop;
+          scrollDown.hidden = !scrollDownEnabled
+            || scrollPane.scrollHeight <= scrollPane.clientHeight + 8
+            || remaining < 24;
+        };
+
+        scrollPane.addEventListener('scroll', updateScrollControls, { passive: true });
+        backToTop.addEventListener('click', () => {
+          const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          scrollPane.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+          scrollPane.focus({ preventScroll: true });
+        });
+        scrollDown.addEventListener('click', () => {
+          const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          scrollPane.scrollBy({
+            top: Math.max(180, scrollPane.clientHeight * 0.72),
+            behavior: reduceMotion ? 'auto' : 'smooth',
+          });
+          scrollPane.focus({ preventScroll: true });
+        });
+
+        const contentObserver = new MutationObserver(updateScrollControls);
+        contentObserver.observe(scrollPane, { childList: true, subtree: true });
+        window.addEventListener('resize', updateScrollControls);
+        window.requestAnimationFrame(updateScrollControls);
+      }
 
       // Every interactive link and button uses the terminal sound system.
       bindSfx(document, 'a, button');

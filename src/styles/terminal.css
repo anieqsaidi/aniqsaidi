@@ -183,6 +183,49 @@ body::after {
 
 .skip-link:focus { transform: translateY(0); }
 
+.mobile-nav-dock {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.scroll-control {
+  position: absolute;
+  bottom: 8px;
+  z-index: 120;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--fg);
+  color: var(--fg-bright);
+  background: var(--bg);
+  font: inherit;
+  font-size: 1.35em;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.back-to-top {
+  right: 0;
+}
+
+.scroll-down {
+  right: 50px;
+}
+
+.scroll-control[hidden] {
+  display: none;
+}
+
+.scroll-control:hover,
+.scroll-control:focus-visible {
+  color: var(--bg);
+  background: var(--fg);
+  text-shadow: none;
+}
+
 /* ---------- Layout ---------- */
 
 .container {
@@ -299,16 +342,35 @@ button {
   color: var(--fg);
 }
 
+.header-command-word {
+  display: inline-block;
+  width: 6ch;
+  overflow: hidden;
+  color: inherit;
+  text-align: left;
+  white-space: nowrap;
+}
+
 .tagline-cursor {
   animation: blink 1.1s steps(1) infinite;
 }
 
-.header-clock {
+.header-temporal {
   flex: 0 0 auto;
   margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7ch;
+}
+
+.header-clock {
   color: inherit;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.04em;
+}
+
+.header-mobile-date {
+  display: none;
 }
 
 .clock-separator {
@@ -522,12 +584,18 @@ button {
   padding: 6px 2px 0;
 }
 
+.h-nav--mobile {
+  display: none;
+}
+
 .h-nav a,
 .h-nav .nav-theme {
   white-space: nowrap;
 }
 
-.nav-label-short {
+.nav-label-short,
+.nav-icon,
+.header-date-short {
   display: none;
 }
 
@@ -1115,23 +1183,47 @@ button {
 
 .profile-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 148px;
+  grid-template-columns: minmax(0, 1fr) 176px;
   align-items: center;
   gap: 32px;
 }
 
-.profile-avatar {
+.profile-avatar-shell {
   grid-column: 2;
   grid-row: 1;
-  display: block;
-  width: 148px;
-  height: 148px;
-  object-fit: cover;
-  image-rendering: pixelated;
-  filter: var(--img-filter);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: 176px;
+  height: 176px;
   border: 1px solid var(--fg);
-  box-shadow: inset 0 0 0 2px var(--bg), 0 0 12px var(--glow);
-  padding: 4px;
+  background:
+    linear-gradient(color-mix(in srgb, var(--fg) 7%, transparent), color-mix(in srgb, var(--fg) 2%, transparent)),
+    var(--bg-deep);
+  box-shadow: inset 0 0 0 3px var(--bg), 0 0 14px var(--glow);
+}
+
+.profile-avatar-shell::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  z-index: 2;
+  pointer-events: none;
+  background: var(--fg);
+  mix-blend-mode: color;
+  opacity: .46;
+}
+
+.profile-avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  image-rendering: pixelated;
+  filter: saturate(.5) brightness(.88) contrast(1.12) drop-shadow(0 0 7px var(--glow));
+  transform: scale(1.12);
+  transform-origin: center 38%;
 }
 
 .records {
@@ -2142,39 +2234,65 @@ html[data-js='true'] .home-system.is-content-loading::before {
   /* Glow on small text reads as blur. */
   body { font-size: 13px; text-shadow: none; letter-spacing: 0; }
 
+  .mobile-nav-dock {
+    position: relative;
+    width: 100%;
+  }
+
+  .scroll-control {
+    position: absolute;
+    bottom: calc(100% + 3px);
+    width: calc((100% - 21px) / 8);
+    height: 40px;
+  }
+
+  .back-to-top {
+    right: 0;
+  }
+
+  .scroll-down {
+    right: calc((100% - 21px) / 8 + 3px);
+  }
+
   /* The double border cost ~50px of 390; one is enough. */
   .frame { border-width: 1px; padding: 0; margin: 14px 0; }
   .frame-body { border: 0; padding: 12px; }
   main { margin-top: 10px; }
 
-  /* The BUILD/date line is pure decoration. */
-  .h-line-bottom { display: none; }
+  .h-line-bottom {
+    display: none;
+  }
+  .header-mobile-date { display: inline; }
 
-  /* Nav: four centered commands per row; incomplete rows stay centered. */
-  .h-nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 4px;
+  /* Keep the header compact; navigation stays within thumb reach above the footer. */
+  .h-nav--header {
+    display: none;
+  }
+
+  .h-nav--mobile {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 3px;
+    flex: 0 0 auto;
     width: 100%;
-    padding: 6px 0 0;
+    padding: 6px 0;
   }
   .h-nav a {
-    flex: 0 0 calc(25% - 3px);
-    min-height: 34px;
+    min-height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     min-width: 0;
     padding: 4px 2px;
     border: 1px solid var(--fg-dim);
-    font-size: 0.8em;
     line-height: 1.2;
     text-align: center;
   }
 
-  .nav-label-full { display: none; }
-  .nav-label-short { display: inline; }
+  .nav-label-full,
+  .nav-label-short,
+  .nav-prompt { display: none; }
+  .nav-icon { display: inline-flex; align-items: center; justify-content: center; }
 
   .projects-intro { grid-template-columns: 1fr; gap: 12px; }
   .project-card, .project-card:first-child, .project-card.is-open { flex-basis: 100%; }
@@ -2220,11 +2338,11 @@ html[data-js='true'] .home-system.is-content-loading::before {
     gap: 18px;
   }
 
-  .profile-avatar {
+  .profile-avatar-shell {
     grid-column: 1;
     grid-row: 1;
-    width: 120px;
-    height: 120px;
+    width: 136px;
+    height: 136px;
     margin: 0 auto;
   }
 
@@ -2317,6 +2435,9 @@ html[data-js='true'] .home-system.is-content-loading::before {
   .t-footer {
     margin-top: 12px;
   }
+  .t-colophon {
+    display: none;
+  }
   .t-meta {
     border-top: 1px solid var(--fg-dim);
     padding-top: 8px;
@@ -2327,7 +2448,7 @@ html[data-js='true'] .home-system.is-content-loading::before {
     gap: 8px;
   }
   .identity-rotator {
-    width: 14ch;
+    width: 16ch;
   }
   .status-light {
     margin-right: 4px;
@@ -2341,7 +2462,8 @@ html[data-js='true'] .home-system.is-content-loading::before {
 }
 
 @media (max-width: 360px) {
-  .h-line-top {
+  .h-line-top,
+  .h-line-bottom {
     gap: 4px;
     font-size: 0.62em;
   }
@@ -2365,6 +2487,6 @@ html[data-js='true'] .home-system.is-content-loading::before {
   }
 
   .identity-rotator {
-    width: 13ch;
+    width: 15ch;
   }
 }

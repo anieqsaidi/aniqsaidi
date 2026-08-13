@@ -1,15 +1,16 @@
 ---
 import { SITE_TITLE, SITE_VERSION, SITE_BUILD_ID } from '../consts';
-import AnimatedWord from './AnimatedWord.astro';
+import PrimaryNav from './PrimaryNav.astro';
 
-const buildDate = new Date()
+const buildDateValue = new Date();
+const buildDate = buildDateValue
   .toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
   .toUpperCase();
+const compactBuildDate = buildDateValue
+  .toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })
+  .replaceAll(' ', '-')
+  .toUpperCase();
 
-const { pathname } = Astro.url;
-const current = (path: string) =>
-  pathname === path || pathname === path.replace(/\/$/, '') ? 'page' : undefined;
-const currentSection = (path: string) => pathname.startsWith(path) ? 'page' : undefined;
 ---
 
 <header class="t-header">
@@ -23,40 +24,25 @@ const currentSection = (path: string) => pathname.startsWith(path) ? 'page' : un
         <span class="header-command-user">aniq@system</span>
         <span class="header-command-path">~/home</span>
         <span aria-hidden="true">%</span>
-        <AnimatedWord text="whoami" effect="decode" delay={-2.4} alt="wh0am1" />
+        <span class="header-command-word" id="header-command-word" aria-hidden="true">whoami</span>
         <span class="tagline-cursor" aria-hidden="true">_</span>
       </span>
-      <time class="header-clock" id="header-clock" aria-label="Current time in Malaysia">
-        <span id="clock-hour">--</span><span class="clock-separator" aria-hidden="true">:</span><span id="clock-minute">--</span> MYT
-      </time>
-    </div>
-    <div class="h-line h-line-bottom">
-      <span>BUILD: {SITE_BUILD_ID} VER {SITE_VERSION}</span>
-      <span>
-        <span id="birthday-emoji" role="img" aria-label="Birthday" hidden>🎉 </span>
-        {buildDate}
+      <span class="header-temporal">
+        <time class="header-clock" id="header-clock" aria-label="Current time in Malaysia">
+          <span id="clock-hour">--</span><span class="clock-separator" aria-hidden="true">:</span><span id="clock-minute">--</span> MYT
+        </time>
+        <span class="header-mobile-date" aria-label={`Build date ${buildDate}`}>// {compactBuildDate}</span>
       </span>
     </div>
-    <nav class="h-nav" aria-label="Primary navigation">
-      <a href="/" aria-current={current('/')}>&gt; HOME</a>
-      <a href="/about/" aria-current={current('/about/')}>&gt; ABOUT</a>
-      <a href="/projects/" aria-current={currentSection('/projects')}>
-        &gt;&nbsp;<span class="nav-label-full">PROJECTS</span><span class="nav-label-short">WORK</span>
-      </a>
-      <a href="/experience/" aria-current={current('/experience/')}>
-        &gt;&nbsp;<span class="nav-label-full">EXPERIENCE</span><span class="nav-label-short">EXP</span>
-      </a>
-      <a href="/certifications/" aria-current={current('/certifications/')}>
-        &gt;&nbsp;<span class="nav-label-full">CERTIFICATIONS</span><span class="nav-label-short">CERTS</span>
-      </a>
-      <a href="/awards/" aria-current={current('/awards/')}>&gt; AWARDS</a>
-      <a href="/leadership/" aria-current={current('/leadership/')}>
-        &gt;&nbsp;<span class="nav-label-full">LEADERSHIP</span><span class="nav-label-short">LEAD</span>
-      </a>
-      <a href="/archives/" aria-current={currentSection('/archives')}>
-        &gt;&nbsp;<span class="nav-label-full">ARCHIVES</span><span class="nav-label-short">PRESS</span>
-      </a>
-    </nav>
+    <div class="h-line h-line-bottom">
+      <span class="header-version">VER {SITE_VERSION}</span>
+      <span class="header-build">BUILD {SITE_BUILD_ID}</span>
+      <span class="header-date">
+        <span id="birthday-emoji" role="img" aria-label="Birthday" hidden>🎉 </span>
+        <span class="header-date-full">{buildDate}</span><span class="header-date-short">{compactBuildDate}</span>
+      </span>
+    </div>
+    <PrimaryNav placement="header" />
   </div>
 </header>
 
@@ -93,6 +79,26 @@ const currentSection = (path: string) => pathname.startsWith(path) ? 'page' : un
 
     if (birthdayEmoji && today.getMonth() === 7 && today.getDate() === 2) {
       birthdayEmoji.hidden = false;
+    }
+
+    var commandWord = document.getElementById('header-command-word');
+    var reduceMotion = window.matchMedia
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (commandWord && !reduceMotion) {
+      var commandText = 'whoami';
+      var commandIndex = 0;
+      commandWord.textContent = '';
+
+      function typeCommand() {
+        if (commandIndex < commandText.length) {
+          commandIndex += 1;
+          commandWord.textContent = commandText.slice(0, commandIndex);
+          window.setTimeout(typeCommand, 105);
+        }
+      }
+
+      window.setTimeout(typeCommand, 480);
     }
   })();
 </script>

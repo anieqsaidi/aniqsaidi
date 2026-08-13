@@ -1,0 +1,37 @@
+---
+import NavIcon from './NavIcon.astro';
+
+interface Props {
+  placement?: 'header' | 'mobile';
+}
+
+const { placement = 'header' } = Astro.props;
+const { pathname } = Astro.url;
+const current = (path: string) =>
+  pathname === path || pathname === path.replace(/\/$/, '') ? 'page' : undefined;
+const currentSection = (path: string) => pathname.startsWith(path) ? 'page' : undefined;
+
+const links = [
+  { href: '/', label: 'Home', icon: 'home', active: current('/') },
+  { href: '/about/', label: 'About', icon: 'about', active: current('/about/') },
+  { href: '/projects/', label: 'Projects', icon: 'projects', active: currentSection('/projects') },
+  { href: '/experience/', label: 'Experience', icon: 'experience', active: current('/experience/') },
+  { href: '/certifications/', label: 'Certifications', icon: 'certifications', active: current('/certifications/') },
+  { href: '/awards/', label: 'Awards', icon: 'awards', active: current('/awards/') },
+  { href: '/leadership/', label: 'Leadership', icon: 'leadership', active: current('/leadership/') },
+  { href: '/archives/', label: 'Archives', icon: 'archives', active: currentSection('/archives') },
+] as const;
+---
+
+<nav
+  class:list={['h-nav', `h-nav--${placement}`]}
+  aria-label={placement === 'mobile' ? 'Mobile primary navigation' : 'Primary navigation'}
+>
+  {links.map((link) => (
+    <a href={link.href} aria-label={link.label} title={link.label.toUpperCase()} aria-current={link.active}>
+      <span class="nav-prompt" aria-hidden="true">&gt;&nbsp;</span>
+      <span class="nav-label-full">{link.label.toUpperCase()}</span>
+      <span class="nav-icon"><NavIcon name={link.icon} /></span>
+    </a>
+  ))}
+</nav>

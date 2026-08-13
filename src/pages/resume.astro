@@ -1,39 +1,208 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Frame from '../components/Frame.astro';
+
+const requestEndpoint = '/api/request-cv';
 ---
 
-<Layout title="RÉSUMÉ" description="Current professional résumé for Aniq Saidi.">
-  <Frame title="RÉSUMÉ">
-    <div class="resume-route" id="resume-route">
-      <p class="prompt">&gt; RESOLVING CURRENT PUBLISHED VERSION...</p>
-      <p>The stable link is online, but no published résumé could be loaded yet.</p>
-      <a href="/about/">&lt; RETURN TO PROFILE</a>
-    </div>
+<Layout title="REQUEST CV" description="Request Aniq Saidi's current professional CV by email.">
+  <Frame title="REQUEST CV">
+    <section
+      class="cv-request"
+      id="cv-request"
+      data-request-endpoint={requestEndpoint}
+      aria-labelledby="cv-request-title"
+    >
+      <div class="cv-request__intro">
+        <p class="prompt">&gt; RESTRICTED DOCUMENT // DELIVERY BY EMAIL</p>
+        <h1 id="cv-request-title">REQUEST CURRENT CV</h1>
+        <p>
+          Enter the email address where you would like the latest copy delivered.
+          Your address will only be used to process this request.
+        </p>
+      </div>
+
+      <form class="cv-request__form" id="cv-request-form" novalidate>
+        <label for="cv-request-email">EMAIL ADDRESS</label>
+        <div class="cv-request__input-row">
+          <span aria-hidden="true">&gt;</span>
+          <input
+            id="cv-request-email"
+            name="email"
+            type="email"
+            inputmode="email"
+            autocomplete="email"
+            maxlength="254"
+            placeholder="you@example.com"
+            aria-describedby="cv-request-privacy cv-request-status"
+            required
+          />
+        </div>
+
+        <div class="cv-request__trap" aria-hidden="true">
+          <label for="cv-request-company">COMPANY WEBSITE</label>
+          <input id="cv-request-company" name="company" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <label class="cv-request__consent" for="cv-request-consent">
+          <input id="cv-request-consent" name="consent" type="checkbox" required />
+          <span>I agree to use the CV for legitimate professional or recruitment purposes.</span>
+        </label>
+
+        <p class="cv-request__privacy" id="cv-request-privacy">
+          No direct PDF link is exposed here. Requests are rate-limited and the address is used only for this delivery.
+        </p>
+
+        <button class="cv-request__submit" type="submit">SEND CV REQUEST <span aria-hidden="true">↗</span></button>
+        <p class="cv-request__status" id="cv-request-status" role="status" aria-live="polite"></p>
+      </form>
+
+      <a class="cv-request__return" href="/about/">&lt; RETURN TO PROFILE</a>
+    </section>
   </Frame>
 </Layout>
 
 <script>
-  import { firebaseConfigured, getFirebaseServices } from '../lib/firebase';
-  async function resolveResume() {
-    const route = document.querySelector<HTMLElement>('#resume-route');
-    if (!route || !firebaseConfigured) return;
+  const root = document.querySelector<HTMLElement>('#cv-request');
+  const form = document.querySelector<HTMLFormElement>('#cv-request-form');
+  const email = document.querySelector<HTMLInputElement>('#cv-request-email');
+  const consent = document.querySelector<HTMLInputElement>('#cv-request-consent');
+  const trap = document.querySelector<HTMLInputElement>('#cv-request-company');
+  const status = document.querySelector<HTMLElement>('#cv-request-status');
+  const submit = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+
+  const setStatus = (message: string, state: 'error' | 'success' | 'idle' = 'idle') => {
+    if (!status) return;
+    status.textContent = message;
+    status.dataset.state = state;
+  };
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    setStatus('');
+
+    if (!email?.validity.valid) {
+      email?.focus();
+      setStatus('ENTER A VALID EMAIL ADDRESS.', 'error');
+      return;
+    }
+    if (!consent?.checked) {
+      consent?.focus();
+      setStatus('CONFIRM THE PROFESSIONAL-USE NOTICE TO CONTINUE.', 'error');
+      return;
+    }
+    if (trap?.value) return;
+
+    const endpoint = root?.dataset.requestEndpoint?.trim();
+    if (!endpoint) {
+      setStatus('REQUEST EMAIL IS NOT ACTIVE YET. NO ADDRESS WAS SAVED AND NO CV WAS SENT.', 'error');
+      return;
+    }
+
+    if (submit) submit.disabled = true;
+    setStatus('TRANSMITTING REQUEST...');
+
     try {
-      const [services, firestore] = await Promise.all([getFirebaseServices(), import('firebase/firestore')]);
-      if (!services) return;
-      const snapshot = await firestore.getDoc(firestore.doc(services.db, 'cmsResume', 'published'));
-      const publicUrl = snapshot.data()?.publicUrl;
-      if (snapshot.exists() && typeof publicUrl === 'string' && publicUrl.startsWith('https://')) {
-        route.innerHTML = `<p class="prompt">&gt; OPENING PUBLISHED RÉSUMÉ...</p><p><a href="${publicUrl.replace(/[&<>'"]/g, (character: string) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character] ?? character)}">OPEN PDF MANUALLY ↗</a></p>`;
-        window.location.replace(publicUrl);
-      }
-    } catch (error) { console.warn('Published résumé could not be resolved.', error); }
-  }
-  resolveResume();
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.value.trim(),
+          company: trap?.value ?? '',
+          consent: consent.checked,
+          source: 'aniqsaidi.my/resume',
+        }),
+      });
+      if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+      form.reset();
+      setStatus('REQUEST RECEIVED. CHECK YOUR INBOX FOR THE CV.', 'success');
+    } catch (error) {
+      console.warn('CV request could not be delivered.', error);
+      setStatus('REQUEST COULD NOT BE SENT. PLEASE TRY AGAIN LATER.', 'error');
+    } finally {
+      if (submit) submit.disabled = false;
+    }
+  });
 </script>
 
 <style>
-  .resume-route { display: grid; gap: 14px; min-height: 180px; place-content: center; text-align: center; }
-  .resume-route p { margin: 0; }
-  .resume-route .prompt { color: var(--fg-bright); }
+  .cv-request {
+    display: grid;
+    width: min(100%, 720px);
+    min-height: 360px;
+    margin: 0 auto;
+    gap: clamp(20px, 4vw, 32px);
+    align-content: center;
+  }
+
+  .cv-request__intro { display: grid; gap: 10px; }
+  .cv-request__intro > * { margin: 0; }
+  .cv-request__intro .prompt { color: var(--fg-bright); font-size: .78rem; letter-spacing: .08em; }
+  .cv-request__intro h1 { color: var(--fg-bright); font-size: clamp(1.15rem, 4vw, 1.65rem); }
+  .cv-request__intro > p:last-child { max-width: 62ch; color: var(--fg-dim); line-height: 1.6; }
+
+  .cv-request__form { display: grid; gap: 13px; }
+  .cv-request__form > label:first-child { color: var(--fg-bright); font-size: .78rem; letter-spacing: .1em; }
+
+  .cv-request__input-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 11px 14px;
+    border: 1px solid var(--fg-dim);
+    background: color-mix(in srgb, var(--fg) 4%, transparent);
+  }
+
+  .cv-request__input-row:focus-within { border-color: var(--fg-bright); box-shadow: 0 0 16px color-mix(in srgb, var(--fg) 18%, transparent); }
+  .cv-request__input-row span { color: var(--fg-bright); }
+  .cv-request__input-row input {
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    color: var(--fg-bright);
+    background: transparent;
+    font: inherit;
+  }
+  .cv-request__input-row input::placeholder { color: var(--fg-dim); opacity: .72; }
+
+  .cv-request__consent {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+    color: var(--fg-dim);
+    font-size: .78rem;
+    line-height: 1.5;
+    cursor: pointer;
+  }
+  .cv-request__consent input { margin: 3px 0 0; accent-color: var(--fg-bright); }
+
+  .cv-request__privacy { margin: 0; color: var(--fg-dim); font-size: .7rem; line-height: 1.5; }
+  .cv-request__trap { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+  .cv-request__submit {
+    justify-self: start;
+    padding: 10px 14px;
+    border: 1px solid var(--fg-bright);
+    color: var(--bg);
+    background: var(--fg-bright);
+    font: inherit;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    cursor: pointer;
+  }
+  .cv-request__submit:hover, .cv-request__submit:focus-visible { color: var(--fg-bright); background: transparent; }
+  .cv-request__submit:disabled { cursor: wait; opacity: .55; }
+
+  .cv-request__status { min-height: 1.5em; margin: 0; color: var(--fg-dim); font-size: .75rem; line-height: 1.5; }
+  .cv-request__status[data-state='error'] { color: #ff8d8d; }
+  .cv-request__status[data-state='success'] { color: var(--fg-bright); }
+  .cv-request__return { justify-self: start; font-size: .78rem; }
+
+  @media (max-width: 640px) {
+    .cv-request { min-height: 0; align-content: start; }
+    .cv-request__submit { width: 100%; }
+  }
 </style>

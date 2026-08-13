@@ -28,16 +28,21 @@ export async function initializeProjectExplorer() {
         const snapshot = await firestore.getDocFromServer(firestore.doc(services.db, 'cmsPublished', 'projects'));
         const published = snapshot.data() as CmsPages['projects'] | undefined;
         if (snapshot.exists() && Array.isArray(published?.data?.projects)) {
-          const publicIdentity = new Map(fallback.data.projects.map((project) => [project.id, project]));
-          projects = active(published.data.projects).map((project, index) => {
-            const safe = publicIdentity.get(project.id);
-            return {
-              ...project,
-              slug: safe?.slug ?? `confidential-project-${index + 1}`,
-              title: safe?.title ?? 'Confidential Engineering Project',
-              organisation: '',
-            };
-          });
+          const publishedProjects = active(published.data.projects);
+          if (!publishedProjects.length) {
+            console.warn('Published project content is empty; retaining the built-in project catalogue.');
+          } else {
+            const publicIdentity = new Map(fallback.data.projects.map((project) => [project.id, project]));
+            projects = publishedProjects.map((project, index) => {
+              const safe = publicIdentity.get(project.id);
+              return {
+                ...project,
+                slug: safe?.slug ?? `confidential-project-${index + 1}`,
+                title: safe?.title ?? 'Confidential Engineering Project',
+                organisation: '',
+              };
+            });
+          }
         }
       }
     } catch (error) {

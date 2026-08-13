@@ -5,6 +5,10 @@
   "storage": {
     "rules": "storage.rules"
   },
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs22"
+  },
   "emulators": {
     "firestore": {
       "port": 8080
@@ -24,6 +28,15 @@
       "**/node_modules/**"
     ],
     "cleanUrls": true,
+    "rewrites": [
+      {
+        "source": "/api/request-cv",
+        "function": {
+          "functionId": "requestCv",
+          "region": "asia-southeast1"
+        }
+      }
+    ],
     "headers": [
       {
         "source": "/",

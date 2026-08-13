@@ -36,7 +36,8 @@ function applyResume(data: unknown) {
   const resume = data as { publicUrl?: string; fileName?: string } | null;
   document.querySelectorAll<HTMLAnchorElement>('[data-cms-resume-link]').forEach((link) => {
     link.href = '/resume/';
-    if (resume?.fileName) link.title = `Current published résumé: ${resume.fileName}`;
+    link.textContent = 'REQUEST CURRENT CV ↗';
+    link.title = resume?.fileName ? 'Request the current CV by email' : 'Request Aniq Saidi\'s CV by email';
   });
 }
 

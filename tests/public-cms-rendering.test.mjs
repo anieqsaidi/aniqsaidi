@@ -39,6 +39,12 @@ test('home rebuilds repeatable queues and calls to action from cmsPublished', as
   assert.match(home, /grid\.replaceChildren/);
 });
 
+test('projects retain the built-in catalogue when the published snapshot is empty', async () => {
+  const projects = await source('src/scripts/projectExplorer.ts');
+  assert.match(projects, /if \(!publishedProjects\.length\)/);
+  assert.match(projects, /retaining the built-in project catalogue/);
+});
+
 test('structured publishing is not blocked by fixed legacy v1 collection shapes', async () => {
   const admin = await source('src/scripts/adminCms.ts');
   assert.doesNotMatch(admin, /transaction\.set\(doc\(services\.db, 'siteContent'/);

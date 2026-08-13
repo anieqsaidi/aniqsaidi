@@ -8,13 +8,15 @@ import { education, profile, undergraduateThesis } from '../data/cv';
 <Layout title="ABOUT" description="About Muhammad Amrun Aniq bin Mohamed Saidi, software engineer.">
   <Frame title="PROFILE">
     <div class="profile-grid">
-      <img
-        class="profile-avatar"
-        src="/images/aniq-pixel.png"
-        alt="Pixel-art portrait of Aniq Saidi"
-        width="512"
-        height="512"
-      />
+      <div class="profile-avatar-shell">
+        <img
+          class="profile-avatar"
+          src="/images/aniq-suit-pixel-transparent.png"
+          alt="Pixel-art portrait of Aniq Saidi"
+          width="512"
+          height="512"
+        />
+      </div>
       <dl class="records">
         <dt>NAME</dt>
         <dd data-cms-field="about.name">{profile.name}</dd>
@@ -27,7 +29,7 @@ import { education, profile, undergraduateThesis } from '../data/cv';
         <dt>LINKEDIN</dt>
         <dd><a href={profile.linkedin} rel="me" data-cms-field="about.linkedin" data-cms-attribute="href">linkedin.com/in/aniqsaidi</a></dd>
         <dt>RÉSUMÉ</dt>
-        <dd><a href="/resume/" data-cms-resume-link>VIEW CURRENT PDF ↗</a></dd>
+        <dd><a href="/resume/" data-cms-resume-link>REQUEST CURRENT CV ↗</a></dd>
       </dl>
     </div>
   </Frame>
@@ -79,7 +81,7 @@ import { education, profile, undergraduateThesis } from '../data/cv';
   </Frame>
 </Layout>
 
-<style>
+<style is:global>
   .education-thesis {
     display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
