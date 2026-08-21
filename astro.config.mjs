@@ -4,7 +4,9 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 
 const packageMetadata = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
-const buildDate = new Date().toISOString();
+
+// Build timestamp in UTC+8 (Malaysia Time)
+const buildDate = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString();
 const buildTimestamp = `${buildDate.slice(0, 10).replaceAll('-', '')}.${buildDate.slice(11, 16).replace(':', '')}`;
 
 function currentCommit() {
