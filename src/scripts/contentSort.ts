@@ -19,8 +19,12 @@ const compare = (mode: SortMode) => (left: HTMLElement, right: HTMLElement) => {
   return dateOrder || titleOrder;
 };
 
-const sortScope = (scope: HTMLElement, mode: SortMode) => {
-  scope.querySelectorAll<HTMLElement>('[data-sort-container]').forEach((container) => {
+export const sortScope = (scope: HTMLElement, mode: SortMode) => {
+  const containers = [
+    ...(scope.matches('[data-sort-container]') ? [scope] : []),
+    ...scope.querySelectorAll<HTMLElement>('[data-sort-container]'),
+  ];
+  containers.forEach((container) => {
     const records = [...container.children].filter((item): item is HTMLElement =>
       item instanceof HTMLElement && item.hasAttribute('data-sort-item'));
     const sorted = [...records].sort(compare(mode));

@@ -20,7 +20,7 @@
     "test:accessibility": "node --test tests/accessibility.test.mjs",
     "test:public-cms": "node --test tests/public-cms-rendering.test.mjs",
     "test:email": "node --test tests/cv-email-template.test.mjs",
-    "test:ordering": "node --test tests/record-order.test.mjs",
+    "test:ordering": "node --test tests/record-order.test.mjs tests/content-sort.test.mjs",
     "test:security": "node --test tests/cv-security.test.mjs tests/security-posture.test.mjs",
     "verify:prod": "npm run build && npm run test:cms && npm run test:editorial && npm run test:operations && npm run test:accessibility && npm run test:public-cms && npm run test:email && npm run test:ordering && npm run test:security",
     "deploy:prod": "npm run verify:prod && firebase deploy --only functions,hosting,firestore:rules,storage --project aniqsaidi",
