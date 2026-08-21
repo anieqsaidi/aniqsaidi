@@ -22,6 +22,16 @@ export async function getFirebaseServices() {
   return { app, auth: getAuth(app), db: getFirestore(app) };
 }
 
+export async function getFirebasePublicServices() {
+  if (!firebaseConfigured) return null;
+  const [{ getApp, getApps, initializeApp }, { getFirestore }] = await Promise.all([
+    import('firebase/app'),
+    import('firebase/firestore/lite'),
+  ]);
+  const app = getApps().length ? getApp() : initializeApp(config);
+  return { app, db: getFirestore(app) };
+}
+
 export type FirebaseServices = NonNullable<Awaited<ReturnType<typeof getFirebaseServices>>>;
 
 export async function getFirebaseStorage() {

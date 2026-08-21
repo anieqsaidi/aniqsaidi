@@ -5,9 +5,9 @@ import AnimatedText from '../components/AnimatedText.astro';
 import RecordHighlights from '../components/RecordHighlights.astro';
 import ContentSort from '../components/ContentSort.astro';
 import { leadership } from '../data/cv';
-import { latestFirst } from '../data/recordOrder';
+import { indexFirst } from '../data/recordOrder';
 
-const sortedLeadership = latestFirst(leadership.map(([title, detail], index) => ({
+const sortedLeadership = indexFirst(leadership.map(([title, detail], index) => ({
   title, detail, description: detail, period: detail, index, sortOrder: index,
 })));
 
@@ -27,7 +27,7 @@ const highlightRecords = leadership.map(([title, detail], index) => ({
     <ContentSort scope="leadership" />
     <div class="credential-list" data-cms-collection="leadership.leadership" data-sort-scope="leadership" data-sort-container>
       {sortedLeadership.map(({ title, detail, index }) => (
-        <article class="credential credential--stacked" data-sort-item data-sort-date={detail} data-sort-title={title}>
+        <article class="credential credential--stacked" data-sort-item data-sort-date={`${title} ${detail}`} data-sort-title={title}>
           <div>
             <h2 data-cms-field={`leadership.${index}.title`}>
               {index === 5

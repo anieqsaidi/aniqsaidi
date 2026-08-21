@@ -11,10 +11,10 @@ import type {
   LeadershipRecord,
   ToolkitRecord,
 } from '../data/cmsSchema';
-import { latestFirst } from '../data/recordOrder';
+import { indexFirst } from '../data/recordOrder';
 
 const published = <T extends CmsRecord>(records: T[] | undefined) =>
-  latestFirst([...(records ?? [])].filter((record) => record.status === 'published'));
+  indexFirst([...(records ?? [])].filter((record) => record.status === 'published'));
 
 const node = <K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string) => {
   const element = document.createElement(tag);
@@ -146,7 +146,7 @@ function renderAwards(page: CmsPages['awards']) {
   if (!container) return;
   container.replaceChildren(...records.map((record) => {
     const article = node('article', 'credential credential--stacked'); article.dataset.recordId = record.id;
-    article.dataset.sortItem = ''; article.dataset.sortDate = record.date; article.dataset.sortTitle = record.title;
+    article.dataset.sortItem = ''; article.dataset.sortDate = [record.date, record.title, record.description].filter(Boolean).join(' '); article.dataset.sortTitle = record.title;
     const copy = node('div'); copy.append(node('h2', '', record.title), node('p', '', [record.description, record.issuer, record.date].filter(Boolean).join(' // ')));
     article.append(copy); return article;
   }));
@@ -163,7 +163,7 @@ function renderLeadership(page: CmsPages['leadership']) {
   if (!container) return;
   container.replaceChildren(...records.map((record) => {
     const article = node('article', 'credential credential--stacked'); article.dataset.recordId = record.id;
-    article.dataset.sortItem = ''; article.dataset.sortDate = record.period; article.dataset.sortTitle = record.role;
+    article.dataset.sortItem = ''; article.dataset.sortDate = [record.period, record.role, record.description].filter(Boolean).join(' '); article.dataset.sortTitle = record.role;
     const copy = node('div'); copy.append(node('h2', '', record.role), node('p', '', [record.description, record.organisation, record.period].filter(Boolean).join(' // ')));
     article.append(copy); return article;
   }));

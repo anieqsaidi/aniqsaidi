@@ -6,7 +6,7 @@ import ContentSort from '../components/ContentSort.astro';
 import { defaultHomeContent } from '../data/homeContent';
 import { defaultSiteFields } from '../data/siteFields';
 import { migrateV1ToV2 } from '../data/cmsSchema';
-import { latestFirst } from '../data/recordOrder';
+import { indexFirst } from '../data/recordOrder';
 
 const projectPage = migrateV1ToV2(defaultHomeContent, defaultSiteFields).projects;
 const publicAliases = [
@@ -21,7 +21,7 @@ const publicAliases = [
   { slug: 'human-resource-management-system', title: 'Human Resource Management System' },
   { slug: 'healthcare-workforce-portal', title: 'Healthcare Workforce Portal' },
 ];
-const projects = latestFirst(projectPage.data.projects.map((project, index) => ({
+const projects = indexFirst(projectPage.data.projects.map((project, index) => ({
   ...project,
   slug: publicAliases[index]?.slug ?? `confidential-project-${index + 1}`,
   title: publicAliases[index]?.title ?? 'Confidential Engineering Project',
@@ -35,10 +35,10 @@ const tags = (items: typeof projects[number]['technologies']) => items.map((item
   <div class="projects-page" id="projects-page" data-projects={JSON.stringify(publicProjectPage)}>
     <Frame title="PROJECTS // CASE FILES">
       <header class="projects-intro">
-        <div>
-          <h2><AnimatedText text="Production work, without the production secrets." word="Production" effect="scan" delay={-1.8} /></h2>
-        </div>
-        <p>Healthcare platforms, public-facing systems, and enterprise analytics—documented around the problem, my contribution, and the engineering decisions that can be shared safely.</p>
+        <!-- <div>
+          <h2><AnimatedText text="Real work, real projects, minus the secrets." word="projects" effect="scan" delay={-1.8} /></h2>
+        </div> -->
+        <p>&gt; A collection of things I've built, problems I've solved, ideas I've turned into reality, and headaches I've collected along the way.</p>
       </header>
 
       <ContentSort scope="projects" />
@@ -47,7 +47,7 @@ const tags = (items: typeof projects[number]['technologies']) => items.map((item
         {projects.map((project, index) => (
           <article class="project-card" id={`project-${project.slug}`} data-project-card={project.slug} data-sort-item data-sort-date={project.period} data-sort-title={project.title}>
             <header>
-              <span>{String(index + 1).padStart(2, '0')} // {project.category}</span>
+              <span><span data-sort-position>{String(index + 1).padStart(2, '0')}</span> // {project.category}</span>
               <span class="project-card-state">
                 <time>{project.period}</time>
                 <strong>{project.projectStatus}</strong>

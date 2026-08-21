@@ -32,6 +32,7 @@ test('interactive controls have explicit button types and admin pages remain pri
   const admin = await htmlFor('admin');
   assert.match(admin, /<meta name="robots" content="noindex, nofollow, noarchive">/);
   assert.match(admin, /<iframe[^>]*title="Public page preview"/);
+  assert.match(admin, /id="admin-auth-message"[^>]*role="status"/);
   const requested = await htmlFor('resume/requested');
   assert.match(requested, /<meta name="robots" content="noindex, nofollow, noarchive">/);
 });

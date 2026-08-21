@@ -38,6 +38,7 @@ const labels: Record<(typeof CMS_PAGE_IDS)[number], string> = {
       <h1 id="admin-auth-title">AUTHORIZED GOOGLE ACCOUNT REQUIRED.</h1>
       <p>Structured content is loaded only after Firebase confirms the approved administrator.</p>
       <button class="admin-button admin-button--primary" id="admin-sign-in" type="button">&gt; SIGN IN WITH GOOGLE</button>
+      <p class="admin-auth-message" id="admin-auth-message" role="status" aria-live="polite">AUTHENTICATION REQUIRED.</p>
     </section>
 
     <div class="admin-workspace">
@@ -72,7 +73,7 @@ const labels: Record<(typeof CMS_PAGE_IDS)[number], string> = {
           </div>
           <span class="admin-state" id="admin-page-state">AUTHENTICATING</span>
         </header>
-        <p class="admin-help">Records use stable IDs. Dated collections are automatically ordered latest to oldest; manual collections can be moved up or down.</p>
+        <p class="admin-help">Records use stable IDs. Dated collections start latest to oldest. Set the order index (1 = first) or use Move Up and Move Down to save an explicit order.</p>
         <div class="admin-editor" id="admin-editor"></div>
       </section>
 
@@ -137,6 +138,8 @@ const labels: Record<(typeof CMS_PAGE_IDS)[number], string> = {
   .admin-auth { max-width: 680px; margin: clamp(40px, 12vh, 110px) auto; padding: 28px; border: 1px solid var(--fg); }
   .admin-auth h1 { margin: 8px 0 12px; color: var(--fg-bright); font-size: clamp(1.05rem, 3vw, 1.45rem); }
   .admin-auth p { margin-bottom: 18px; color: var(--fg-dim); }
+  .admin-auth .admin-auth-message { margin: 14px 0 0; font-size: .7rem; }
+  .admin-auth .admin-auth-message.is-error { color: var(--fg-bright); }
   .admin-kicker { color: var(--fg); font-size: .72rem; letter-spacing: .12em; }
   .admin-workspace { grid-template-columns: 210px minmax(0, 1fr) 245px; min-height: calc(100dvh - 154px); border: 1px solid var(--fg-dim); }
   .admin-sidebar { position: sticky; top: 0; align-self: start; min-width: 0; min-height: calc(100dvh - 154px); border-right: 1px solid var(--fg-dim); background: var(--bg-deep); }

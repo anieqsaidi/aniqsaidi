@@ -1,6 +1,6 @@
 import { SITE_FIELDS_PUBLISHED_KEY, defaultSiteFields, normalizeSiteFields } from '../data/siteFields';
 import type { CmsPageId } from '../data/cmsSchema';
-import { firebaseConfigured, getFirebaseServices } from '../lib/firebase';
+import { firebaseConfigured, getFirebasePublicServices } from '../lib/firebase';
 import { renderPublishedPage } from './publicCmsRender';
 
 const pageIdFromPath = (pathname: string) => {
@@ -89,15 +89,15 @@ export async function loadSiteContent() {
 
   if (!firebaseConfigured) return;
   try {
-    const [services, firestore] = await Promise.all([getFirebaseServices(), import('firebase/firestore')]);
+    const [services, firestore] = await Promise.all([getFirebasePublicServices(), import('firebase/firestore/lite')]);
     if (!services) return;
     const pageId = pageIdFromPath(window.location.pathname);
     const supportsStructuredContent = ['about', 'experience', 'certifications', 'awards', 'leadership', 'archives'].includes(pageId);
     const [content, seo, structuredPage] = await Promise.all([
-      firestore.getDocFromServer(firestore.doc(services.db, 'siteContent', 'pages')),
-      firestore.getDocFromServer(firestore.doc(services.db, 'cmsSeo', 'published')),
+      firestore.getDoc(firestore.doc(services.db, 'siteContent', 'pages')),
+      firestore.getDoc(firestore.doc(services.db, 'cmsSeo', 'published')),
       supportsStructuredContent
-        ? firestore.getDocFromServer(firestore.doc(services.db, 'cmsPublished', pageId))
+        ? firestore.getDoc(firestore.doc(services.db, 'cmsPublished', pageId))
         : Promise.resolve(null),
     ]);
     if (content.exists()) applyFields(normalizeSiteFields(content.data().fields));

@@ -131,7 +131,7 @@ const { profile, queue } = defaultHomeContent;
 <script>
   import { HOME_PUBLISHED_KEY, normalizeHomeContent, type HomeContent } from '../data/homeContent';
   import type { CmsPages } from '../data/cmsSchema';
-  import { firebaseConfigured, getFirebaseServices } from '../lib/firebase';
+  import { firebaseConfigured, getFirebasePublicServices } from '../lib/firebase';
 
   type DynamicHome = CmsPages['home']['data'];
 
@@ -237,12 +237,12 @@ const { profile, queue } = defaultHomeContent;
   }
 
   if (!isDraftPreview && firebaseConfigured) {
-    Promise.all([getFirebaseServices(), import('firebase/firestore')])
+    Promise.all([getFirebasePublicServices(), import('firebase/firestore/lite')])
       .then(([services, firestore]) => {
         if (!services) return;
         return Promise.all([
-          firestore.getDocFromServer(firestore.doc(services.db, 'cmsPublished', 'home')),
-          firestore.getDocFromServer(firestore.doc(services.db, 'siteContent', 'home')),
+          firestore.getDoc(firestore.doc(services.db, 'cmsPublished', 'home')),
+          firestore.getDoc(firestore.doc(services.db, 'siteContent', 'home')),
         ]);
       })
       .then((snapshots) => {

@@ -1,5 +1,6 @@
 import {
   GoogleAuthProvider,
+  getRedirectResult,
   onAuthStateChanged,
   signInWithPopup,
   signInWithRedirect,
@@ -22,6 +23,10 @@ export async function initializeAdminGate(options: AdminGateOptions) {
   const { root, authPanel, signInButton, signOutButton, message, onAuthorized } = options;
   const services = await getFirebaseServices();
   let unlocked = false;
+  const errorCode = (error: unknown) => {
+    const code = typeof error === 'object' && error && 'code' in error ? String((error as { code?: unknown }).code ?? '') : '';
+    return code.replace(/^auth\//, '').toUpperCase() || 'UNKNOWN ERROR';
+  };
 
   const setMessage = (text: string, error = false) => {
     message.textContent = text;
@@ -58,16 +63,24 @@ export async function initializeAdminGate(options: AdminGateOptions) {
     } else setMessage('AUTHENTICATION REQUIRED.');
   });
 
+  void getRedirectResult(services.auth).catch((error) => {
+    console.error(error);
+    setMessage(`GOOGLE SIGN-IN FAILED // ${errorCode(error)}.`, true);
+  });
+
   signInButton.addEventListener('click', async () => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ login_hint: ADMIN_EMAIL });
     try {
       await signInWithPopup(services.auth, provider);
     } catch (error) {
-      if ((error as { code?: string }).code === 'auth/popup-blocked') await signInWithRedirect(services.auth, provider);
-      else {
+      const code = (error as { code?: string }).code ?? '';
+      if (['auth/popup-blocked', 'auth/operation-not-supported-in-this-environment'].includes(code)) {
+        setMessage('POPUP UNAVAILABLE // CONTINUING WITH REDIRECT SIGN-IN.');
+        await signInWithRedirect(services.auth, provider);
+      } else {
         console.error(error);
-        setMessage('GOOGLE SIGN-IN FAILED.', true);
+        setMessage(`GOOGLE SIGN-IN FAILED // ${errorCode(error)}.`, true);
       }
     }
   });

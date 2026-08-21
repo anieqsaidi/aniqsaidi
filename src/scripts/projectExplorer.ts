@@ -1,11 +1,11 @@
 import { type CmsPages, type ProjectRecord } from '../data/cmsSchema';
-import { firebaseConfigured, getFirebaseServices } from '../lib/firebase';
-import { latestFirst } from '../data/recordOrder';
+import { firebaseConfigured, getFirebasePublicServices } from '../lib/firebase';
+import { indexFirst } from '../data/recordOrder';
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, className = '', text = '') => {
   const node = document.createElement(tag); if (className) node.className = className; if (text) node.textContent = text; return node;
 };
-const active = <T extends { status: string; sortOrder: number }>(items: T[]) => latestFirst(items.filter((item) => item.status !== 'archived'));
+const active = <T extends { status: string; sortOrder: number }>(items: T[]) => indexFirst(items.filter((item) => item.status !== 'archived'));
 const labels = (items: ProjectRecord['technologies']) => active(items).map((item) => item.label).join(' // ');
 
 export async function initializeProjectExplorer() {
@@ -24,9 +24,9 @@ export async function initializeProjectExplorer() {
     }
   } else if (firebaseConfigured) {
     try {
-      const [services, firestore] = await Promise.all([getFirebaseServices(), import('firebase/firestore')]);
+      const [services, firestore] = await Promise.all([getFirebasePublicServices(), import('firebase/firestore/lite')]);
       if (services) {
-        const snapshot = await firestore.getDocFromServer(firestore.doc(services.db, 'cmsPublished', 'projects'));
+        const snapshot = await firestore.getDoc(firestore.doc(services.db, 'cmsPublished', 'projects'));
         const published = snapshot.data() as CmsPages['projects'] | undefined;
         if (snapshot.exists() && Array.isArray(published?.data?.projects)) {
           const publishedProjects = active(published.data.projects);
@@ -61,7 +61,9 @@ export async function initializeProjectExplorer() {
       const head = el('header');
       const state = el('span', 'project-card-state');
       state.append(el('time', '', project.period), el('strong', '', project.projectStatus));
-      head.append(el('span', '', `${String(index + 1).padStart(2, '0')} // ${project.category}`), state);
+      const position = el('span', '', String(index + 1).padStart(2, '0')); position.dataset.sortPosition = '';
+      const identity = el('span'); identity.append(position, ` // ${project.category}`);
+      head.append(identity, state);
       const copy = el('div', 'project-card-copy'); copy.append(el('h2', '', project.title), el('p', '', project.shortDescription));
       const details = el('dl'); details.append(meta('ROLE', project.role), meta('STACK', labels(project.technologies)), meta('PLATFORM', labels(project.platforms)));
       const panelId = `project-case-${project.slug}`;

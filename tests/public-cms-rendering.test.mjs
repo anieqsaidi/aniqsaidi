@@ -50,3 +50,16 @@ test('structured publishing is not blocked by fixed legacy v1 collection shapes'
   assert.doesNotMatch(admin, /transaction\.set\(doc\(services\.db, 'siteContent'/);
   assert.match(admin, /PUBLISH FAILED \/\/ \$\{errorCode\(error\)\}/);
 });
+
+test('public Firestore Lite readers use its supported document API', async () => {
+  const readers = await Promise.all([
+    source('src/scripts/siteContent.ts'),
+    source('src/scripts/projectExplorer.ts'),
+    source('src/pages/index.astro'),
+  ]);
+
+  for (const reader of readers) {
+    assert.doesNotMatch(reader, /getDocFromServer/);
+    assert.match(reader, /firestore\.getDoc\(/);
+  }
+});

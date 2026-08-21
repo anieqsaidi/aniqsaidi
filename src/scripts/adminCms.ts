@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut } from 'firebase/auth';
+import { GoogleAuthProvider, getRedirectResult, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut } from 'firebase/auth';
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, runTransaction, serverTimestamp } from 'firebase/firestore';
 import {
   CMS_PAGE_IDS,
@@ -14,7 +14,7 @@ import {
   type CmsPages,
   type CmsRecord,
 } from '../data/cmsSchema';
-import { latestFirst } from '../data/recordOrder';
+import { indexFirst } from '../data/recordOrder';
 import {
   changedPageIds,
   createRevisionId,
@@ -30,10 +30,10 @@ import { normalizeSiteFields } from '../data/siteFields';
 import { firebaseConfigured, getFirebaseServices } from '../lib/firebase';
 import { auditPayload, recordAudit } from './adminOperations';
 
-type InputType = 'text' | 'textarea' | 'email' | 'url' | 'month' | 'date' | 'checkbox' | 'select';
+type InputType = 'text' | 'textarea' | 'email' | 'url' | 'month' | 'date' | 'number' | 'checkbox' | 'select';
 type NestedType = 'textRecords' | 'tagRecords' | 'sections';
 type FieldConfig = { key: string; label: string; type?: InputType; options?: string[]; nested?: NestedType };
-type CollectionConfig = { key: string; title: string; labelKey: string; ordering?: 'automatic' | 'manual'; fields: FieldConfig[] };
+type CollectionConfig = { key: string; title: string; labelKey: string; ordering?: 'indexed' | 'manual'; fields: FieldConfig[] };
 type PageConfig = { single?: FieldConfig[]; collections: CollectionConfig[] };
 
 const configs: Record<CmsPageId, PageConfig> = {
@@ -65,7 +65,7 @@ const configs: Record<CmsPageId, PageConfig> = {
   },
   projects: {
     collections: [
-      { key: 'projects', title: 'PROJECTS & CASE STUDIES', labelKey: 'title', ordering: 'automatic', fields: [
+      { key: 'projects', title: 'PROJECTS & CASE STUDIES', labelKey: 'title', ordering: 'indexed', fields: [
         { key: 'title', label: 'PROJECT TITLE' }, { key: 'slug', label: 'SLUG' },
         { key: 'shortDescription', label: 'SHORT DESCRIPTION', type: 'textarea' }, { key: 'category', label: 'CATEGORY' },
         { key: 'role', label: 'MY ROLE' }, { key: 'organisation', label: 'ORGANISATION' },
@@ -81,7 +81,7 @@ const configs: Record<CmsPageId, PageConfig> = {
   },
   experience: {
     collections: [
-      { key: 'jobs', title: 'EXPERIENCE RECORDS', labelKey: 'role', ordering: 'automatic', fields: [
+      { key: 'jobs', title: 'EXPERIENCE RECORDS', labelKey: 'role', ordering: 'indexed', fields: [
         { key: 'role', label: 'ROLE' }, { key: 'company', label: 'COMPANY' }, { key: 'location', label: 'LOCATION' },
         { key: 'period', label: 'DISPLAY PERIOD' }, { key: 'startDate', label: 'START', type: 'month' },
         { key: 'endDate', label: 'END', type: 'month' }, { key: 'current', label: 'CURRENT ROLE', type: 'checkbox' },
@@ -93,24 +93,24 @@ const configs: Record<CmsPageId, PageConfig> = {
       ] },
     ],
   },
-  certifications: { collections: [{ key: 'certifications', title: 'CERTIFICATION RECORDS', labelKey: 'title', ordering: 'automatic', fields: [
+  certifications: { collections: [{ key: 'certifications', title: 'CERTIFICATION RECORDS', labelKey: 'title', ordering: 'indexed', fields: [
     { key: 'title', label: 'TITLE' }, { key: 'issuer', label: 'ISSUER' }, { key: 'issuedAt', label: 'ISSUED' },
     { key: 'category', label: 'CATEGORY', type: 'select', options: ['professional', 'cloud', 'learning'] },
     { key: 'credentialUrl', label: 'CREDENTIAL URL', type: 'url' }, { key: 'featured', label: 'FEATURED', type: 'checkbox' },
   ] }] },
-  awards: { collections: [{ key: 'awards', title: 'AWARD RECORDS', labelKey: 'title', ordering: 'automatic', fields: [
+  awards: { collections: [{ key: 'awards', title: 'AWARD RECORDS', labelKey: 'title', ordering: 'indexed', fields: [
     { key: 'title', label: 'TITLE' }, { key: 'issuer', label: 'ISSUER' }, { key: 'date', label: 'DATE' },
     { key: 'description', label: 'DESCRIPTION', type: 'textarea' }, { key: 'category', label: 'CATEGORY' },
     { key: 'featured', label: 'FEATURED', type: 'checkbox' },
   ] }] },
-  leadership: { collections: [{ key: 'leadership', title: 'LEADERSHIP RECORDS', labelKey: 'role', ordering: 'automatic', fields: [
+  leadership: { collections: [{ key: 'leadership', title: 'LEADERSHIP RECORDS', labelKey: 'role', ordering: 'indexed', fields: [
     { key: 'role', label: 'ROLE' }, { key: 'organisation', label: 'ORGANISATION' }, { key: 'period', label: 'PERIOD' },
     { key: 'description', label: 'DESCRIPTION', type: 'textarea' }, { key: 'scope', label: 'SCOPE' },
     { key: 'earlierRecord', label: 'EARLIER RECORD', type: 'checkbox' }, { key: 'featured', label: 'FEATURED', type: 'checkbox' },
   ] }] },
   archives: {
     single: [{ key: 'lede', label: 'ARCHIVE INTRODUCTION', type: 'textarea' }],
-    collections: [{ key: 'articles', title: 'ARCHIVE ARTICLES', labelKey: 'title', ordering: 'automatic', fields: [
+    collections: [{ key: 'articles', title: 'ARCHIVE ARTICLES', labelKey: 'title', ordering: 'indexed', fields: [
       { key: 'title', label: 'TITLE' }, { key: 'slug', label: 'SLUG' }, { key: 'publication', label: 'PUBLICATION' },
       { key: 'publicationDate', label: 'PUBLICATION DATE', type: 'date' }, { key: 'description', label: 'DESCRIPTION', type: 'textarea' },
       { key: 'sourceUrl', label: 'SOURCE URL', type: 'url' }, { key: 'assetPath', label: 'ASSET PATH' },
@@ -183,6 +183,7 @@ export async function initializeAdminCms() {
   const pageState = document.querySelector<HTMLElement>('#admin-page-state');
   const preview = document.querySelector<HTMLElement>('#admin-preview');
   const message = document.querySelector<HTMLElement>('#admin-message');
+  const authMessage = document.querySelector<HTMLElement>('#admin-auth-message');
   const authPanel = document.querySelector<HTMLElement>('#admin-auth');
   const mode = document.querySelector<HTMLElement>('#admin-mode');
   const identity = document.querySelector<HTMLElement>('#admin-identity');
@@ -226,7 +227,8 @@ export async function initializeAdminCms() {
   };
 
   const setMessage = (text: string, error = false) => {
-    if (!message) return; message.textContent = text; message.classList.toggle('is-error', error);
+    if (message) { message.textContent = text; message.classList.toggle('is-error', error); }
+    if (authMessage) { authMessage.textContent = text; authMessage.classList.toggle('is-error', error); }
   };
 
   const syncControls = () => {
@@ -287,12 +289,13 @@ export async function initializeAdminCms() {
     const headingWrap = document.createElement('div'); headingWrap.className = 'admin-collection-heading';
     const heading = document.createElement('h3'); heading.textContent = `${config.title} // ${recordsInput.length}`;
     headingWrap.append(heading);
-    if (config.ordering === 'automatic') {
+    if (config.ordering === 'indexed') {
       const ordering = document.createElement('small'); ordering.className = 'admin-ordering-note';
-      ordering.textContent = 'AUTO ORDER // LATEST TO OLDEST'; headingWrap.append(ordering);
+      ordering.textContent = 'INDEX ORDER // 1 = FIRST / LATEST';
+      headingWrap.append(ordering);
     }
     const add = button('+ ADD RECORD', 'add'); add.dataset.collection = config.key; header.append(headingWrap, add); section.append(header);
-    const records = config.ordering === 'automatic' ? latestFirst(recordsInput) : recordsInput;
+    const records = config.ordering === 'indexed' ? indexFirst(recordsInput) : recordsInput;
     records.forEach((record, displayedIndex) => {
       const actualIndex = recordsInput.indexOf(record);
       const details = document.createElement('details'); details.className = 'admin-record'; details.open = displayedIndex === 0;
@@ -305,6 +308,16 @@ export async function initializeAdminCms() {
       metadata.append(fieldControl({ key: 'id', label: 'STABLE ID' }, `data.${config.key}.${actualIndex}.id`, record.id));
       const idInput = metadata.querySelector<HTMLInputElement>('input'); if (idInput) idInput.readOnly = true;
       metadata.append(fieldControl({ key: 'status', label: 'STATUS', type: 'select', options: ['draft','published','archived'] }, `data.${config.key}.${actualIndex}.status`, record.status));
+      if (config.ordering === 'indexed') {
+        const orderField = fieldControl({ key: 'sortOrder', label: 'ORDER INDEX // 1 = FIRST', type: 'number' }, '', displayedIndex + 1);
+        const orderInput = orderField.querySelector<HTMLInputElement>('input');
+        if (orderInput) {
+          orderInput.removeAttribute('data-path'); orderInput.min = '1'; orderInput.max = String(records.length);
+          orderInput.step = '1'; orderInput.dataset.orderIndex = ''; orderInput.dataset.collection = config.key;
+          orderInput.dataset.recordId = String(record.id ?? '');
+        }
+        metadata.append(orderField);
+      }
       body.append(metadata);
       const fields = document.createElement('div'); fields.className = 'admin-record-fields';
       config.fields.forEach((field) => {
@@ -317,13 +330,16 @@ export async function initializeAdminCms() {
       body.append(fields);
       const actions = document.createElement('div'); actions.className = 'admin-record-actions';
       const availableActions = [
-        ...(config.ordering === 'automatic' ? [] : [['↑ MOVE UP','up'],['↓ MOVE DOWN','down']]),
+        ['↑ MOVE UP','up'],['↓ MOVE DOWN','down'],
         ['⧉ DUPLICATE','duplicate'],
         [record.status === 'archived' ? '↺ RESTORE' : '□ ARCHIVE','archive'],
         ['× DELETE','delete'],
       ];
       availableActions.forEach(([labelText, action]) => {
-        const control = button(labelText, action); control.dataset.collection = config.key; control.dataset.index = String(actualIndex); actions.append(control);
+        const control = button(labelText, action); control.dataset.collection = config.key; control.dataset.index = String(actualIndex); control.dataset.recordId = String(record.id ?? '');
+        if (action === 'up') control.disabled = displayedIndex === 0;
+        if (action === 'down') control.disabled = displayedIndex === records.length - 1;
+        actions.append(control);
       });
       body.append(actions); details.append(body); section.append(details);
     });
@@ -394,7 +410,25 @@ export async function initializeAdminCms() {
   };
 
   const collection = (key: string) => getAtPath(pages[selectedPage], `data.${key}`) as Array<Record<string, unknown>>;
-  const reindex = (records: Array<Record<string, unknown>>) => records.forEach((record, index) => { record.sortOrder = index; });
+  const reindex = (records: Array<Record<string, unknown>>) => records.forEach((record, index) => {
+    record.sortOrder = index;
+    delete record.manualOrder;
+  });
+
+  editor.addEventListener('change', (event) => {
+    const control = (event.target as Element).closest<HTMLInputElement>('[data-order-index]');
+    if (!control) return;
+    const records = collection(control.dataset.collection!);
+    const displayed = indexFirst(records);
+    const currentIndex = displayed.findIndex((record) => record.id === control.dataset.recordId);
+    const requestedIndex = Math.min(records.length - 1, Math.max(0, Number(control.value) - 1));
+    if (currentIndex < 0 || !Number.isInteger(requestedIndex)) return;
+    const [record] = displayed.splice(currentIndex, 1);
+    displayed.splice(requestedIndex, 0, record);
+    records.splice(0, records.length, ...displayed);
+    reindex(records);
+    setDirty(); render();
+  });
 
   editor.addEventListener('input', (event) => {
     const control = event.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
@@ -420,12 +454,34 @@ export async function initializeAdminCms() {
       reindex(records); setDirty(); render(); return;
     }
     const key = control.dataset.collection!; const records = collection(key);
-    if (action === 'add') records.push({ ...templates[key](), sortOrder: records.length });
+    const config = configs[selectedPage].collections.find((item) => item.key === key);
+    if (action === 'add') {
+      const added = { ...templates[key](), sortOrder: records.length } as Record<string, unknown>;
+      records.push(added);
+    }
     else {
-      const index = Number(control.dataset.index); const record = records[index]; if (!record) return;
-      if (action === 'up' && index > 0) [records[index - 1], records[index]] = [records[index], records[index - 1]];
-      if (action === 'down' && index < records.length - 1) [records[index + 1], records[index]] = [records[index], records[index + 1]];
-      if (action === 'duplicate') records.splice(index + 1, 0, reidentify(record, key) as Record<string, unknown>);
+      const index = records.findIndex((item) => item.id === control.dataset.recordId);
+      const record = records[index]; if (!record) return;
+      if ((action === 'up' || action === 'down') && config?.ordering === 'indexed') {
+        const displayed = indexFirst(records);
+        const displayedIndex = displayed.indexOf(record);
+        const target = action === 'up' ? displayedIndex - 1 : displayedIndex + 1;
+        if (target >= 0 && target < displayed.length) {
+          [displayed[displayedIndex], displayed[target]] = [displayed[target], displayed[displayedIndex]];
+          records.splice(0, records.length, ...displayed);
+        }
+      } else if (action === 'up' && index > 0) [records[index - 1], records[index]] = [records[index], records[index - 1]];
+      else if (action === 'down' && index < records.length - 1) [records[index + 1], records[index]] = [records[index], records[index + 1]];
+      if (action === 'duplicate') {
+        const duplicate = reidentify(record, key) as Record<string, unknown>;
+        if (config?.ordering === 'indexed') {
+          const displayed = indexFirst(records);
+          displayed.splice(displayed.indexOf(record) + 1, 0, duplicate);
+          records.splice(0, records.length, ...displayed);
+        } else {
+          records.splice(index + 1, 0, duplicate);
+        }
+      }
       if (action === 'archive') {
         const restoring = record.status === 'archived'; record.status = restoring ? 'draft' : 'archived';
         if (services?.auth.currentUser) void recordAudit(services, restoring ? 'record.restore' : 'record.archive', key, String(record.id ?? ''), `${restoring ? 'Restored' : 'Archived'} ${String(record[configs[selectedPage].collections.find((item) => item.key === key)?.labelKey ?? 'id'])} in ${selectedPage} draft`).catch(console.error);
@@ -563,7 +619,7 @@ export async function initializeAdminCms() {
   };
 
   const appendPreviewValue = (parent: HTMLElement, key: string, value: unknown) => {
-    if (value === '' || value == null || ['id','sortOrder','status','featured','external','earlierRecord'].includes(key)) return;
+    if (value === '' || value == null || ['id','sortOrder','manualOrder','status','featured','external','earlierRecord'].includes(key)) return;
     if (Array.isArray(value)) {
       value.filter((item) => !item || typeof item !== 'object' || (item as CmsRecord).status !== 'archived').forEach((item) => {
         if (!item || typeof item !== 'object') return;
@@ -755,15 +811,23 @@ export async function initializeAdminCms() {
     if (user?.emailVerified && user.uid === adminUid) return unlock(user, true);
     app.classList.remove('is-authorized'); if (authPanel) authPanel.hidden = false;
     if (mode) mode.textContent = user ? 'ACCESS // DENIED' : 'AUTH // REQUIRED';
-    if (user) { setMessage('THIS GOOGLE ACCOUNT IS NOT AUTHORIZED.', true); await signOut(services.auth); }
+    if (user) { setMessage('THIS GOOGLE ACCOUNT IS NOT AUTHORIZED // USE THE APPROVED ADMIN ACCOUNT.', true); await signOut(services.auth); }
+    else setMessage('AUTHENTICATION REQUIRED.');
+  });
+
+  if (services) void getRedirectResult(services.auth).catch((error) => {
+    console.error(error); setMessage(`GOOGLE SIGN-IN FAILED // ${errorCode(error)}.`, true);
   });
 
   signInButton?.addEventListener('click', async () => {
     if (!services) return; const provider = new GoogleAuthProvider(); provider.setCustomParameters({ login_hint: adminEmail });
     try { await signInWithPopup(services.auth, provider); }
     catch (error) {
-      if ((error as { code?: string }).code === 'auth/popup-blocked') await signInWithRedirect(services.auth, provider);
-      else { console.error(error); setMessage('GOOGLE SIGN-IN FAILED.', true); }
+      const code = (error as { code?: string }).code ?? '';
+      if (['auth/popup-blocked', 'auth/operation-not-supported-in-this-environment'].includes(code)) {
+        setMessage('POPUP UNAVAILABLE // CONTINUING WITH REDIRECT SIGN-IN.');
+        await signInWithRedirect(services.auth, provider);
+      } else { console.error(error); setMessage(`GOOGLE SIGN-IN FAILED // ${errorCode(error)}.`, true); }
     }
   });
   signOutButton?.addEventListener('click', () => services && signOut(services.auth));

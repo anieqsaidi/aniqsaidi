@@ -23,6 +23,11 @@ const buildId = `${buildTimestamp}-${currentCommit()}`;
 export default defineConfig({
   site: 'https://aniqsaidi.my',
   vite: {
+    build: {
+      // The full Firebase SDK is isolated to authenticated admin routes.
+      // Public pages use the much smaller Firestore Lite bundle.
+      chunkSizeWarningLimit: 550,
+    },
     define: {
       __SITE_VERSION__: JSON.stringify(packageMetadata.version),
       __SITE_BUILD_ID__: JSON.stringify(buildId),

@@ -1,5 +1,7 @@
 type SortMode = 'latest' | 'oldest' | 'title-asc' | 'title-desc';
 
+const originalOrder = new WeakMap<HTMLElement, number>();
+
 const dateRank = (value: string) => {
   const direct = Date.parse(value);
   const years = [...value.matchAll(/(?:19|20)\d{2}/g)].map((match) => Number(match[0]));
@@ -13,10 +15,12 @@ const compare = (mode: SortMode) => (left: HTMLElement, right: HTMLElement) => {
   const rightTitle = right.dataset.sortTitle ?? '';
   const titleOrder = leftTitle.localeCompare(rightTitle, undefined, { sensitivity: 'base' });
   const dateOrder = dateRank(right.dataset.sortDate ?? '') - dateRank(left.dataset.sortDate ?? '');
-  if (mode === 'oldest') return -dateOrder || titleOrder;
+  const stableOrder = (originalOrder.get(left) ?? 0) - (originalOrder.get(right) ?? 0);
+  if (mode === 'latest') return stableOrder;
+  if (mode === 'oldest') return -stableOrder;
   if (mode === 'title-asc') return titleOrder || dateOrder;
   if (mode === 'title-desc') return -titleOrder || dateOrder;
-  return dateOrder || titleOrder;
+  return stableOrder;
 };
 
 export const sortScope = (scope: HTMLElement, mode: SortMode) => {
@@ -27,9 +31,24 @@ export const sortScope = (scope: HTMLElement, mode: SortMode) => {
   containers.forEach((container) => {
     const records = [...container.children].filter((item): item is HTMLElement =>
       item instanceof HTMLElement && item.hasAttribute('data-sort-item'));
+    records.forEach((record, index) => {
+      if (!originalOrder.has(record)) originalOrder.set(record, index);
+    });
     const sorted = [...records].sort(compare(mode));
     if (sorted.some((record, index) => record !== records[index])) sorted.forEach((record) => container.append(record));
+    sorted.forEach((record, index) => {
+      const position = record.querySelector<HTMLElement>('[data-sort-position]');
+      const nextPosition = String(index + 1).padStart(2, '0');
+      if (position && position.textContent !== nextPosition) position.textContent = nextPosition;
+    });
   });
+};
+
+const affectsSortableStructure = (mutation: MutationRecord) => {
+  const target = mutation.target instanceof Element ? mutation.target : null;
+  if (target?.matches('[data-sort-container]')) return true;
+  return [...mutation.addedNodes, ...mutation.removedNodes].some((item) =>
+    item instanceof Element && (item.matches('[data-sort-item], [data-sort-container]') || Boolean(item.querySelector('[data-sort-item], [data-sort-container]'))));
 };
 
 let initialized = false;
@@ -43,7 +62,8 @@ export function initializeContentSort() {
     const select = control.querySelector<HTMLSelectElement>('select');
     if (!scope || !select) return;
     let queued = false;
-    new MutationObserver(() => {
+    new MutationObserver((mutations) => {
+      if (!mutations.some(affectsSortableStructure)) return;
       if (queued) return;
       queued = true;
       queueMicrotask(() => { queued = false; sortScope(scope, select.value as SortMode); });
