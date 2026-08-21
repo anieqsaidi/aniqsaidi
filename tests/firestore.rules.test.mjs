@@ -246,7 +246,7 @@ test('media catalogue is admin-only and validates exact metadata', async () => {
   await assertSucceeds(deleteDoc(doc(adminDb, 'cmsMedia', 'asset-1')));
 });
 
-test('published SEO and résumé are public while drafts stay private', async () => {
+test('published SEO is public while all résumé metadata and drafts stay private', async () => {
   await environment.withSecurityRulesDisabled(async (context) => {
     await setDoc(doc(context.firestore(), 'cmsSeo', 'published'), {
       ...defaultSeoDocument, version: 1, updatedAt: serverTimestamp(), publishedAt: serverTimestamp(), updatedBy: ADMIN_UID,
@@ -259,7 +259,7 @@ test('published SEO and résumé are public while drafts stay private', async ()
   });
   const publicDb = environment.unauthenticatedContext().firestore();
   await assertSucceeds(getDoc(doc(publicDb, 'cmsSeo', 'published')));
-  await assertSucceeds(getDoc(doc(publicDb, 'cmsResume', 'published')));
+  await assertFails(getDoc(doc(publicDb, 'cmsResume', 'published')));
   await assertFails(getDoc(doc(publicDb, 'cmsSeo', 'draft')));
   await assertFails(getDoc(doc(publicDb, 'cmsResume', 'draft')));
 });

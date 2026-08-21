@@ -21,9 +21,15 @@ const email = renderCvDeliveryEmail({
         <strong>CV email preview</strong>
         <span>Subject: {email.subject}</span>
       </div>
-      <div class="preview-actions" aria-label="Preview width">
-        <button type="button" data-width="desktop" aria-pressed="true">Desktop</button>
-        <button type="button" data-width="mobile" aria-pressed="false">Mobile</button>
+      <div class="preview-controls">
+        <div class="preview-actions" aria-label="Color scheme">
+          <button type="button" data-theme="light" aria-pressed="true">Light</button>
+          <button type="button" data-theme="dark" aria-pressed="false">Dark</button>
+        </div>
+        <div class="preview-actions" aria-label="Preview width">
+          <button type="button" data-width="desktop" aria-pressed="true">Desktop</button>
+          <button type="button" data-width="mobile" aria-pressed="false">Mobile</button>
+        </div>
       </div>
     </header>
     <main>
@@ -32,15 +38,21 @@ const email = renderCvDeliveryEmail({
         title="Rendered CV delivery email"
         srcdoc={email.html}
         sandbox="allow-popups allow-popups-to-escape-sandbox"
+        style="color-scheme: light"
       ></iframe>
     </main>
 
     <script>
       const frame = document.querySelector<HTMLIFrameElement>('#email-frame');
-      const buttons = document.querySelectorAll<HTMLButtonElement>('[data-width]');
-      buttons.forEach((button) => button.addEventListener('click', () => {
+      const widthButtons = document.querySelectorAll<HTMLButtonElement>('[data-width]');
+      const themeButtons = document.querySelectorAll<HTMLButtonElement>('[data-theme]');
+      widthButtons.forEach((button) => button.addEventListener('click', () => {
         frame?.classList.toggle('is-mobile', button.dataset.width === 'mobile');
-        buttons.forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        widthButtons.forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+      }));
+      themeButtons.forEach((button) => button.addEventListener('click', () => {
+        if (frame) frame.style.colorScheme = button.dataset.theme ?? 'light';
+        themeButtons.forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
       }));
     </script>
   </body>
@@ -58,7 +70,8 @@ const email = renderCvDeliveryEmail({
   .preview-bar div:first-child { display: grid; gap: 3px; }
   .preview-bar strong { font-size: 14px; }
   .preview-bar span { color: #aaa; font-size: 12px; }
-  .preview-actions { display: flex; gap: 6px; }
+  .preview-controls, .preview-actions { display: flex; gap: 8px; }
+  .preview-controls { flex-wrap: wrap; }
   button {
     border: 1px solid #555; border-radius: 6px; padding: 7px 11px;
     background: transparent; color: #ddd; cursor: pointer;

@@ -60,7 +60,7 @@ export interface CompletenessIssue extends ValidationIssue {
 
 const descriptions: Record<CmsPageId, string> = {
   home: 'Software engineer building production systems across healthcare, cloud, data, web, mobile, and AI integration.',
-  about: 'About Muhammad Amrun Aniq Bin Mohamed Saidi, a software engineer based in Selangor, Malaysia.',
+  about: 'About Aniq Saidi, a software engineer based in Selangor, Malaysia.',
   projects: 'Engineering case studies covering healthcare platforms, responsive web delivery, and enterprise analytics.',
   experience: 'Professional experience across healthcare software, cloud analytics, business systems, and mobile delivery.',
   certifications: 'Professional, cloud, analytics, and software-engineering certifications earned by Aniq Saidi.',

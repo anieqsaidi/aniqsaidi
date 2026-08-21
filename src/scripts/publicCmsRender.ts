@@ -11,11 +11,10 @@ import type {
   LeadershipRecord,
   ToolkitRecord,
 } from '../data/cmsSchema';
+import { latestFirst } from '../data/recordOrder';
 
 const published = <T extends CmsRecord>(records: T[] | undefined) =>
-  [...(records ?? [])]
-    .filter((record) => record.status === 'published')
-    .sort((a, b) => a.sortOrder - b.sortOrder || a.id.localeCompare(b.id));
+  latestFirst([...(records ?? [])].filter((record) => record.status === 'published'));
 
 const node = <K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string) => {
   const element = document.createElement(tag);
@@ -35,9 +34,9 @@ const setLink = (anchor: HTMLAnchorElement, href: string) => {
 function renderAbout(page: CmsPages['about']) {
   const { data } = page;
   const fields: Record<string, string> = {
-    'about.name': data.name,
+    'about.name': 'Aniq Saidi',
     'about.role': data.role,
-    'about.location': data.location,
+    'about.location': 'Selangor, Malaysia',
   };
   Object.entries(fields).forEach(([key, value]) => {
     const element = document.querySelector<HTMLElement>(`[data-cms-field="${key}"]`);
@@ -51,13 +50,13 @@ function renderAbout(page: CmsPages['about']) {
   const container = document.querySelector<HTMLElement>('[data-cms-collection="about.education"]');
   if (!container) return;
   const thesis = container.querySelector<HTMLElement>('.education-thesis');
-  const records = published<EducationRecord>(data.education);
+  const records = published<EducationRecord>(data.education).slice(0, 1);
   container.replaceChildren(...records.map((record, index) => {
     const article = node('article', `credential${index === 0 && thesis ? ' credential--with-thesis' : ''}`);
     article.dataset.recordId = record.id;
     const copy = node('div');
     copy.append(node('h2', '', record.qualification), node('p', '', record.institution));
-    article.append(copy, node('p', '', record.period));
+    article.append(copy, node('p', '', index === 0 ? 'GRADUATED // 2020' : record.period));
     if (index === 0 && thesis) article.append(thesis);
     return article;
   }));

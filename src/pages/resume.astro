@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Frame from '../components/Frame.astro';
 
 const requestEndpoint = '/api/request-cv';
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? '';
 ---
 
 <Layout title="REQUEST CV" description="Request Aniq Saidi's current professional CV by email.">
@@ -11,14 +12,15 @@ const requestEndpoint = '/api/request-cv';
       class="cv-request"
       id="cv-request"
       data-request-endpoint={requestEndpoint}
+      data-turnstile-configured={String(Boolean(turnstileSiteKey))}
       aria-labelledby="cv-request-title"
     >
       <div class="cv-request__intro">
-        <p class="prompt">&gt; RESTRICTED DOCUMENT // DELIVERY BY EMAIL</p>
+        <p class="prompt">&gt; PRIVATE DOCUMENT // VERIFIED ACCESS</p>
         <h1 id="cv-request-title">REQUEST CURRENT CV</h1>
         <p>
-          Enter the email address where you would like the latest copy delivered.
-          Your address will only be used to process this request.
+          Enter your email address and confirm it from your inbox. Once verified,
+          you will receive temporary access to the latest CV.
         </p>
       </div>
 
@@ -49,11 +51,15 @@ const requestEndpoint = '/api/request-cv';
           <span>I agree to use the CV for legitimate professional or recruitment purposes.</span>
         </label>
 
+        {turnstileSiteKey && (
+          <div class="cv-request__turnstile cf-turnstile" data-sitekey={turnstileSiteKey} data-action="request_cv" data-theme="auto"></div>
+        )}
+
         <p class="cv-request__privacy" id="cv-request-privacy">
-          No direct PDF link is exposed here. Requests are rate-limited and the address is used only for this delivery.
+          The verification link expires in 30 minutes. CV access expires after 24 hours or three downloads.
         </p>
 
-        <button class="cv-request__submit" type="submit">SEND CV REQUEST <span aria-hidden="true">↗</span></button>
+        <button class="cv-request__submit" type="submit" disabled={!turnstileSiteKey}>REQUEST CV <span aria-hidden="true">↗</span></button>
         <p class="cv-request__status" id="cv-request-status" role="status" aria-live="polite"></p>
       </form>
 
@@ -61,6 +67,8 @@ const requestEndpoint = '/api/request-cv';
     </section>
   </Frame>
 </Layout>
+
+{turnstileSiteKey && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
 
 <script>
   const root = document.querySelector<HTMLElement>('#cv-request');
@@ -70,6 +78,10 @@ const requestEndpoint = '/api/request-cv';
   const trap = document.querySelector<HTMLInputElement>('#cv-request-company');
   const status = document.querySelector<HTMLElement>('#cv-request-status');
   const submit = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+
+  if (root?.dataset.turnstileConfigured !== 'true') {
+    setTimeout(() => setStatus('CV REQUESTS REQUIRE TURNSTILE CONFIGURATION.', 'error'));
+  }
 
   const setStatus = (message: string, state: 'error' | 'success' | 'idle' = 'idle') => {
     if (!status) return;
@@ -92,6 +104,11 @@ const requestEndpoint = '/api/request-cv';
       return;
     }
     if (trap?.value) return;
+    const turnstileToken = new FormData(form).get('cf-turnstile-response')?.toString() ?? '';
+    if (!turnstileToken) {
+      setStatus('COMPLETE THE SECURITY CHECK TO CONTINUE.', 'error');
+      return;
+    }
 
     const endpoint = root?.dataset.requestEndpoint?.trim();
     if (!endpoint) {
@@ -100,8 +117,9 @@ const requestEndpoint = '/api/request-cv';
     }
 
     if (submit) submit.disabled = true;
-    setStatus('TRANSMITTING REQUEST...');
+    setStatus('VERIFYING REQUEST...');
 
+    let succeeded = false;
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -110,17 +128,22 @@ const requestEndpoint = '/api/request-cv';
           email: email.value.trim(),
           company: trap?.value ?? '',
           consent: consent.checked,
+          turnstileToken,
           source: 'aniqsaidi.my/resume',
         }),
       });
       if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
-      form.reset();
-      setStatus('REQUEST RECEIVED. CHECK YOUR INBOX FOR THE CV.', 'success');
+      succeeded = true;
+      setStatus('REQUEST ACCEPTED. OPENING INBOX INSTRUCTIONS...', 'success');
+      window.location.assign('/resume/requested/');
     } catch (error) {
       console.warn('CV request could not be delivered.', error);
       setStatus('REQUEST COULD NOT BE SENT. PLEASE TRY AGAIN LATER.', 'error');
     } finally {
-      if (submit) submit.disabled = false;
+      if (!succeeded) {
+        if (submit) submit.disabled = false;
+        (window as Window & { turnstile?: { reset: () => void } }).turnstile?.reset();
+      }
     }
   });
 </script>
@@ -179,6 +202,7 @@ const requestEndpoint = '/api/request-cv';
   .cv-request__consent input { margin: 3px 0 0; accent-color: var(--fg-bright); }
 
   .cv-request__privacy { margin: 0; color: var(--fg-dim); font-size: .7rem; line-height: 1.5; }
+  .cv-request__turnstile { min-height: 65px; }
   .cv-request__trap { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 
   .cv-request__submit {

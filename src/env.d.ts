@@ -5,6 +5,7 @@ declare const __SITE_BUILD_ID__: string;
 
 interface ImportMetaEnv {
   readonly PUBLIC_GA_MEASUREMENT_ID?: string;
+  readonly PUBLIC_TURNSTILE_SITE_KEY?: string;
 }
 
 interface ImportMeta {

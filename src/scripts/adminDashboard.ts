@@ -32,11 +32,12 @@ export async function initializeOperationsDashboard() {
   const healthSummary = document.querySelector<HTMLElement>('#ops-health-summary');
   const healthList = document.querySelector<HTMLElement>('#ops-health-list');
   const auditList = document.querySelector<HTMLElement>('#ops-audit-list');
+  const cvRequestList = document.querySelector<HTMLElement>('#ops-cv-request-list');
   const importFile = document.querySelector<HTMLInputElement>('#ops-import-file');
   const importPreview = document.querySelector<HTMLElement>('#ops-import-preview');
   const importCommit = document.querySelector<HTMLButtonElement>('#ops-import-commit');
   const pageExport = document.querySelector<HTMLSelectElement>('#ops-page-export');
-  if (!root || !authPanel || !signInButton || !signOutButton || !message || !status || !healthSummary || !healthList || !auditList || !importFile || !importPreview || !importCommit || !pageExport) throw new Error('Operations dashboard markup is incomplete.');
+  if (!root || !authPanel || !signInButton || !signOutButton || !message || !status || !healthSummary || !healthList || !auditList || !cvRequestList || !importFile || !importPreview || !importCommit || !pageExport) throw new Error('Operations dashboard markup is incomplete.');
   CMS_PAGE_IDS.forEach((pageId) => pageExport.add(new Option(pageId.toUpperCase(), pageId)));
 
   const defaults = JSON.parse(root.dataset.pageDefaults ?? '{}') as CmsPages;
@@ -49,6 +50,7 @@ export async function initializeOperationsDashboard() {
   let resumePublished: ResumeDocument = structuredClone(defaultResumeDocument);
   let media: MediaRecord[] = [];
   let audits: AuditEntry[] = [];
+  let cvRequests: Array<Record<string, unknown>> = [];
   let selectedImport: CmsExportBundle | null = null;
   let importBaseVersions: Record<string, number> = {};
   const versions: Record<string, number> = {};
@@ -62,13 +64,14 @@ export async function initializeOperationsDashboard() {
     drafts = structuredClone(defaults); published = structuredClone(defaults);
     seoDraft = structuredClone(defaultSeoDocument); seoPublished = structuredClone(defaultSeoDocument);
     resumeDraft = structuredClone(defaultResumeDocument); resumePublished = structuredClone(defaultResumeDocument);
-    const [draftDocs, publishedDocs, seoDraftDoc, seoPublishedDoc, resumeDraftDoc, resumePublishedDoc, mediaDocs, auditDocs] = await Promise.all([
+    const [draftDocs, publishedDocs, seoDraftDoc, seoPublishedDoc, resumeDraftDoc, resumePublishedDoc, mediaDocs, auditDocs, cvRequestDocs] = await Promise.all([
       Promise.all(CMS_PAGE_IDS.map((pageId) => getDoc(doc(services!.db, 'cmsDrafts', pageId)))),
       Promise.all(CMS_PAGE_IDS.map((pageId) => getDoc(doc(services!.db, 'cmsPublished', pageId)))),
       getDoc(doc(services.db, 'cmsSeo', 'draft')), getDoc(doc(services.db, 'cmsSeo', 'published')),
       getDoc(doc(services.db, 'cmsResume', 'draft')), getDoc(doc(services.db, 'cmsResume', 'published')),
       getDocs(collection(services.db, 'cmsMedia')),
       getDocs(query(collection(services.db, 'cmsAudit'), orderBy('timestamp', 'desc'), limit(30))),
+      getDocs(query(collection(services.db, 'cvRequests'), orderBy('requestedAt', 'desc'), limit(50))),
     ]);
     draftDocs.forEach((snapshot, index) => { const pageId = CMS_PAGE_IDS[index]; if (snapshot.exists()) { drafts[pageId] = sanitizeCmsPage(snapshot.data(), defaults[pageId]) as never; versions[`draft.${pageId}`] = Number(snapshot.data().version ?? 0); timestamps[`draft.${pageId}`] = snapshot.data().updatedAt; } });
     publishedDocs.forEach((snapshot, index) => { const pageId = CMS_PAGE_IDS[index]; if (snapshot.exists()) { published[pageId] = sanitizeCmsPage(snapshot.data(), defaults[pageId]) as never; versions[`published.${pageId}`] = Number(snapshot.data().version ?? 0); timestamps[`published.${pageId}`] = snapshot.data().publishedAt; } });
@@ -78,6 +81,7 @@ export async function initializeOperationsDashboard() {
     if (resumePublishedDoc.exists()) { resumePublished = sanitizeResumeDocument(resumePublishedDoc.data()); versions['resume.published'] = Number(resumePublishedDoc.data().version ?? 0); }
     media = mediaDocs.docs.map((item) => item.data() as MediaRecord);
     audits = auditDocs.docs.map((item) => item.data() as AuditEntry);
+    cvRequests = cvRequestDocs.docs.map((item) => ({ id: item.id, ...item.data() }));
     render(); setMessage('OPERATIONS DATA REFRESHED.');
   };
 
@@ -94,6 +98,7 @@ export async function initializeOperationsDashboard() {
     healthSummary!.innerHTML = `<strong>${issues.length ? 'ACTION REQUIRED' : 'READY TO SHIP'}</strong><span>${errors} ERRORS</span><span>${issues.length - errors} WARNINGS</span><span>${modified.length} UNPUBLISHED</span>`;
     healthList!.innerHTML = issues.length ? issues.slice(0, 50).map((issue) => `<a class="quality-item" data-severity="${issue.severity}" href="${issue.pageId === 'media' || issue.pageId === 'resume' ? '/admin/media/' : `/admin/?page=${issue.pageId}`}"><span>${String(issue.pageId).toUpperCase()} // ${issue.severity.toUpperCase()}</span><p>${escapeHtml(issue.message)}</p><small>${escapeHtml(issue.path)} ↗</small></a>`).join('') : '<p>ALL VALIDATION CHECKS PASSED.</p>';
     auditList!.innerHTML = audits.length ? audits.map((entry) => `<article><span>${escapeHtml(entry.action.toUpperCase())}</span><div><strong>${escapeHtml(entry.summary)}</strong><small>${escapeHtml(entry.actorEmail)} // ${escapeHtml(formatDate(entry.timestamp))}</small></div><small>${escapeHtml(entry.entityType)}:${escapeHtml(entry.entityId)}</small></article>`).join('') : '<p>NO AUDIT EVENTS RECORDED YET.</p>';
+    cvRequestList!.innerHTML = cvRequests.length ? cvRequests.map((entry) => `<article><span>${escapeHtml(String(entry.status ?? 'pending').toUpperCase())}</span><div><strong>${escapeHtml(String(entry.email ?? ''))}</strong><small>REQUESTED ${escapeHtml(formatDate(entry.requestedAt))} // VERIFIED ${escapeHtml(formatDate(entry.verifiedAt))} // DOWNLOADED ${escapeHtml(formatDate(entry.downloadedAt))}</small></div><small>${Number(entry.downloadCount ?? 0)} / 3 DOWNLOADS</small></article>`).join('') : '<p>NO CV REQUESTS RECORDED YET.</p>';
   };
 
   const bundleFor = (scope: CmsExportBundle['scope'], pageId: CmsPageId | '' = '') => createExportBundle({

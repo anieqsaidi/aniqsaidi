@@ -5,7 +5,7 @@ import AnimatedText from '../components/AnimatedText.astro';
 import { education, profile, undergraduateThesis } from '../data/cv';
 ---
 
-<Layout title="ABOUT" description="About Muhammad Amrun Aniq bin Mohamed Saidi, software engineer.">
+<Layout title="ABOUT" description="About Aniq Saidi, software engineer based in Selangor, Malaysia.">
   <Frame title="PROFILE">
     <div class="profile-grid">
       <div class="profile-avatar-shell">
@@ -40,11 +40,7 @@ import { education, profile, undergraduateThesis } from '../data/cv';
         <article class:list={['credential', index === 0 && 'credential--with-thesis']}>
           <div>
             <h2 data-cms-field={`about.education.${index}.qualification`}>
-              {index === 0
-                ? <AnimatedText text={item.qualification} word="Software" effect="wave" delay={-3.6} />
-                : index === 1
-                  ? <AnimatedText text={item.qualification} word="Engineering" effect="jitter" delay={-5.1} />
-                  : <AnimatedText text={item.qualification} word="Education" effect="invert" delay={-2.7} />}
+              <AnimatedText text={item.qualification} word="Software" effect="wave" delay={-3.6} />
             </h2>
             <p data-cms-field={`about.education.${index}.institution`}>{item.institution}</p>
           </div>

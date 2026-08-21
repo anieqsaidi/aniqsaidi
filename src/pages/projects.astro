@@ -5,6 +5,7 @@ import AnimatedText from '../components/AnimatedText.astro';
 import { defaultHomeContent } from '../data/homeContent';
 import { defaultSiteFields } from '../data/siteFields';
 import { migrateV1ToV2 } from '../data/cmsSchema';
+import { latestFirst } from '../data/recordOrder';
 
 const projectPage = migrateV1ToV2(defaultHomeContent, defaultSiteFields).projects;
 const publicAliases = [
@@ -19,12 +20,12 @@ const publicAliases = [
   { slug: 'human-resource-management-system', title: 'Human Resource Management System' },
   { slug: 'healthcare-workforce-portal', title: 'Healthcare Workforce Portal' },
 ];
-const projects = projectPage.data.projects.map((project, index) => ({
+const projects = latestFirst(projectPage.data.projects.map((project, index) => ({
   ...project,
   slug: publicAliases[index]?.slug ?? `confidential-project-${index + 1}`,
   title: publicAliases[index]?.title ?? 'Confidential Engineering Project',
   organisation: '',
-})).sort((a, b) => a.sortOrder - b.sortOrder);
+})));
 const publicProjectPage = { ...projectPage, data: { projects } };
 const tags = (items: typeof projects[number]['technologies']) => items.map((item) => item.label).join(' // ');
 ---

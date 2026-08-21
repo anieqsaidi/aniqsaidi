@@ -1,0 +1,1096 @@
+# Portfolio Security Enhancement
+
+## aniqsaidi.my
+
+This document defines the recommended privacy and security enhancements for the `aniqsaidi.my` portfolio.
+
+The primary objectives are to:
+
+- Reduce unnecessary public exposure of personally identifiable information (PII).
+- Protect the CV distribution mechanism from abuse.
+- Verify ownership of email addresses before granting CV access.
+- Prevent the CV from being accessible through a permanent public URL.
+- Introduce secure, temporary, random-token-based CV access.
+- Prevent automated abuse and email relay misuse.
+- Preserve a simple and professional experience for legitimate recruiters.
+- Review the portfolio for additional technical security exposure.
+
+---
+
+# 1. Public Personal Information
+
+Review all public-facing pages and reduce unnecessary personally identifiable information.
+
+The objective is **data minimisation, not anonymisation**.
+
+## 1.1 Public Name
+
+Where appropriate, use:
+
+**Aniq Saidi**
+
+instead of:
+
+**Muhammad Amrun Aniq Bin Mohamed Saidi**
+
+The full legal name does not need to appear prominently throughout the portfolio.
+
+Do not blindly replace the name within historical press articles, archives, citations, awards, or other material where the full name forms part of the original record.
+
+---
+
+## 1.2 Location
+
+Replace unnecessarily precise location information such as:
+
+`Sungai Buloh, Selangor, Malaysia`
+
+with:
+
+`Selangor, Malaysia`
+
+The portfolio should communicate the professional location without unnecessarily narrowing down the user's likely residence.
+
+---
+
+## 1.3 Education
+
+Keep professionally relevant tertiary education:
+
+- Bachelor of Computer Science (Software Engineering) with Honors — UMPSA
+
+Consider removing older education information that provides little professional value while increasing OSINT exposure, particularly:
+
+- SMK Bandar Baru Sungai Buloh
+- Kelantan Matriculation College
+
+Do not remove university leadership history, awards, press coverage, or other professionally meaningful achievements simply because they reference UMPSA.
+
+---
+
+# 2. Preserve Valuable Professional Information
+
+Do not unnecessarily remove professionally useful information.
+
+The following can remain publicly available:
+
+- Employment history
+- Current professional role
+- University degree
+- Professional certifications
+- Awards
+- University leadership experience
+- Press/media appearances
+- Portfolio projects
+- Technology stack
+- LinkedIn
+- Professional accomplishments
+
+The portfolio should remain useful as a professional profile.
+
+---
+
+# 3. Project Information Security
+
+Review all project descriptions according to the following principle:
+
+> **Problem + contribution + generic technology = public.**
+
+Project descriptions should demonstrate engineering ability without revealing operational information that could assist reconnaissance or spear-phishing.
+
+Do not publicly expose unnecessary information such as:
+
+- Internal IP addresses
+- Internal hostnames
+- Server addresses
+- Database names
+- Database credentials
+- API secrets
+- Internal URLs
+- Infrastructure topology
+- Production configuration
+- Private repository URLs
+- Internal vendor/account identifiers
+- Environment variables
+- Authentication tokens
+- Production logs
+- Screenshots containing real patient information
+- Screenshots containing real employee information
+- Screenshots containing customer information
+- Personally identifiable production data
+
+Internal product names should also be reviewed before publication.
+
+---
+
+# 4. Existing CV Request Risk
+
+The existing workflow effectively allows:
+
+```text
+Visitor enters arbitrary email
+        ↓
+Portfolio backend
+        ↓
+CV automatically emailed
+```
+
+This creates an unauthenticated email-triggering endpoint.
+
+Potential abuse includes:
+
+- Sending unsolicited emails through the portfolio.
+- Automated request spam.
+- Email provider quota exhaustion.
+- Sender/domain reputation damage.
+- CV harvesting.
+- Bot abuse.
+- Repeated requests to arbitrary recipients.
+- Potential use of the portfolio as a limited email relay.
+
+The CV should therefore **not be sent immediately after an email address is submitted**.
+
+---
+
+# 5. Target CV Request Architecture
+
+Replace the existing flow with:
+
+```text
+Visitor
+   │
+   ▼
+CV Request Form
+   │
+   ├── Email validation
+   ├── Rate limiting
+   └── Cloudflare Turnstile
+            │
+            ▼
+       Backend validation
+            │
+            ▼
+Cryptographically secure
+verification token
+            │
+            ▼
+     Verification Email
+            │
+            ▼
+    User confirms email
+            │
+            ├── Verification token invalidated
+            │
+            ▼
+Cryptographically secure
+temporary download token
+            │
+            ▼
+      CV Access Page
+            │
+            ├── Token valid?
+            ├── Not expired?
+            ├── Downloads < limit?
+            │
+            ▼
+      Protected CV PDF
+```
+
+The important principle is:
+
+> **Controlling an email address must be proven before CV access is granted.**
+
+---
+
+# 6. Cloudflare Turnstile
+
+Protect the initial CV request form using Cloudflare Turnstile.
+
+Prefer **Managed Turnstile** to minimise friction for legitimate visitors.
+
+Requirements:
+
+- Integrate Turnstile into the CV request form.
+- Validate the Turnstile response server-side.
+- Never rely exclusively on client-side validation.
+- Keep the Turnstile secret server-side.
+- Store secrets using environment variables or the appropriate secret-management mechanism.
+- Do not commit secrets to Git.
+- Validate hostname/action where appropriate.
+- Reject invalid Turnstile responses.
+- Reject expired Turnstile tokens.
+- Reject reused Turnstile tokens.
+
+Turnstile should complement rate limiting rather than replace it.
+
+---
+
+# 7. Email Ownership Verification
+
+After Turnstile and rate-limit checks succeed:
+
+1. Validate the submitted email.
+2. Generate a cryptographically secure random verification token.
+3. Store the necessary request information.
+4. Associate the verification token with the submitted email.
+5. Give the token a short expiry.
+6. Send a verification email.
+
+Recommended verification expiry:
+
+**30 minutes**
+
+The verification email should explain that someone requested access to Aniq Saidi's CV.
+
+Provide a button such as:
+
+**Confirm CV Request**
+
+If the recipient did not make the request, they should simply be able to ignore the email.
+
+The actual CV must **not** be attached to this verification email.
+
+---
+
+# 8. Verification Token Security
+
+Verification tokens must be:
+
+- Cryptographically random
+- Sufficiently long
+- Unpredictable
+- Single-use
+- Time-limited
+- Invalidated immediately after successful verification
+
+Never generate security tokens using:
+
+- Timestamps
+- Incrementing IDs
+- Email addresses
+- `Math.random()`
+- Predictable custom algorithms
+
+Use the platform's cryptographically secure random-number generator.
+
+---
+
+# 9. Separate Download Token
+
+After successful email verification, generate a **second token** specifically for CV access.
+
+Do not reuse the email verification token.
+
+Example:
+
+```text
+/cv/download?t=<secure-random-token>
+```
+
+Recommended configuration:
+
+```text
+Expiry: 24 hours
+Maximum successful downloads: 3
+```
+
+The download token must be:
+
+- Cryptographically random
+- Independent from the verification token
+- Unpredictable
+- Time-limited
+- Limited by download count
+- Invalid after expiry
+- Invalid after reaching the download limit
+
+This separates two permissions:
+
+```text
+Verification token
+        ↓
+Proves ownership of email
+
+Download token
+        ↓
+Authorises access to CV
+```
+
+---
+
+# 10. Token Hashing
+
+Where practical, do not store raw tokens in the database.
+
+Preferred approach:
+
+```text
+Generate secure random token
+        ↓
+Send raw token to visitor
+        ↓
+SHA-256(token)
+        ↓
+Store token hash
+```
+
+When the token is returned:
+
+```text
+Received token
+        ↓
+SHA-256(received token)
+        ↓
+Compare against stored hash
+```
+
+A database leak would therefore not directly reveal active access tokens.
+
+---
+
+# 11. Protect the Actual CV
+
+The actual CV PDF must not be permanently accessible through a predictable public URL such as:
+
+```text
+/assets/aniq-cv.pdf
+```
+
+or:
+
+```text
+/public/cv.pdf
+```
+
+Otherwise, the verification system can simply be bypassed.
+
+Serve the CV through a protected backend or serverless endpoint.
+
+The endpoint should:
+
+1. Receive the download token.
+2. Hash and validate the token.
+3. Check expiration.
+4. Check download count.
+5. Confirm the request remains valid.
+6. Increment the successful download count.
+7. Return or stream the PDF.
+
+Do not expose the internal storage path unnecessarily.
+
+---
+
+# 12. Rate Limiting
+
+Implement server-side rate limiting for CV requests.
+
+Suggested starting limits:
+
+```text
+Per email:
+3 requests/hour
+
+Per IP:
+5 requests/hour
+
+Per IP:
+20 requests/day
+```
+
+These values can be adjusted based on legitimate traffic patterns.
+
+Rate limiting must be implemented server-side.
+
+Do not depend on JavaScript for enforcement.
+
+---
+
+# 13. Duplicate Request Protection
+
+Prevent repeated submissions from generating excessive verification emails.
+
+For example:
+
+```text
+Cooldown per email:
+5–10 minutes
+```
+
+If multiple requests occur during the cooldown period, avoid sending another verification email unnecessarily.
+
+Return a generic success response instead.
+
+---
+
+# 14. Privacy-Preserving Responses
+
+Do not unnecessarily expose internal state.
+
+After a request, prefer messaging such as:
+
+> If the email address is valid, a verification link will be sent shortly.
+
+Avoid revealing:
+
+- Whether the email requested the CV previously.
+- Whether an email exists in the database.
+- Whether an email is blocked.
+- Exact rate-limit rules.
+- Internal token state.
+- Database information.
+- Email-provider errors.
+- Internal exception messages.
+
+Detailed errors should be logged securely server-side.
+
+---
+
+# 15. CV Request Audit Trail
+
+Add a **CV Requests** section to the existing portfolio CMS/admin system if appropriate.
+
+Suggested information:
+
+| Field | Purpose |
+|---|---|
+| Email | Requesting address |
+| Requested At | Initial request |
+| Verified At | Email ownership confirmed |
+| Downloaded At | Successful CV access |
+| Download Count | Number of successful downloads |
+| Status | Pending / Verified / Downloaded / Expired |
+
+Possible statuses:
+
+```text
+Pending
+Verified
+Downloaded
+Expired
+Blocked
+```
+
+Do not collect information merely because it is technically possible.
+
+---
+
+# 16. IP Address Privacy
+
+IP addresses may be useful temporarily for:
+
+- Rate limiting
+- Abuse detection
+- Security investigation
+
+However, avoid permanently storing full IP addresses unless there is a genuine operational requirement.
+
+Prefer temporary/cache-based rate-limit storage where supported.
+
+If persistent IP storage is required:
+
+- Document why.
+- Define a retention period.
+- Automatically remove old records.
+
+---
+
+# 17. Suggested Storage Model
+
+Adapt the implementation to the portfolio's existing database/storage architecture.
+
+Do not create unnecessary infrastructure.
+
+Conceptually, a CV request may contain:
+
+```text
+id
+email
+
+verification_token_hash
+verification_expires_at
+verified_at
+
+download_token_hash
+download_expires_at
+download_count
+max_downloads
+
+requested_at
+last_request_at
+downloaded_at
+
+status
+```
+
+Additional abuse-prevention information should only be stored when necessary.
+
+---
+
+# 18. Token Lifecycle
+
+## Verification Token
+
+Created when:
+
+```text
+CV request accepted
+```
+
+Recommended expiry:
+
+```text
+30 minutes
+```
+
+Invalidated when:
+
+```text
+Email verification succeeds
+```
+
+Verification tokens must not remain reusable after confirmation.
+
+---
+
+## Download Token
+
+Created when:
+
+```text
+Email verification succeeds
+```
+
+Recommended expiry:
+
+```text
+24 hours
+```
+
+Maximum successful downloads:
+
+```text
+3
+```
+
+Invalidated when:
+
+```text
+Token expires
+OR
+Maximum download count reached
+```
+
+Expired records should periodically be cleaned from storage where appropriate.
+
+---
+
+# 19. User Experience
+
+Security should not make the portfolio inconvenient for legitimate recruiters.
+
+## Initial State
+
+```text
+REQUEST MY CV
+
+Email Address
+┌───────────────────────────────┐
+│ recruiter@company.com         │
+└───────────────────────────────┘
+
+[ Request CV ]
+```
+
+Turnstile should operate with minimal friction.
+
+---
+
+## After Submission
+
+Display something similar to:
+
+> **Check your inbox**
+>
+> We've sent a verification link to the email address you provided.
+
+Do not immediately provide CV access.
+
+---
+
+## Verification Email
+
+Example concept:
+
+```text
+Someone requested access to Aniq Saidi's CV using this
+email address.
+
+[ Confirm CV Request ]
+
+This verification request expires in 30 minutes.
+
+If you did not make this request, you can safely ignore
+this email.
+```
+
+---
+
+## After Verification
+
+Display:
+
+> **Email verified**
+>
+> Your private CV link is ready and will expire in 24 hours.
+
+Provide:
+
+**Download CV**
+
+Optionally send the temporary CV access link to the verified email address as well.
+
+---
+
+# 20. Do Not Introduce User Accounts
+
+Do not introduce:
+
+- Registration
+- Passwords
+- Recruiter accounts
+- Login requirements
+- Account recovery
+
+These would add unnecessary friction and security complexity.
+
+Email ownership verification is sufficient for this use case.
+
+---
+
+# 21. Public CV Privacy Review
+
+Review the CV itself.
+
+The recruiter/public version of the CV should not unnecessarily contain highly sensitive personal information.
+
+Flag or remove where applicable:
+
+- IC number
+- Passport number
+- Full residential address
+- Date of birth
+- Banking information
+- Personal signature
+- Unnecessary personal identifiers
+- References' private contact information
+
+Professional contact information may remain where intentionally provided.
+
+Do not automatically remove ambiguous information from the CV. Report questionable fields for review first.
+
+---
+
+# 22. Email Endpoint Security
+
+Review the existing email implementation.
+
+Ensure:
+
+- Recipient email addresses are validated.
+- User-controlled input cannot manipulate email headers.
+- Sender/from address is fixed server-side.
+- Email subject is fixed or safely constructed.
+- Requesters cannot provide arbitrary email bodies.
+- Email API credentials remain server-side.
+- Provider errors are not returned directly to users.
+- Secrets are never exposed in frontend bundles.
+
+The CV functionality must never become a generic email relay.
+
+---
+
+# 23. Prevent Token Leakage
+
+Sensitive tokens can accidentally leak through:
+
+- Browser history
+- Server logs
+- Analytics
+- Referrer headers
+- Third-party scripts
+- Error-reporting systems
+
+For verification/download routes, consider:
+
+```http
+Referrer-Policy: no-referrer
+```
+
+Avoid loading unnecessary third-party analytics or resources on token-bearing URLs.
+
+Do not intentionally send token query parameters to analytics platforms.
+
+Where practical, after successful validation:
+
+```text
+Token URL
+   ↓
+Backend validates token
+   ↓
+Create temporary authorised state/session
+   ↓
+Redirect to clean URL
+```
+
+This prevents the security token from remaining unnecessarily visible in the address bar.
+
+---
+
+# 24. Security Review of Existing CV Implementation
+
+While implementing the new workflow, inspect the existing system for:
+
+- Exposed API keys
+- Secrets committed to frontend code
+- Public CV asset URLs
+- Unrestricted email endpoints
+- Missing input validation
+- Email-header injection
+- Missing server-side validation
+- CORS misconfiguration
+- Missing rate limiting
+- Verbose production errors
+- Predictable tokens
+- Open redirects
+- Token leakage through logs
+- Token leakage through analytics
+- Token leakage through referrer headers
+
+Fix directly related vulnerabilities where safe.
+
+Report significant unrelated security issues instead of performing large unrelated refactors.
+
+---
+
+# 25. Wider Portfolio Security Review
+
+The portfolio deployment should also be reviewed separately from the CV functionality.
+
+Inspect:
+
+- HTTP security headers
+- Content Security Policy
+- Firebase configuration
+- Cloudflare configuration
+- DNS configuration
+- Public API keys
+- Accidentally committed secrets
+- Environment variables
+- Source maps
+- JavaScript bundles
+- `/admin`
+- Admin authentication
+- Session handling
+- Cookies
+- CORS
+- `robots.txt`
+- Search-engine indexing
+- Indexed admin routes
+- Debug endpoints
+- Error pages
+- Public storage buckets
+- Exposed development files
+- Git metadata
+- Backup files
+- Dependency vulnerabilities
+
+The objective is to identify both information disclosure and exploitable technical weaknesses.
+
+---
+
+# 26. Admin Security
+
+Pay particular attention to:
+
+```text
+/admin
+```
+
+Review:
+
+- Authentication requirements
+- Session expiry
+- Cookie configuration
+- CSRF protection
+- Brute-force protection
+- Rate limiting
+- Password storage
+- Password reset functionality
+- Authorization checks
+- Direct API access
+- Admin API endpoints
+- Error disclosure
+
+Simply hiding `/admin` from navigation or `robots.txt` must never be considered an authentication mechanism.
+
+---
+
+# 27. Security Headers
+
+Review whether appropriate security headers are configured.
+
+Depending on the existing architecture, consider:
+
+```http
+Content-Security-Policy
+Strict-Transport-Security
+X-Content-Type-Options: nosniff
+Referrer-Policy
+Permissions-Policy
+```
+
+Do not blindly introduce a strict CSP that breaks the existing portfolio.
+
+Inspect existing resources and implement the policy incrementally.
+
+---
+
+# 28. Secrets Management
+
+Search the repository for potentially exposed secrets.
+
+Examples:
+
+```text
+API_KEY
+SECRET
+TOKEN
+PASSWORD
+PRIVATE_KEY
+DATABASE_URL
+SMTP_PASSWORD
+FIREBASE_*
+TURNSTILE_SECRET
+```
+
+Determine whether each value is intended to be public.
+
+Client-side Firebase configuration should not automatically be treated as a secret, but the corresponding Firebase security rules must be reviewed.
+
+Sensitive credentials must be moved to the appropriate server-side secret/environment configuration.
+
+If an actual secret has previously been committed to Git, removing it from the latest file is insufficient.
+
+The credential should also be **rotated**.
+
+---
+
+# 29. Testing Requirements
+
+Test the complete legitimate workflow:
+
+```text
+Request
+   ↓
+Turnstile
+   ↓
+Verification email
+   ↓
+Email confirmation
+   ↓
+Temporary download token
+   ↓
+CV download
+```
+
+Also test at minimum:
+
+- Invalid email
+- Malformed email
+- Missing Turnstile
+- Invalid Turnstile
+- Expired Turnstile
+- Reused Turnstile
+- Invalid verification token
+- Expired verification token
+- Reused verification token
+- Missing verification token
+- Invalid download token
+- Expired download token
+- Missing download token
+- Maximum download count reached
+- Repeated email requests
+- Email rate limit exceeded
+- IP rate limit exceeded
+- Direct CV asset access
+- Malformed tokens
+- Modified tokens
+- Concurrent download attempts
+
+Confirm that:
+
+- Secret keys never appear in frontend bundles.
+- CV cannot be accessed without authorization.
+- Verification tokens cannot download the CV.
+- Download tokens cannot verify an email.
+- Expired tokens cannot be reused.
+- Successful verification invalidates its token.
+- Download count enforcement works server-side.
+
+---
+
+# 30. Implementation Approach for Codex
+
+Before modifying the application:
+
+1. Inspect the existing project architecture.
+2. Identify the frontend framework.
+3. Identify the backend/serverless architecture.
+4. Identify the database/storage mechanism.
+5. Locate the existing CV request implementation.
+6. Locate the actual CV file.
+7. Identify the existing email provider.
+8. Identify existing Cloudflare/Firebase infrastructure.
+9. Inspect the existing CMS/admin implementation.
+10. Identify existing security/rate-limit utilities.
+
+Reuse existing infrastructure wherever sensible.
+
+Do not introduce unnecessary frameworks or services.
+
+Before substantial changes, provide a short implementation plan.
+
+---
+
+# 31. Required Implementation Report
+
+After implementation, report:
+
+- Files changed
+- Components added
+- API/serverless endpoints added
+- Database/schema changes
+- Environment variables required
+- Secrets required
+- Cloudflare Turnstile configuration
+- Email-provider configuration
+- Deployment steps
+- Security decisions made
+- Tests performed
+- Remaining risks
+- Manual configuration required
+
+Do not simply report that the implementation is "secure."
+
+Explain what controls were implemented and what remains outside the application's control.
+
+---
+
+# 32. Priority
+
+## Critical
+
+1. Prevent arbitrary automatic CV emailing.
+2. Protect the actual CV from direct public access.
+3. Implement secure email ownership verification.
+4. Implement a separate temporary CV download token.
+5. Implement server-side rate limiting.
+6. Implement server-side Turnstile verification.
+7. Keep secrets server-side.
+8. Ensure email functionality cannot become an arbitrary relay.
+
+## High
+
+9. Hash stored tokens.
+10. Implement explicit token lifecycle management.
+11. Harden the email endpoint.
+12. Prevent token leakage.
+13. Add CV request audit visibility.
+14. Review `/admin` security.
+15. Review CV contents for sensitive personal information.
+
+## Privacy
+
+16. Reduce unnecessarily precise location information.
+17. Reduce unnecessary historical education information.
+18. Prefer `Aniq Saidi` as the public professional name.
+19. Review project descriptions for operational/internal information.
+
+## General Security
+
+20. Review security headers.
+21. Review Firebase/security rules.
+22. Review CORS.
+23. Review source maps and frontend bundles.
+24. Search for exposed secrets.
+25. Review dependency security.
+26. Review search-engine exposure.
+
+---
+
+# 33. Security Philosophy
+
+The portfolio should remain open enough to demonstrate professional credibility while avoiding unnecessary personal exposure.
+
+The guiding principles are:
+
+> **Publish professional value, not unnecessary identity data.**
+
+> **Verify ownership before granting private resources.**
+
+> **Never trust security controls implemented only in the browser.**
+
+> **Use short-lived, cryptographically secure credentials for temporary access.**
+
+> **A secret URL is not access control.**
+
+> **Collect only the data that has a genuine purpose.**
+
+> **Security should increase attacker friction without unnecessarily increasing recruiter friction.**
+
+---
+
+# Desired Outcome
+
+After implementation, a legitimate recruiter should experience:
+
+```text
+Enter email
+     ↓
+Complete/pass Turnstile
+     ↓
+Check inbox
+     ↓
+Confirm email
+     ↓
+Download CV
+```
+
+The entire process should take less than a minute.
+
+At the same time:
+
+```text
+Random visitor
+      ✕ cannot trigger unlimited emails
+
+Bot
+      ✕ cannot easily automate requests
+
+Unknown third party
+      ✕ cannot request the CV for someone else and receive it
+
+Crawler
+      ✕ cannot discover a permanent CV URL
+
+Leaked verification token
+      ✕ cannot remain permanently valid
+
+Old download token
+      ✕ cannot provide indefinite CV access
+
+Database token leak
+      ✕ should not immediately reveal raw access tokens
+```
+
+The final result should preserve the character and usability of `aniqsaidi.my` while substantially improving its **privacy, abuse resistance, CV access control, and overall security posture**.

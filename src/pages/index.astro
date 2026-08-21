@@ -166,7 +166,7 @@ const { profile, queue } = defaultHomeContent;
     animatedText(greeting, `${content.profile.greeting}.`, content.profile.greeting, 'pulse', '-3.6s');
     const identity = document.querySelector('[data-home-identity]');
     if (identity) {
-      identity.firstChild!.textContent = `${content.profile.role} // ${content.profile.location}`;
+      identity.firstChild!.textContent = `${content.profile.role} // Selangor, Malaysia`;
     }
     const node = document.querySelector('[data-home-node]');
     if (node) node.textContent = `NODE: ${content.profile.node} // STATUS: ${content.profile.status}`;
@@ -215,7 +215,12 @@ const { profile, queue } = defaultHomeContent;
     homeRoot?.classList.remove('is-content-loading');
     homeRoot?.removeAttribute('aria-busy');
   };
-  const homeSyncDeadline = window.setTimeout(revealHome, 180);
+  const homeSyncStarted = performance.now();
+  const revealHomeAfterMinimum = () => window.setTimeout(
+    revealHome,
+    Math.max(0, 650 - (performance.now() - homeSyncStarted)),
+  );
+  const homeSyncDeadline = window.setTimeout(revealHome, 6000);
 
   const isDraftPreview = new URLSearchParams(location.search).get('cms-preview') === 'draft';
   if (isDraftPreview) {
@@ -227,7 +232,7 @@ const { profile, queue } = defaultHomeContent;
       console.warn('HOME draft preview could not be loaded.', error);
     } finally {
       window.clearTimeout(homeSyncDeadline);
-      revealHome();
+      revealHomeAfterMinimum();
     }
   }
 
@@ -256,12 +261,12 @@ const { profile, queue } = defaultHomeContent;
       .catch((error) => console.warn('Published HOME content could not be loaded.', error))
       .finally(() => {
         window.clearTimeout(homeSyncDeadline);
-        revealHome();
+        revealHomeAfterMinimum();
       });
   }
 
   if (!isDraftPreview && !firebaseConfigured) {
     window.clearTimeout(homeSyncDeadline);
-    revealHome();
+    revealHomeAfterMinimum();
   }
 </script>

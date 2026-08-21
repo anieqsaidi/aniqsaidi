@@ -13,39 +13,39 @@ function setMeta(selector: string, value: string, attribute = 'content') {
   document.querySelector<HTMLElement>(selector)?.setAttribute(attribute, value);
 }
 
+const publicSafeText = (value: string) => value
+  .replace(/Muhammad Amrun Aniq Bin Mohamed Saidi/gi, 'Aniq Saidi')
+  .replace(/Sungai Buloh,\s*Selangor,\s*Malaysia/gi, 'Selangor, Malaysia');
+
 function applySeo(data: unknown) {
   if (!data || typeof data !== 'object') return;
   const pages = (data as { pages?: Record<string, Record<string, string>> }).pages;
   const seo = pages?.[pageIdFromPath(window.location.pathname)];
   if (!seo) return;
   const canonical = new URL(seo.canonicalPath || window.location.pathname, window.location.origin).href;
-  if (seo.seoTitle) document.title = seo.seoTitle;
-  setMeta('#site-meta-description', seo.seoDescription);
+  if (seo.seoTitle) document.title = publicSafeText(seo.seoTitle);
+  setMeta('#site-meta-description', publicSafeText(seo.seoDescription));
   setMeta('#site-canonical', canonical, 'href');
-  setMeta('#site-og-title', seo.socialTitle || seo.seoTitle);
-  setMeta('#site-og-description', seo.socialDescription || seo.seoDescription);
+  setMeta('#site-og-title', publicSafeText(seo.socialTitle || seo.seoTitle));
+  setMeta('#site-og-description', publicSafeText(seo.socialDescription || seo.seoDescription));
   setMeta('#site-og-url', canonical);
   const socialImage = seo.socialImage ? new URL(seo.socialImage, window.location.origin).href : '';
   setMeta('#site-og-image', socialImage);
-  setMeta('#site-twitter-title', seo.socialTitle || seo.seoTitle);
-  setMeta('#site-twitter-description', seo.socialDescription || seo.seoDescription);
+  setMeta('#site-twitter-title', publicSafeText(seo.socialTitle || seo.seoTitle));
+  setMeta('#site-twitter-description', publicSafeText(seo.socialDescription || seo.seoDescription));
   setMeta('#site-twitter-image', socialImage);
-}
-
-function applyResume(data: unknown) {
-  const resume = data as { publicUrl?: string; fileName?: string } | null;
-  document.querySelectorAll<HTMLAnchorElement>('[data-cms-resume-link]').forEach((link) => {
-    link.href = '/resume/';
-    link.textContent = 'REQUEST CURRENT CV ↗';
-    link.title = resume?.fileName ? 'Request the current CV by email' : 'Request Aniq Saidi\'s CV by email';
-  });
 }
 
 function applyFields(fields: Record<string, string>) {
   document.querySelectorAll<HTMLElement>('[data-cms-field]').forEach((element) => {
     const key = element.dataset.cmsField;
     if (!key || !(key in fields)) return;
-    const value = fields[key];
+    const publicOverrides: Record<string, string> = {
+      'about.name': 'Aniq Saidi',
+      'about.location': 'Selangor, Malaysia',
+      'about.education.0.period': 'GRADUATED // 2020',
+    };
+    const value = publicOverrides[key] ?? fields[key];
     if (key in defaultSiteFields && value === defaultSiteFields[key]) return;
     const attribute = element.dataset.cmsAttribute;
     if (!attribute && element.textContent?.trim() === value) return;
@@ -93,17 +93,15 @@ export async function loadSiteContent() {
     if (!services) return;
     const pageId = pageIdFromPath(window.location.pathname);
     const supportsStructuredContent = ['about', 'experience', 'certifications', 'awards', 'leadership', 'archives'].includes(pageId);
-    const [content, seo, resume, structuredPage] = await Promise.all([
+    const [content, seo, structuredPage] = await Promise.all([
       firestore.getDocFromServer(firestore.doc(services.db, 'siteContent', 'pages')),
       firestore.getDocFromServer(firestore.doc(services.db, 'cmsSeo', 'published')),
-      firestore.getDocFromServer(firestore.doc(services.db, 'cmsResume', 'published')),
       supportsStructuredContent
         ? firestore.getDocFromServer(firestore.doc(services.db, 'cmsPublished', pageId))
         : Promise.resolve(null),
     ]);
     if (content.exists()) applyFields(normalizeSiteFields(content.data().fields));
     if (seo.exists()) applySeo(seo.data());
-    if (resume.exists()) applyResume(resume.data());
     if (structuredPage?.exists()) renderPublishedPage(pageId as CmsPageId, structuredPage.data());
   } catch (error) {
     console.warn('Published page content could not be loaded.', error);

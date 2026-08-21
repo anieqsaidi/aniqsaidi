@@ -17,9 +17,10 @@ import {
 interface Props {
   title?: string;
   description?: string;
+  robots?: string;
 }
 
-const { title, description = SITE_DESCRIPTION } = Astro.props;
+const { title, description = SITE_DESCRIPTION, robots } = Astro.props;
 const pageTitle = title ? `${title} // ${SITE_TITLE}` : SITE_TITLE;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 const socialImageUrl = new URL('/social/aniq-terminal-social.png', Astro.site);
@@ -35,6 +36,7 @@ const socialImageUrl = new URL('/social/aniq-terminal-social.png', Astro.site);
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <meta name="description" id="site-meta-description" content={description} />
+    {robots && <meta name="robots" content={robots} />}
     <link rel="canonical" id="site-canonical" href={canonicalUrl} />
     <meta property="og:type" content="website" />
     <meta property="og:title" id="site-og-title" content={pageTitle} />
@@ -150,10 +152,16 @@ const socialImageUrl = new URL('/social/aniq-terminal-social.png', Astro.site);
         main?.classList.remove('site-content-loading');
         main?.removeAttribute('aria-busy');
       };
-      const contentSyncDeadline = window.setTimeout(revealSiteContent, 180);
+      const contentSyncStarted = performance.now();
+      const minimumSyncDisplay = 650;
+      const revealAfterMinimum = () => window.setTimeout(
+        revealSiteContent,
+        Math.max(0, minimumSyncDisplay - (performance.now() - contentSyncStarted)),
+      );
+      const contentSyncDeadline = window.setTimeout(revealSiteContent, 6000);
       loadSiteContent().finally(() => {
         window.clearTimeout(contentSyncDeadline);
-        revealSiteContent();
+        revealAfterMinimum();
       });
 
       const scrollPane = document.getElementById('main-content');

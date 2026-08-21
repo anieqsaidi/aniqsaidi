@@ -4,6 +4,11 @@ import Frame from '../components/Frame.astro';
 import AnimatedText from '../components/AnimatedText.astro';
 import RecordHighlights from '../components/RecordHighlights.astro';
 import { leadership } from '../data/cv';
+import { latestFirst } from '../data/recordOrder';
+
+const sortedLeadership = latestFirst(leadership.map(([title, detail], index) => ({
+  title, detail, description: detail, period: detail, index, sortOrder: index,
+})));
 
 const highlightedIndexes = new Set([0, 1, 4]);
 const highlightRecords = leadership.map(([title, detail], index) => ({
@@ -19,7 +24,7 @@ const highlightRecords = leadership.map(([title, detail], index) => ({
   <Frame title="LEADERSHIP">
     <RecordHighlights page="leadership" records={highlightRecords} />
     <div class="credential-list" data-cms-collection="leadership.leadership">
-      {leadership.map(([title, detail], index) => (
+      {sortedLeadership.map(({ title, detail, index }) => (
         <article class="credential credential--stacked">
           <div>
             <h2 data-cms-field={`leadership.${index}.title`}>

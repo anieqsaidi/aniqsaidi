@@ -1,7 +1,7 @@
 export const profile = {
-  name: 'Muhammad Amrun Aniq Bin Mohamed Saidi',
+  name: 'Aniq Saidi',
   role: 'Software Engineer',
-  location: 'Sungai Buloh, Selangor, Malaysia',
+  location: 'Selangor, Malaysia',
   email: 'aniqsaidi.official@gmail.com',
   linkedin: 'https://www.linkedin.com/in/aniqsaidi/',
   summary:
@@ -90,17 +90,7 @@ export const education = [
   {
     qualification: 'Bachelor of Computer Science (Software Engineering) with Honors',
     institution: 'Universiti Malaysia Pahang Al-Sultan Abdullah (UMPSA)',
-    period: '2015 - 2020',
-  },
-  {
-    qualification: 'Certificate of Engineering Science',
-    institution: 'Kelantan Matriculation College',
-    period: '2014 - 2015',
-  },
-  {
-    qualification: 'Malaysian Certificate of Education (SPM)',
-    institution: 'SMK Bandar Baru Sungai Buloh',
-    period: '2009 - 2013',
+    period: 'GRADUATED // 2020',
   },
 ] as const;
 

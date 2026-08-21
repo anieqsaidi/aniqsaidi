@@ -35,6 +35,14 @@ test('only the approved UID may upload valid images and PDFs', async () => {
   await assertFails(uploadBytes(ref(admin, 'public/media/script/payload.js'), new Uint8Array([1]), { contentType: 'text/javascript' }));
 });
 
+test('résumé files are never anonymously readable', async () => {
+  await environment.withSecurityRulesDisabled(async (context) => {
+    await uploadBytes(ref(context.storage(), 'public/resume/versions/private.pdf'), new Uint8Array([1, 2, 3]), { contentType: 'application/pdf' });
+  });
+  await assertFails(getBytes(ref(environment.unauthenticatedContext().storage(), 'public/resume/versions/private.pdf')));
+  await assertSucceeds(getBytes(ref(environment.authenticatedContext(ADMIN_UID).storage(), 'public/resume/versions/private.pdf')));
+});
+
 test('oversized files are denied and immutable résumé versions cannot be overwritten', async () => {
   const admin = environment.authenticatedContext(ADMIN_UID).storage();
   await assertFails(uploadBytes(ref(admin, 'public/media/huge/display.webp'), new Uint8Array(12 * 1024 * 1024 + 1), { contentType: 'image/webp' }));

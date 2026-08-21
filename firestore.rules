@@ -545,7 +545,7 @@ service cloud.firestore {
     }
 
     match /cmsResume/{state} {
-      allow read: if state == 'published' || (state == 'draft' && isAdmin());
+      allow read: if isAdmin();
       allow create: if isAdmin()
         && request.resource.data.version == 1
         && state in ['draft', 'published']
@@ -564,6 +564,15 @@ service cloud.firestore {
     match /cmsBackups/{backupId} {
       allow read: if isAdmin();
       allow create: if isAdmin() && isValidBackup(request.resource.data, backupId);
+    }
+
+    match /cvRequests/{requestId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /cvRequestLimits/{limitId} {
+      allow read, write: if false;
     }
 
     match /{document=**} {

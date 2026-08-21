@@ -27,7 +27,7 @@ service firebase.storage {
     }
 
     match /public/resume/{fileName} {
-      allow read: if true;
+      allow read: if isAdmin();
       allow create, update: if isAdmin()
         && request.resource.size > 0
         && request.resource.size <= 10 * 1024 * 1024
@@ -36,7 +36,7 @@ service firebase.storage {
     }
 
     match /public/resume/versions/{fileName} {
-      allow read: if true;
+      allow read: if isAdmin();
       allow write: if isAdmin()
         && (
           request.resource == null

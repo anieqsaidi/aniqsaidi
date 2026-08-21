@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-const publicPages = ['', 'about', 'projects', 'experience', 'certifications', 'awards', 'leadership', 'archives'];
+const publicPages = ['', 'about', 'projects', 'experience', 'certifications', 'awards', 'leadership', 'archives', 'resume/requested'];
 const htmlFor = (route) => readFile(new URL(`../dist/${route ? `${route}/` : ''}index.html`, import.meta.url), 'utf8');
 
 test('public pages expose a single labelled main landmark and keyboard skip link', async () => {
@@ -32,6 +32,8 @@ test('interactive controls have explicit button types and admin pages remain pri
   const admin = await htmlFor('admin');
   assert.match(admin, /<meta name="robots" content="noindex, nofollow, noarchive">/);
   assert.match(admin, /<iframe[^>]*title="Public page preview"/);
+  const requested = await htmlFor('resume/requested');
+  assert.match(requested, /<meta name="robots" content="noindex, nofollow, noarchive">/);
 });
 
 test('reduced-motion and visible-focus safeguards are present', async () => {

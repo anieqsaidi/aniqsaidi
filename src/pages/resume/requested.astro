@@ -1,0 +1,105 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Frame from '../../components/Frame.astro';
+---
+
+<Layout
+  title="CHECK YOUR INBOX"
+  description="Instructions for completing a private CV request."
+  robots="noindex, nofollow, noarchive"
+>
+  <Frame title="REQUEST RECEIVED">
+    <section class="request-success" aria-labelledby="request-success-title">
+      <div class="request-success__signal" aria-hidden="true">
+        <span>✓</span>
+      </div>
+
+      <div class="request-success__copy">
+        <p class="prompt">&gt; REQUEST ACCEPTED // EMAIL CONFIRMATION REQUIRED</p>
+        <h1 id="request-success-title">CHECK YOUR INBOX</h1>
+        <p class="request-success__lead">
+          We sent a verification link if your request was accepted. Open the email and select 
+          <strong> Confirm CV request</strong> to continue.
+        </p>
+
+        <ol class="request-success__steps" aria-label="Next steps">
+          <li><span>01</span><p><strong>OPEN THE EMAIL</strong><br />Check your inbox and spam folder.</p></li>
+          <li><span>02</span><p><strong>CONFIRM YOUR REQUEST</strong><br />The verification link expires in 30 minutes.</p></li>
+          <li><span>03</span><p><strong>DOWNLOAD THE CV</strong><br />Verified access lasts 24 hours or three downloads.</p></li>
+        </ol>
+
+        <p class="request-success__notice">
+          For privacy, this page shows the same confirmation for every accepted submission.
+          Delivery can take a few moments.
+        </p>
+
+        <div class="request-success__actions">
+          <a class="request-success__primary" href="/">RETURN HOME</a>
+          <a href="/resume/">SUBMIT ANOTHER REQUEST</a>
+        </div>
+      </div>
+    </section>
+  </Frame>
+</Layout>
+
+<style>
+  .request-success {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    width: min(100%, 760px);
+    min-height: 390px;
+    margin: 0 auto;
+    gap: clamp(22px, 5vw, 48px);
+    align-content: center;
+    align-items: start;
+  }
+
+  .request-success__signal {
+    display: grid;
+    width: clamp(72px, 10vw, 96px);
+    aspect-ratio: 1;
+    place-items: center;
+    border: 1px solid var(--fg-bright);
+    color: var(--bg);
+    background: var(--fg-bright);
+    box-shadow: 0 0 24px color-mix(in srgb, var(--fg) 24%, transparent);
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+  }
+
+  .request-success__copy { display: grid; gap: 18px; }
+  .request-success__copy > * { margin: 0; }
+  .request-success__copy .prompt { color: var(--fg); font-size: .72rem; letter-spacing: .09em; }
+  .request-success__copy h1 { color: var(--fg-bright); font-size: clamp(1.35rem, 4vw, 2rem); }
+  .request-success__lead { max-width: 62ch; color: var(--fg-bright); line-height: 1.65; }
+
+  .request-success__steps {
+    display: grid;
+    margin: 2px 0;
+    padding: 0;
+    border-block: 1px dashed var(--fg-dim);
+    list-style: none;
+  }
+  .request-success__steps li {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px dashed color-mix(in srgb, var(--fg-dim) 55%, transparent);
+  }
+  .request-success__steps li:last-child { border-bottom: 0; }
+  .request-success__steps span { color: var(--fg); }
+  .request-success__steps p { margin: 0; color: var(--fg-dim); font-size: .78rem; line-height: 1.55; }
+  .request-success__steps strong { color: var(--fg-bright); }
+  .request-success__notice { color: var(--fg-dim); font-size: .72rem; line-height: 1.55; }
+  .request-success__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .request-success__actions a { padding: 10px 13px; border: 1px solid var(--fg-dim); font-size: .72rem; }
+  .request-success__actions .request-success__primary { border-color: var(--fg-bright); color: var(--bg); background: var(--fg-bright); }
+  .request-success__actions a:hover, .request-success__actions a:focus-visible { color: var(--fg-bright); background: transparent; }
+
+  @media (max-width: 640px) {
+    .request-success { grid-template-columns: 1fr; min-height: 0; align-content: start; }
+    .request-success__signal { width: 64px; }
+    .request-success__actions { display: grid; }
+    .request-success__actions a { text-align: center; }
+  }
+</style>

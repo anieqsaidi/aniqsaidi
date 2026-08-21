@@ -12,6 +12,8 @@ test('CV delivery template renders professional monochrome HTML and a plain-text
   assert.equal(email.subject, 'Aniq Saidi — Curriculum Vitae');
   assert.match(email.html, /&gt;_ ANIQ SAIDI/);
   assert.match(email.html, /text-align:center/);
+  assert.match(email.html, /prefers-color-scheme:dark/);
+  assert.match(email.html, /email-bg/);
   assert.match(email.html, /Thank you for your interest/);
   assert.doesNotMatch(email.html, /TRANSMISSION|BLUE PHOSPHOR|#3878c5/i);
   assert.doesNotMatch(email.html, /recruiter@example\.com/);

@@ -14,6 +14,7 @@ import {
   type CmsPages,
   type CmsRecord,
 } from '../data/cmsSchema';
+import { latestFirst } from '../data/recordOrder';
 import {
   changedPageIds,
   createRevisionId,
@@ -285,7 +286,7 @@ export async function initializeAdminCms() {
     const header = document.createElement('header');
     const heading = document.createElement('h3'); heading.textContent = `${config.title} // ${recordsInput.length}`;
     const add = button('+ ADD RECORD', 'add'); add.dataset.collection = config.key; header.append(heading, add); section.append(header);
-    const records = [...recordsInput].sort((a, b) => Number(a.sortOrder) - Number(b.sortOrder));
+    const records = latestFirst(recordsInput);
     records.forEach((record, displayedIndex) => {
       const actualIndex = recordsInput.indexOf(record);
       const details = document.createElement('details'); details.className = 'admin-record'; details.open = displayedIndex === 0;

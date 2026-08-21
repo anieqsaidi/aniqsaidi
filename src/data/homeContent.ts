@@ -25,7 +25,7 @@ export const defaultHomeContent: HomeContent = {
   profile: {
     greeting: 'HELLO, I’M ANIQ',
     role: 'Software Engineer',
-    location: 'Sungai Buloh, Selangor, Malaysia',
+    location: 'Selangor, Malaysia',
     node: 'MY-KUL',
     status: 'ONLINE',
     startCopy: 'Browse the system for the full record, or send a direct signal. Every route is live. Nothing goes to junk.',

@@ -1,10 +1,11 @@
 import { type CmsPages, type ProjectRecord } from '../data/cmsSchema';
 import { firebaseConfigured, getFirebaseServices } from '../lib/firebase';
+import { latestFirst } from '../data/recordOrder';
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, className = '', text = '') => {
   const node = document.createElement(tag); if (className) node.className = className; if (text) node.textContent = text; return node;
 };
-const active = <T extends { status: string; sortOrder: number }>(items: T[]) => items.filter((item) => item.status !== 'archived').sort((a, b) => a.sortOrder - b.sortOrder);
+const active = <T extends { status: string; sortOrder: number }>(items: T[]) => latestFirst(items.filter((item) => item.status !== 'archived'));
 const labels = (items: ProjectRecord['technologies']) => active(items).map((item) => item.label).join(' // ');
 
 export async function initializeProjectExplorer() {
