@@ -1,4 +1,4 @@
-const config = {
+const localConfig = {
   apiKey: import.meta.env.PUBLIC_FIREBASE_API_KEY,
   authDomain: import.meta.env.PUBLIC_FIREBASE_AUTH_DOMAIN,
   projectId: import.meta.env.PUBLIC_FIREBASE_PROJECT_ID,
@@ -8,11 +8,26 @@ const config = {
 };
 
 export const firebaseConfigured = Boolean(
-  config.apiKey && config.authDomain && config.projectId && config.appId,
+  (localConfig.apiKey && localConfig.authDomain && localConfig.projectId && localConfig.appId) || import.meta.env.PROD,
 );
+
+type FirebaseWebConfig = typeof localConfig;
+
+let runtimeConfig: Promise<FirebaseWebConfig> | null = null;
+
+async function getFirebaseConfig() {
+  if (localConfig.apiKey && localConfig.authDomain && localConfig.projectId && localConfig.appId) return localConfig;
+  if (typeof window === 'undefined') throw new Error('Firebase configuration is unavailable outside the browser.');
+  runtimeConfig ??= fetch('/__/firebase/init.json', { cache: 'no-store' }).then(async (response) => {
+    if (!response.ok) throw new Error(`Firebase runtime configuration failed (${response.status}).`);
+    return response.json() as Promise<FirebaseWebConfig>;
+  });
+  return runtimeConfig;
+}
 
 export async function getFirebaseServices() {
   if (!firebaseConfigured) return null;
+  const config = await getFirebaseConfig();
   const [{ getApp, getApps, initializeApp }, { getAuth }, { getFirestore }] = await Promise.all([
     import('firebase/app'),
     import('firebase/auth'),
@@ -24,6 +39,7 @@ export async function getFirebaseServices() {
 
 export async function getFirebasePublicServices() {
   if (!firebaseConfigured) return null;
+  const config = await getFirebaseConfig();
   const [{ getApp, getApps, initializeApp }, { getFirestore }] = await Promise.all([
     import('firebase/app'),
     import('firebase/firestore/lite'),

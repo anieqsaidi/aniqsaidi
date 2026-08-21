@@ -63,3 +63,10 @@ test('public Firestore Lite readers use its supported document API', async () =>
     assert.match(reader, /firestore\.getDoc\(/);
   }
 });
+
+test('production Firebase configuration is resolved from Firebase Hosting at runtime', async () => {
+  const firebase = await source('src/lib/firebase.ts');
+  assert.match(firebase, /fetch\('\/__\/firebase\/init\.json'/);
+  assert.match(firebase, /import\.meta\.env\.PROD/);
+  assert.match(firebase, /cache: 'no-store'/);
+});
