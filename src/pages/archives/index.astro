@@ -5,6 +5,7 @@ import Layout from '../../layouts/Layout.astro';
 import Frame from '../../components/Frame.astro';
 import AnimatedText from '../../components/AnimatedText.astro';
 import AnimatedWord from '../../components/AnimatedWord.astro';
+import ContentSort from '../../components/ContentSort.astro';
 
 type WordEffect = 'glitch' | 'scan' | 'pulse' | 'flicker' | 'decode' | 'wave' | 'invert' | 'jitter';
 type ArchiveEffect = {
@@ -54,12 +55,17 @@ for (const post of posts) {
           delay={-2.6}
         />
       </p>
-      <div class="archive-year-buttons" aria-label="Select an archive year">
+      <ContentSort scope="archives" />
+      <div data-sort-scope="archives">
+      <div class="archive-year-buttons" aria-label="Select an archive year" data-sort-container>
         {[...byYear.entries()].map(([year, yearPosts]) => (
           <button
             class="archive-year-button"
             type="button"
             data-archive-year={year}
+            data-sort-item
+            data-sort-date={String(year)}
+            data-sort-title={String(year)}
             data-sfx="hover"
             aria-controls={`archive-year-${year}`}
             aria-expanded="false"
@@ -73,18 +79,18 @@ for (const post of posts) {
         ))}
       </div>
 
-      <div data-archive-panels>
+      <div data-archive-panels data-sort-container>
       {[...byYear.entries()].map(([year, yearPosts]) => (
-        <section class="archive-year-panel" id={`archive-year-${year}`} hidden>
+        <section class="archive-year-panel" id={`archive-year-${year}`} hidden data-sort-item data-sort-date={String(year)} data-sort-title={String(year)}>
           <h3 class="sr-only">Press archive entries from {year}</h3>
-          <div class="menu-list archive-entry-list">
+          <div class="menu-list archive-entry-list" data-sort-container>
             {yearPosts.map((post) => {
               const date = post.data.pubDate.toISOString().slice(0, 10);
               const panelId = `archive-entry-${post.id}`;
               const effect = archiveEffects[post.id];
 
               return (
-                <article class="archive-entry-record">
+                <article class="archive-entry-record" data-sort-item data-sort-date={date} data-sort-title={post.data.title}>
                   <button
                     class="menu-item archive-entry-button"
                     type="button"
@@ -173,6 +179,7 @@ for (const post of posts) {
           </div>
         </section>
       ))}
+      </div>
       </div>
     </Frame>
   </div>

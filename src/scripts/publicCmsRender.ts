@@ -67,6 +67,7 @@ function renderExperience(page: CmsPages['experience']) {
   if (jobs) jobs.replaceChildren(...published<ExperienceRecord>(page.data.jobs).map((job) => {
     const article = node('article', 'timeline-item');
     article.dataset.recordId = job.id;
+    article.dataset.sortItem = ''; article.dataset.sortDate = job.startDate || job.period; article.dataset.sortTitle = job.role;
     const header = node('header', 'timeline-head');
     const heading = node('div');
     heading.append(node('h2', '', job.role), node('p', '', job.company));
@@ -123,6 +124,7 @@ function renderCertifications(page: CmsPages['certifications']) {
   container.replaceChildren(...records.map((record) => {
     const article = node('article', 'credential certification');
     article.dataset.recordId = record.id;
+    article.dataset.sortItem = ''; article.dataset.sortDate = record.issuedAt; article.dataset.sortTitle = record.title;
     const copy = node('div');
     const title = node('h2', '', record.title);
     if (record.credentialUrl) { const link = node('a', '', record.title); setLink(link, record.credentialUrl); title.replaceChildren(link); }
@@ -144,6 +146,7 @@ function renderAwards(page: CmsPages['awards']) {
   if (!container) return;
   container.replaceChildren(...records.map((record) => {
     const article = node('article', 'credential credential--stacked'); article.dataset.recordId = record.id;
+    article.dataset.sortItem = ''; article.dataset.sortDate = record.date; article.dataset.sortTitle = record.title;
     const copy = node('div'); copy.append(node('h2', '', record.title), node('p', '', [record.description, record.issuer, record.date].filter(Boolean).join(' // ')));
     article.append(copy); return article;
   }));
@@ -160,6 +163,7 @@ function renderLeadership(page: CmsPages['leadership']) {
   if (!container) return;
   container.replaceChildren(...records.map((record) => {
     const article = node('article', 'credential credential--stacked'); article.dataset.recordId = record.id;
+    article.dataset.sortItem = ''; article.dataset.sortDate = record.period; article.dataset.sortTitle = record.role;
     const copy = node('div'); copy.append(node('h2', '', record.role), node('p', '', [record.description, record.organisation, record.period].filter(Boolean).join(' // ')));
     article.append(copy); return article;
   }));
@@ -170,6 +174,7 @@ function archiveArticle(record: ArchiveRecord, existing?: HTMLElement) {
   const article = existing ?? node('article', 'archive-entry-record');
   article.dataset.recordId = record.id;
   article.dataset.archiveSlug = record.slug;
+  article.dataset.sortItem = ''; article.dataset.sortDate = record.publicationDate; article.dataset.sortTitle = record.title;
   const panelId = `archive-entry-${record.slug}`;
   let button = article.querySelector<HTMLButtonElement>('[data-archive-entry]');
   if (!button) {
@@ -229,12 +234,14 @@ function renderArchives(page: CmsPages['archives']) {
   buttonContainer.replaceChildren(...[...years].map(([year, records]) => {
     const button = node('button', 'archive-year-button'); button.type = 'button'; button.dataset.archiveYear = year; button.dataset.sfx = 'hover';
     button.setAttribute('aria-controls', `archive-year-${year}`); button.setAttribute('aria-expanded', 'false');
+    button.dataset.sortItem = ''; button.dataset.sortDate = year; button.dataset.sortTitle = year;
     button.append(`> ${year} `, node('span', '', `[${records.length}]`)); return button;
   }));
   panelsContainer.replaceChildren(...[...years].map(([year, records]) => {
     const section = node('section', 'archive-year-panel'); section.id = `archive-year-${year}`; section.hidden = true;
+    section.dataset.sortItem = ''; section.dataset.sortDate = year; section.dataset.sortTitle = year;
     const heading = node('h3', 'sr-only', `Press archive entries from ${year}`);
-    const list = node('div', 'menu-list archive-entry-list');
+    const list = node('div', 'menu-list archive-entry-list'); list.dataset.sortContainer = '';
     list.append(...records.map((record) => archiveArticle(record, existing.get(record.slug))));
     section.append(heading, list); return section;
   }));

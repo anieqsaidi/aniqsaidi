@@ -33,7 +33,7 @@ import { auditPayload, recordAudit } from './adminOperations';
 type InputType = 'text' | 'textarea' | 'email' | 'url' | 'month' | 'date' | 'checkbox' | 'select';
 type NestedType = 'textRecords' | 'tagRecords' | 'sections';
 type FieldConfig = { key: string; label: string; type?: InputType; options?: string[]; nested?: NestedType };
-type CollectionConfig = { key: string; title: string; labelKey: string; fields: FieldConfig[] };
+type CollectionConfig = { key: string; title: string; labelKey: string; ordering?: 'automatic' | 'manual'; fields: FieldConfig[] };
 type PageConfig = { single?: FieldConfig[]; collections: CollectionConfig[] };
 
 const configs: Record<CmsPageId, PageConfig> = {
@@ -65,7 +65,7 @@ const configs: Record<CmsPageId, PageConfig> = {
   },
   projects: {
     collections: [
-      { key: 'projects', title: 'PROJECTS & CASE STUDIES', labelKey: 'title', fields: [
+      { key: 'projects', title: 'PROJECTS & CASE STUDIES', labelKey: 'title', ordering: 'automatic', fields: [
         { key: 'title', label: 'PROJECT TITLE' }, { key: 'slug', label: 'SLUG' },
         { key: 'shortDescription', label: 'SHORT DESCRIPTION', type: 'textarea' }, { key: 'category', label: 'CATEGORY' },
         { key: 'role', label: 'MY ROLE' }, { key: 'organisation', label: 'ORGANISATION' },
@@ -81,7 +81,7 @@ const configs: Record<CmsPageId, PageConfig> = {
   },
   experience: {
     collections: [
-      { key: 'jobs', title: 'EXPERIENCE RECORDS', labelKey: 'role', fields: [
+      { key: 'jobs', title: 'EXPERIENCE RECORDS', labelKey: 'role', ordering: 'automatic', fields: [
         { key: 'role', label: 'ROLE' }, { key: 'company', label: 'COMPANY' }, { key: 'location', label: 'LOCATION' },
         { key: 'period', label: 'DISPLAY PERIOD' }, { key: 'startDate', label: 'START', type: 'month' },
         { key: 'endDate', label: 'END', type: 'month' }, { key: 'current', label: 'CURRENT ROLE', type: 'checkbox' },
@@ -93,24 +93,24 @@ const configs: Record<CmsPageId, PageConfig> = {
       ] },
     ],
   },
-  certifications: { collections: [{ key: 'certifications', title: 'CERTIFICATION RECORDS', labelKey: 'title', fields: [
+  certifications: { collections: [{ key: 'certifications', title: 'CERTIFICATION RECORDS', labelKey: 'title', ordering: 'automatic', fields: [
     { key: 'title', label: 'TITLE' }, { key: 'issuer', label: 'ISSUER' }, { key: 'issuedAt', label: 'ISSUED' },
     { key: 'category', label: 'CATEGORY', type: 'select', options: ['professional', 'cloud', 'learning'] },
     { key: 'credentialUrl', label: 'CREDENTIAL URL', type: 'url' }, { key: 'featured', label: 'FEATURED', type: 'checkbox' },
   ] }] },
-  awards: { collections: [{ key: 'awards', title: 'AWARD RECORDS', labelKey: 'title', fields: [
+  awards: { collections: [{ key: 'awards', title: 'AWARD RECORDS', labelKey: 'title', ordering: 'automatic', fields: [
     { key: 'title', label: 'TITLE' }, { key: 'issuer', label: 'ISSUER' }, { key: 'date', label: 'DATE' },
     { key: 'description', label: 'DESCRIPTION', type: 'textarea' }, { key: 'category', label: 'CATEGORY' },
     { key: 'featured', label: 'FEATURED', type: 'checkbox' },
   ] }] },
-  leadership: { collections: [{ key: 'leadership', title: 'LEADERSHIP RECORDS', labelKey: 'role', fields: [
+  leadership: { collections: [{ key: 'leadership', title: 'LEADERSHIP RECORDS', labelKey: 'role', ordering: 'automatic', fields: [
     { key: 'role', label: 'ROLE' }, { key: 'organisation', label: 'ORGANISATION' }, { key: 'period', label: 'PERIOD' },
     { key: 'description', label: 'DESCRIPTION', type: 'textarea' }, { key: 'scope', label: 'SCOPE' },
     { key: 'earlierRecord', label: 'EARLIER RECORD', type: 'checkbox' }, { key: 'featured', label: 'FEATURED', type: 'checkbox' },
   ] }] },
   archives: {
     single: [{ key: 'lede', label: 'ARCHIVE INTRODUCTION', type: 'textarea' }],
-    collections: [{ key: 'articles', title: 'ARCHIVE ARTICLES', labelKey: 'title', fields: [
+    collections: [{ key: 'articles', title: 'ARCHIVE ARTICLES', labelKey: 'title', ordering: 'automatic', fields: [
       { key: 'title', label: 'TITLE' }, { key: 'slug', label: 'SLUG' }, { key: 'publication', label: 'PUBLICATION' },
       { key: 'publicationDate', label: 'PUBLICATION DATE', type: 'date' }, { key: 'description', label: 'DESCRIPTION', type: 'textarea' },
       { key: 'sourceUrl', label: 'SOURCE URL', type: 'url' }, { key: 'assetPath', label: 'ASSET PATH' },
@@ -284,9 +284,15 @@ export async function initializeAdminCms() {
   const renderCollection = (config: CollectionConfig, recordsInput: Array<Record<string, unknown>>) => {
     const section = document.createElement('section'); section.className = 'admin-collection';
     const header = document.createElement('header');
+    const headingWrap = document.createElement('div'); headingWrap.className = 'admin-collection-heading';
     const heading = document.createElement('h3'); heading.textContent = `${config.title} // ${recordsInput.length}`;
-    const add = button('+ ADD RECORD', 'add'); add.dataset.collection = config.key; header.append(heading, add); section.append(header);
-    const records = latestFirst(recordsInput);
+    headingWrap.append(heading);
+    if (config.ordering === 'automatic') {
+      const ordering = document.createElement('small'); ordering.className = 'admin-ordering-note';
+      ordering.textContent = 'AUTO ORDER // LATEST TO OLDEST'; headingWrap.append(ordering);
+    }
+    const add = button('+ ADD RECORD', 'add'); add.dataset.collection = config.key; header.append(headingWrap, add); section.append(header);
+    const records = config.ordering === 'automatic' ? latestFirst(recordsInput) : recordsInput;
     records.forEach((record, displayedIndex) => {
       const actualIndex = recordsInput.indexOf(record);
       const details = document.createElement('details'); details.className = 'admin-record'; details.open = displayedIndex === 0;
@@ -310,7 +316,13 @@ export async function initializeAdminCms() {
       });
       body.append(fields);
       const actions = document.createElement('div'); actions.className = 'admin-record-actions';
-      [['↑ MOVE UP','up'],['↓ MOVE DOWN','down'],['⧉ DUPLICATE','duplicate'],[record.status === 'archived' ? '↺ RESTORE' : '□ ARCHIVE','archive'],['× DELETE','delete']].forEach(([labelText, action]) => {
+      const availableActions = [
+        ...(config.ordering === 'automatic' ? [] : [['↑ MOVE UP','up'],['↓ MOVE DOWN','down']]),
+        ['⧉ DUPLICATE','duplicate'],
+        [record.status === 'archived' ? '↺ RESTORE' : '□ ARCHIVE','archive'],
+        ['× DELETE','delete'],
+      ];
+      availableActions.forEach(([labelText, action]) => {
         const control = button(labelText, action); control.dataset.collection = config.key; control.dataset.index = String(actualIndex); actions.append(control);
       });
       body.append(actions); details.append(body); section.append(details);

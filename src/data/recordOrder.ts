@@ -6,7 +6,7 @@ type OrderableRecord = {
 
 const DATE_KEYS = [
   'publicationDate', 'issuedAt', 'startDate', 'endDate', 'date', 'period',
-  'description', 'shortDescription',
+  'description',
 ] as const;
 
 function dateRank(value: unknown) {

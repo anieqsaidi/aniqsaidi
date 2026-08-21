@@ -72,7 +72,7 @@ const labels: Record<(typeof CMS_PAGE_IDS)[number], string> = {
           </div>
           <span class="admin-state" id="admin-page-state">AUTHENTICATING</span>
         </header>
-        <p class="admin-help">Records use stable IDs and can be added, duplicated, reordered, archived, restored, or deleted from the draft.</p>
+        <p class="admin-help">Records use stable IDs. Dated collections are automatically ordered latest to oldest; manual collections can be moved up or down.</p>
         <div class="admin-editor" id="admin-editor"></div>
       </section>
 
@@ -160,6 +160,8 @@ const labels: Record<(typeof CMS_PAGE_IDS)[number], string> = {
   :global(.admin-single-fields > h3), :global(.admin-collection > header) { min-height: 44px; padding: 11px 12px; border-bottom: 1px dashed var(--fg-dim); color: var(--fg-bright); }
   :global(.admin-collection > header) { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   :global(.admin-collection h3), :global(.admin-single-fields h3) { font-size: .78rem; }
+  :global(.admin-collection-heading) { display: grid; gap: 4px; }
+  :global(.admin-ordering-note) { color: var(--fg-dim); font-size: .6rem; letter-spacing: .06em; }
   :global(.admin-single-fields > .admin-record-fields) { padding: 12px; }
   :global(.admin-record) { border-bottom: 1px solid color-mix(in srgb, var(--fg-dim) 55%, transparent); }
   :global(.admin-record:last-child) { border-bottom: 0; }

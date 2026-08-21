@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Frame from '../components/Frame.astro';
 import AnimatedText from '../components/AnimatedText.astro';
 import RecordHighlights from '../components/RecordHighlights.astro';
+import ContentSort from '../components/ContentSort.astro';
 import { leadership } from '../data/cv';
 import { latestFirst } from '../data/recordOrder';
 
@@ -23,9 +24,10 @@ const highlightRecords = leadership.map(([title, detail], index) => ({
 <Layout title="LEADERSHIP" description="Leadership experience of Aniq Saidi.">
   <Frame title="LEADERSHIP">
     <RecordHighlights page="leadership" records={highlightRecords} />
-    <div class="credential-list" data-cms-collection="leadership.leadership">
+    <ContentSort scope="leadership" />
+    <div class="credential-list" data-cms-collection="leadership.leadership" data-sort-scope="leadership" data-sort-container>
       {sortedLeadership.map(({ title, detail, index }) => (
-        <article class="credential credential--stacked">
+        <article class="credential credential--stacked" data-sort-item data-sort-date={detail} data-sort-title={title}>
           <div>
             <h2 data-cms-field={`leadership.${index}.title`}>
               {index === 5

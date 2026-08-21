@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Frame from '../components/Frame.astro';
 import AnimatedText from '../components/AnimatedText.astro';
 import RecordHighlights from '../components/RecordHighlights.astro';
+import ContentSort from '../components/ContentSort.astro';
 import { certifications } from '../data/cv';
 
 const sortedCertifications = [...certifications].sort((a, b) =>
@@ -46,9 +47,10 @@ const highlightRecords = certifications.map((certification, index) => ({
 <Layout title="CERTIFICATIONS" description="Professional certifications earned by Aniq Saidi.">
   <Frame title="CERTIFICATIONS">
     <RecordHighlights page="certifications" records={highlightRecords} />
-    <div class="credential-list" data-cms-collection="certifications.certifications">
+    <ContentSort scope="certifications" />
+    <div class="credential-list" data-cms-collection="certifications.certifications" data-sort-scope="certifications" data-sort-container>
       {sortedCertifications.map((certification) => (
-        <article class="credential certification">
+        <article class="credential certification" data-sort-item data-sort-date={certification.datetime} data-sort-title={certification.title}>
           <div>
             <h2 data-cms-field={`certifications.${certifications.indexOf(certification)}.title`}>
               {effectForCertification(certification.title) ? (

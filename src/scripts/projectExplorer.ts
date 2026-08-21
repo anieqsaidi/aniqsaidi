@@ -57,6 +57,7 @@ export async function initializeProjectExplorer() {
     if (!projects.length) { grid.append(el('p', 'project-empty', 'NO PUBLISHED PROJECT RECORDS YET. CHECK BACK AFTER THE NEXT DEPLOYMENT.')); return; }
     projects.forEach((project, index) => {
       const card = el('article', 'project-card'); card.id = `project-${project.slug}`; card.dataset.projectCard = project.slug;
+      card.dataset.sortItem = ''; card.dataset.sortDate = project.period; card.dataset.sortTitle = project.title;
       const head = el('header');
       const state = el('span', 'project-card-state');
       state.append(el('time', '', project.period), el('strong', '', project.projectStatus));

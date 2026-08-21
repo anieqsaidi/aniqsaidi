@@ -42,3 +42,18 @@ test('reduced-motion and visible-focus safeguards are present', async () => {
   assert.match(css, /:focus-visible/);
   assert.match(css, /\.skip-link:focus/);
 });
+
+test('content pages expose one standardized sort control while home and about remain unsorted', async () => {
+  const sortablePages = ['projects', 'experience', 'certifications', 'awards', 'leadership', 'archives'];
+  for (const route of sortablePages) {
+    const html = await htmlFor(route);
+    assert.equal((html.match(/data-sort-control=/g) ?? []).length, 1, `${route} must have one sort control`);
+    assert.match(html, new RegExp(`data-sort-scope="${route}"`));
+    assert.match(html, /<option value="latest" selected>Latest first<\/option>|<option value="latest">LATEST FIRST<\/option>/i);
+    assert.match(html, /<option value="oldest">OLDEST FIRST<\/option>/i);
+  }
+  for (const route of ['', 'about']) {
+    const html = await htmlFor(route);
+    assert.doesNotMatch(html, /data-sort-control=/, `${route || 'home'} must not expose a sort control`);
+  }
+});

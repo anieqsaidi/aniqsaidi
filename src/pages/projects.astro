@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Frame from '../components/Frame.astro';
 import AnimatedText from '../components/AnimatedText.astro';
+import ContentSort from '../components/ContentSort.astro';
 import { defaultHomeContent } from '../data/homeContent';
 import { defaultSiteFields } from '../data/siteFields';
 import { migrateV1ToV2 } from '../data/cmsSchema';
@@ -40,9 +41,11 @@ const tags = (items: typeof projects[number]['technologies']) => items.map((item
         <p>Healthcare platforms, public-facing systems, and enterprise analytics—documented around the problem, my contribution, and the engineering decisions that can be shared safely.</p>
       </header>
 
-      <div class="project-grid" id="project-grid" aria-live="polite">
+      <ContentSort scope="projects" />
+
+      <div class="project-grid" id="project-grid" aria-live="polite" data-sort-scope="projects" data-sort-container>
         {projects.map((project, index) => (
-          <article class="project-card" id={`project-${project.slug}`} data-project-card={project.slug}>
+          <article class="project-card" id={`project-${project.slug}`} data-project-card={project.slug} data-sort-item data-sort-date={project.period} data-sort-title={project.title}>
             <header>
               <span>{String(index + 1).padStart(2, '0')} // {project.category}</span>
               <span class="project-card-state">

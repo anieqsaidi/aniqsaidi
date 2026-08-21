@@ -1,0 +1,23 @@
+---
+interface Props {
+  scope: string;
+}
+
+const { scope } = Astro.props;
+---
+
+<div class="content-sort" data-sort-control={scope}>
+  <label for={`content-sort-${scope}`}>&gt; SORT BY</label>
+  <select id={`content-sort-${scope}`} aria-label="Sort content">
+    <option value="latest">LATEST FIRST</option>
+    <option value="oldest">OLDEST FIRST</option>
+    <option value="title-asc">TITLE // A-Z</option>
+    <option value="title-desc">TITLE // Z-A</option>
+  </select>
+  <span data-sort-status aria-live="polite">LATEST FIRST</span>
+</div>
+
+<script>
+  import { initializeContentSort } from '../scripts/contentSort';
+  initializeContentSort();
+</script>

@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Frame from '../components/Frame.astro';
 import AnimatedText from '../components/AnimatedText.astro';
+import ContentSort from '../components/ContentSort.astro';
 import { experience, skillGroups } from '../data/cv';
 
 const earlierRoleEffects = [
@@ -25,9 +26,10 @@ const toolkitEffects = [
 
 <Layout title="EXPERIENCE" description="Professional experience and technical toolkit of Aniq Saidi.">
   <Frame title="WORK EXPERIENCE">
-    <div class="timeline" data-cms-collection="experience.jobs">
+    <ContentSort scope="experience" />
+    <div class="timeline" data-cms-collection="experience.jobs" data-sort-scope="experience" data-sort-container>
       {experience.map((job, jobIndex) => (
-        <article class="timeline-item">
+        <article class="timeline-item" data-sort-item data-sort-date={job.start} data-sort-title={job.role}>
           <header class="timeline-head">
             <div>
               <h2 data-cms-field={`experience.jobs.${jobIndex}.role`}>

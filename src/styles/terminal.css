@@ -1539,6 +1539,37 @@ html[data-js='true'] .home-system.is-content-loading::before {
   flex-direction: column;
 }
 
+.content-sort {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  margin: 0 0 16px;
+  color: var(--fg-dim);
+  font-size: .68rem;
+  letter-spacing: .07em;
+}
+
+.content-sort select {
+  min-height: 38px;
+  padding: 7px 30px 7px 10px;
+  border: 1px solid var(--fg-dim);
+  border-radius: 0;
+  background: var(--bg-deep);
+  color: var(--fg-bright);
+  font: inherit;
+  cursor: pointer;
+}
+
+.content-sort select:hover,
+.content-sort select:focus-visible {
+  border-color: var(--fg-bright);
+  outline: none;
+  box-shadow: 0 0 7px var(--glow);
+}
+
+.content-sort [data-sort-status] { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
 /* ---------- Curated record highlights ---------- */
 
 .record-highlights {
