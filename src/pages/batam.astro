@@ -26,11 +26,11 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
 
 <TripLayout title="Batam 2026 · Trip Portal" description="Private travel companion for the Batam 2026 group trip.">
   <main class="trip-shell">
-    <header class="trip-hero" id="top">
-      <div class="hero-topline"><span class="eyebrow">GROUP TRIP · PRIVATE LINK</span><span class="status-dot">Plan active</span></div>
+    <header class="trip-hero justify-self-center" id="top">
+      <!-- <div class="hero-topline"><span class="eyebrow">GROUP TRIP · PRIVATE LINK</span><span class="status-dot">Plan active</span></div> -->
       <h1>BATAM <span>2026</span></h1>
       <p class="trip-date">28–30 August 2026</p>
-      <div class="trip-stats" aria-label="Trip summary"><span>3 Days · 2 Nights</span><span>9 Travellers</span></div>
+      <!-- <div class="trip-stats" aria-label="Trip summary"><span>3 Days · 2 Nights</span><span>9 Travellers</span></div> -->
       <div class="route"><span>Sungai Buloh</span><b>→</b><span>Pasir Gudang</span><b>→</b><span>Batam</span></div>
       <p class="departure-note"><b>Status:</b> <span id="trip-status" aria-live="polite">Awaiting departure · 27 Aug at approximately 10:00 PM MYT</span></p>
     </header>
@@ -52,6 +52,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       <span class="section-switcher__hint" aria-hidden="true"> <b>→</b></span>
     </nav>
 
+    <div class="trip-content" id="trip-content">
     <section class="panel immigration-card immigration-card--priority" data-home-view data-hide-after="2026-08-27T00:00:00+08:00" aria-labelledby="entry-forms-title"><div class="immigration-card__icon" aria-hidden="true">!</div><div><span class="priority-deadline">High priority · Complete 26 August</span><h2 id="entry-forms-title">2 Indonesia entry forms</h2><div class="entry-form-steps"><article><span>1</span><div><h3>All Indonesia declaration</h3><p>Required arrival, immigration, customs and health declaration. Save the QR code after submission.</p><a href="https://allindonesia.imigrasi.go.id/" target="_blank" rel="noopener noreferrer">Complete All Indonesia ↗</a></div></article><article><span>2</span><div><h3>Visa Exemption for autogate</h3><p>A separate free application for each eligible foreign traveller. All Indonesia may offer this next, but it is processed through Indonesia eVisa.</p><a href="https://evisa.imigrasi.go.id/" target="_blank" rel="noopener noreferrer">Apply for Visa Exemption ↗</a></div></article></div></div></section>
 
     <section class="top-essentials" id="essentials" data-home-view aria-labelledby="essentials-title">
@@ -202,6 +203,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     </section>
 
     <footer class="trip-footer" data-home-view><a href="#top">Back to top ↑</a><p>Batam 2026 · Keep this link within the travel group.</p></footer>
+    </div>
   </main>
 
   <dialog class="entry-reminder" id="entry-reminder" data-hide-after="2026-08-27T00:00:00+08:00" aria-labelledby="entry-reminder-title">
@@ -243,7 +245,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     const now = new Date();
     const tripStatus = document.getElementById('trip-status');
     const tripStages = [
-      ['2026-08-27T22:00:00+08:00', 'Awaiting departure · 27 Aug at approximately 10:00 PM MYT'],
+      ['2026-08-27T22:00:00+08:00', 'Awaiting departure · 27 Aug · 10:00 PM MYT'],
       ['2026-08-28T04:00:00+08:00', 'En route to Pasir Gudang'],
       ['2026-08-28T08:45:00+08:00', 'At Pasir Gudang · Preparing for ferry departure'],
       ['2026-08-28T08:45:00+07:00', 'Crossing to Batam Centre'],
