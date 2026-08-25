@@ -19,8 +19,9 @@ const cars = [
   ['Car 2 · Perodua Myvi · 2 people', 'Aniq · Faisal', 'Aniq', '+60192427685'],
   ['Car 3 · Perodua Myvi · 3 people', 'Badiuz · Nasuha · Nayla (Infant)', 'Badiuz', '+60133593495'],
 ];
-const essentials = ['Passport', 'Ferry ticket', 'Travel insurance', 'eSIM installed / downloaded', 'MYR cash', 'IDR cash', 'Phone charger', 'Power bank', 'Medication', 'Hotel booking', 'Supir contact'];
+const essentials = ['Passport', 'All Indonesia arrival declaration', 'Visa Exemption for autogate', 'Ferry ticket', 'Travel insurance', 'eSIM installed / downloaded', 'MYR cash', 'IDR cash', 'Phone charger', 'Power bank', 'Medication', 'Hotel booking', 'Supir contact'];
 const esimOrderUrl = 'https://uk.trip.com/m/tntorder/orderdetailwkp?orderid=1433814105962330&tripsignature=AAEAAQAHb3JkZXJpZLgkM4pZVj-CMf58nIKCREeF7l5WYjghsP0J000cKpxv-tripsign';
+const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
 ---
 
 <TripLayout title="Batam 2026 · Trip Portal" description="Private travel companion for the Batam 2026 group trip.">
@@ -31,40 +32,54 @@ const esimOrderUrl = 'https://uk.trip.com/m/tntorder/orderdetailwkp?orderid=1433
       <p class="trip-date">28–30 August 2026</p>
       <div class="trip-stats" aria-label="Trip summary"><span>3 Days · 2 Nights</span><span>9 Travellers</span></div>
       <div class="route"><span>Sungai Buloh</span><b>→</b><span>Pasir Gudang</span><b>→</b><span>Batam</span></div>
-      <p class="departure-note"><b>Road departure:</b> 27 Aug · approximately 10:00 PM MYT</p>
+      <p class="departure-note"><b>Status:</b> <span id="trip-status" aria-live="polite">Awaiting departure · 27 Aug at approximately 10:00 PM MYT</span></p>
     </header>
 
-    <section class="panel fx-converter" id="currency" aria-labelledby="fx-title" data-rate="4369.71">
-      <div class="fx-heading"><div><p class="eyebrow">WISE RATE SNAPSHOT</p><h2 id="fx-title">Quick currency check</h2></div><span>Checked 25 Aug 2026</span></div>
-      <div class="fx-fields">
-        <label><span>You have</span><div><b id="fx-from-symbol">RM</b><input id="fx-amount" type="number" min="0" step="any" inputmode="decimal" value="100" aria-describedby="fx-rate-note" /><strong id="fx-from-code">MYR</strong></div></label>
-        <button class="fx-swap" id="fx-swap" type="button" aria-label="Swap MYR and IDR">⇄</button>
-        <div class="fx-result" aria-live="polite"><span>You get approximately</span><div><b id="fx-to-symbol">Rp</b><output id="fx-output" for="fx-amount">436,971</output><strong id="fx-to-code">IDR</strong></div></div>
+    <nav class="section-switcher" aria-label="Quick access">
+      <div class="section-switcher__scroll">
+        <button class="active" type="button" data-view="home" aria-pressed="true">Home</button>
+        <button type="button" data-view="itinerary" aria-pressed="false">Plan</button>
+        <button type="button" data-view="ferry" aria-pressed="false">Ferry</button>
+        <button type="button" data-view="hotel" aria-pressed="false">Hotel</button>
+        <button type="button" data-view="crew" aria-pressed="false">Crew</button>
+        <button type="button" data-view="supir" aria-pressed="false">Supir</button>
+        <button type="button" data-view="insurance" aria-pressed="false">Insurance</button>
+        <button type="button" data-view="esim" aria-pressed="false">eSIM</button>
+        <button type="button" data-view="photos" aria-pressed="false">Photos</button>
+        <button type="button" data-view="payments" aria-pressed="false">Payments</button>
+        <button type="button" data-view="emergency" aria-pressed="false">Emergency</button>
       </div>
-      <div class="fx-footer"><details><summary>Rate details</summary><p id="fx-rate-note">Wise mid-market reference on 25 Aug 2026: RM1 = Rp4,369.71. Rates change; fees and the final card or transfer amount may differ.</p></details><a href="https://wise.com/my/currency-converter/myr-to-idr-rate" target="_blank" rel="noopener noreferrer">Live Wise rate ↗</a></div>
+      <span class="section-switcher__hint" aria-hidden="true"> <b>→</b></span>
+    </nav>
+
+    <section class="panel immigration-card immigration-card--priority" data-home-view data-hide-after="2026-08-27T00:00:00+08:00" aria-labelledby="entry-forms-title"><div class="immigration-card__icon" aria-hidden="true">!</div><div><span class="priority-deadline">High priority · Complete 26 August</span><h2 id="entry-forms-title">2 Indonesia entry forms</h2><div class="entry-form-steps"><article><span>1</span><div><h3>All Indonesia declaration</h3><p>Required arrival, immigration, customs and health declaration. Save the QR code after submission.</p><a href="https://allindonesia.imigrasi.go.id/" target="_blank" rel="noopener noreferrer">Complete All Indonesia ↗</a></div></article><article><span>2</span><div><h3>Visa Exemption for autogate</h3><p>A separate free application for each eligible foreign traveller. All Indonesia may offer this next, but it is processed through Indonesia eVisa.</p><a href="https://evisa.imigrasi.go.id/" target="_blank" rel="noopener noreferrer">Apply for Visa Exemption ↗</a></div></article></div></div></section>
+
+    <section class="top-essentials" id="essentials" data-home-view aria-labelledby="essentials-title">
+      <div class="section-heading"><p class="eyebrow">NEXT PRIORITY</p><h2 id="essentials-title">Trip checklist</h2></div>
+      <div class="panel info-disclosure info-disclosure--static"><div class="info-disclosure__header"><div><span class="eyebrow">BEFORE WE GO</span><strong>13 essentials to prepare</strong></div></div><div class="info-disclosure__content checklist">{essentials.map((item) => <label><input type="checkbox" /><span>{item}</span></label>)}</div></div>
     </section>
 
-    <section class="up-next" aria-labelledby="up-next-title">
+    <section class="up-next" data-home-view aria-labelledby="up-next-title">
       <div><p class="eyebrow">UP NEXT</p><h2 id="up-next-title">Depart Sungai Buloh</h2><p id="next-time">27 Aug · 10:00 PM MYT</p></div>
       <div class="next-icon" aria-hidden="true">→</div>
       <p class="next-detail" id="next-detail">3 cars · 9 travellers · Overnight drive</p>
     </section>
 
-    <section class="panel today-panel" aria-labelledby="today-title">
+    <section class="panel today-panel" data-home-view aria-labelledby="today-title">
       <div class="section-heading"><p class="eyebrow">AT A GLANCE</p><h2 id="today-title">Today’s itinerary</h2></div>
       <div id="today-events" class="today-events"><p class="muted">&rarr; The trip begins Thursday, 27 August.</p></div>
     </section>
 
-    <section class="notice-stack" aria-label="Important notices">
+    <section class="notice-stack" data-home-view aria-label="Important notices">
       {notices.map((notice) => <article class={`notice notice--${notice.kind}`}><span class="notice-mark" aria-hidden="true">{notice.kind === 'confirmed' ? '✓' : '!'}</span><div><h3>{notice.label}</h3><p>{notice.text}</p></div></article>)}
     </section>
 
-    <section class="section-block" id="itinerary" aria-labelledby="itinerary-title">
+    <section class="section-block" id="itinerary" data-section-view="itinerary" aria-labelledby="itinerary-title">
       <div class="section-heading"><p class="eyebrow">THE FULL PLAN</p><h2 id="itinerary-title">Itinerary</h2></div>
       <div class="days">
         {itinerary.map((day, index) => (
-          <details class="day-card" open={index === 0} data-date={day.date}>
-            <summary><div><span>{day.label} · {new Date(`${day.date}T12:00:00Z`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })}</span><h3>{day.title}</h3></div><i aria-hidden="true">+</i></summary>
+          <article class="day-card" data-date={day.date}>
+            <div class="day-card__header"><div><span>{day.label} · {new Date(`${day.date}T12:00:00Z`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })}</span><h3>{day.title}</h3></div></div>
             <div class="timeline">
               {day.events.map((event) => (
                 <article class="event" id={event.title === 'Harbour Bay Downtown' ? 'place-harbour-bay' : event.title === 'Grand Batam Mall' ? 'place-grand-batam' : event.title === 'Ferry check-in' ? 'place-batam-centre-terminal' : undefined} data-datetime={event.datetime}>
@@ -73,27 +88,27 @@ const esimOrderUrl = 'https://uk.trip.com/m/tntorder/orderdetailwkp?orderid=1433
                 </article>
               ))}
             </div>
-          </details>
+          </article>
         ))}
       </div>
     </section>
 
-    <section class="section-block" id="ferry">
+    <section class="section-block" id="ferry" data-section-view="ferry">
       <div class="section-heading"><p class="eyebrow">CROSSING</p><h2>Ferry</h2></div>
       <div class="two-col">
         <article class="panel booking-card"><div class="card-top"><span class="badge badge--confirmed">Outbound · Confirmed</span><span>28 Aug 2026</span></div><h3>Pasir Gudang <b>→</b> Batam Centre</h3><p class="big-time">8:45 AM <small>MYT</small></p><p class="equivalent">Be at the counter by 7:15 AM MYT</p><dl><div><dt>Depart</dt><dd>Pelabuhan Pasir Gudang</dd></div><div><dt>Arrive</dt><dd>Batam Centre</dd></div></dl></article>
         <article class="panel booking-card"><div class="card-top"><span class="badge badge--confirmed">Return · Confirmed</span><span>30 Aug 2026</span></div><h3>Batam Centre <b>→</b> Pasir Gudang</h3><p class="big-time">11:20 AM <small>WIB</small></p><p class="equivalent">12:20 PM MYT · counter by 9:50 AM WIB</p><dl><div><dt>Depart</dt><dd>Batam Centre</dd></div><div><dt>Arrive</dt><dd>Pelabuhan Pasir Gudang</dd></div></dl></article>
       </div>
       <article class="panel ferry-order-card"><div class="card-top"><div><p class="eyebrow">EASYBOOK ORDER</p><h3>BRKR5HYN</h3></div><span class="badge badge--confirmed">Confirmed</span></div><dl><div><dt>Trip</dt><dd>Two way · 9 passengers</dd></div><div><dt>Operator</dt><dd>PPT Ticketing Sdn Bhd</dd></div><div><dt>Order code</dt><dd>EBMY-ON-2607229822</dd></div><div><dt>Seaport tax</dt><dd>Included</dd></div><div><dt>Luggage</dt><dd>15 kg per passenger</dd></div></dl><a class="ferry-support" href="https://wa.me/60189691080" target="_blank" rel="noopener noreferrer">Easybook WhatsApp support</a></article>
-      <details class="panel info-disclosure ferry-guide"><summary><div><span class="eyebrow">BEFORE BOARDING</span><strong>Check-in & document reminders</strong></div><i aria-hidden="true">+</i></summary><div class="info-disclosure__content"><ul><li>Check in at the ferry counter 90 minutes before departure.</li><li>Bring each traveller’s passport and required travel documents.</li><li>Keep the order summary available; print it if requested, as a screenshot may not be accepted.</li><li>The booking summary does not state an estimated arrival time or assigned seats.</li><li>Schedules can change—verify with the operator before travelling.</li></ul><p>The original order summary is not attached here because it contains travellers’ passport and identity details.</p></div></details>
+      <article class="panel info-disclosure info-disclosure--static ferry-guide"><div class="info-disclosure__header"><div><span class="eyebrow">BEFORE BOARDING</span><strong>Check-in & document reminders</strong></div></div><div class="info-disclosure__content"><ul><li>Check in at the ferry counter 90 minutes before departure.</li><li>Bring each traveller’s passport and required travel documents.</li><li>Keep the order summary available; print it if requested, as a screenshot may not be accepted.</li><li>The booking summary does not state an estimated arrival time or assigned seats.</li><li>Schedules can change—verify with the operator before travelling.</li></ul><p>The original order summary is not attached here because it contains travellers’ passport and identity details.</p></div></article>
     </section>
 
-    <section class="section-block" id="hotel">
+    <section class="section-block" id="hotel" data-section-view="hotel">
       <div class="section-heading"><p class="eyebrow">2-NIGHT STAY</p><h2>Hotel</h2></div>
       <article class="panel hotel-card">
         <div class="hotel-card__top"><div><span class="badge badge--confirmed">4 rooms confirmed · 28–30 August</span><h3>Lovina Inn Nagoya Batam</h3><p>Budget-friendly hotel in central Lubuk Baja, Batam.</p></div><span class="hotel-rating">2-star</span></div>
         <address>Komplek Sri Usaha, Blk. H No. 8, Lubuk Baja Kota, Kota Batam, Kepulauan Riau 29444, Indonesia</address>
-        <details class="hotel-details"><summary>Nearby places & amenities <span>View</span></summary><div class="hotel-details__content">
+        <div class="hotel-details"><div class="hotel-details__header">Nearby places & amenities</div><div class="hotel-details__content">
           <div class="hotel-location-grid">
             <div><span>Walkable</span><strong>Nagoya Citywalk</strong><small>≈ 240 m · about 3–5 min</small></div>
             <div><span>Walkable</span><strong>Nagoya Hill Mall</strong><small>≈ 300–500 m · about 4–7 min</small></div>
@@ -102,55 +117,73 @@ const esimOrderUrl = 'https://uk.trip.com/m/tntorder/orderdetailwkp?orderid=1433
             <div><span>Day 3 itinerary</span><strong>Batam Centre terminal</strong><small>≈ 5.5–8 km · about 10–16 min by car</small><a class="hotel-itinerary-link" href="#place-batam-centre-terminal">See in itinerary →</a></div>
           </div>
           <ul class="amenity-list" aria-label="Hotel amenities"><li>Free Wi-Fi</li><li>Basic breakfast</li><li>24-hour front desk</li><li>Air conditioning</li><li>Lift access</li><li>Halal dining</li><li>Free parking</li></ul>
-        </div></details>
-        <details class="hotel-details booking-confirmation-details"><summary>Booking & check-in details <span>View</span></summary><div class="hotel-details__content"><dl class="hotel-booking-facts"><div><dt>Check-in</dt><dd>28 Aug · from 3:00 PM</dd></div><div><dt>Check-out</dt><dd>30 Aug · by 12:00 PM</dd></div><div><dt>Confirmations</dt><dd>5440.336.138 · 6085.884.190</dd></div><div><dt>Meal plan</dt><dd>No meals included</dd></div></dl><p class="hotel-arrival-note">Arrive before 6:00 PM. Contact the hotel in advance if the group will be later, and present the confirmations with valid ID at check-in.</p></div></details>
+        </div></div>
+        <div class="hotel-details booking-confirmation-details"><div class="hotel-details__header">Booking & check-in details</div><div class="hotel-details__content"><dl class="hotel-booking-facts"><div><dt>Check-in</dt><dd>28 Aug · from 3:00 PM</dd></div><div><dt>Check-out</dt><dd>30 Aug · by 12:00 PM</dd></div><div><dt>Confirmations</dt><dd>5440.336.138 · 6085.884.190</dd></div><div><dt>Meal plan</dt><dd>No meals included</dd></div></dl><p class="hotel-arrival-note">Arrive before 6:00 PM. Contact the hotel in advance if the group will be later, and present the confirmations with valid ID at check-in.</p></div></div>
         <div class="hotel-actions"><a href="tel:+62778421789">Call hotel</a><a class="hotel-action--secondary" href="https://www.lovinainn.com/" target="_blank" rel="noopener noreferrer">Official website</a></div>
       </article>
-      <details class="panel info-disclosure"><summary><div><span class="eyebrow">ROOM ALLOCATION</span><strong>4 rooms · 9 travellers</strong></div><i aria-hidden="true">+</i></summary><div class="info-disclosure__content compact-grid">{rooms.map(([room, type, guests]) => <article class="compact-card"><span>{room}</span><h3>{type}</h3><p>{guests}</p></article>)}</div></details>
+      <div class="panel info-disclosure info-disclosure--static"><div class="info-disclosure__header"><div><span class="eyebrow">ROOM ALLOCATION</span><strong>4 rooms · 9 travellers</strong></div></div><div class="info-disclosure__content compact-grid">{rooms.map(([room, type, guests]) => <article class="compact-card"><span>{room}</span><h3>{type}</h3><p>{guests}</p></article>)}</div></div>
     </section>
 
-    <section class="section-block" id="crew">
+    <section class="section-block" id="crew" data-section-view="crew">
       <div class="section-heading"><p class="eyebrow">9 TRAVELLERS · 3 CARS</p><h2>Crew</h2></div>
-      <details class="panel info-disclosure"><summary><div><span class="eyebrow">CAR ALLOCATION</span><strong>View 3-car arrangement</strong></div><i aria-hidden="true">+</i></summary><div class="info-disclosure__content compact-grid car-grid">{cars.map(([car, people, pic, phone]) => <article class="compact-card car-card"><h3>{car}</h3><p>{people}</p><a class="car-pic" href={`tel:${phone}`}><span>PIC · {pic}</span><b>{phone}</b></a></article>)}</div></details>
+      <div class="panel info-disclosure info-disclosure--static"><div class="info-disclosure__header"><div><span class="eyebrow">CAR ALLOCATION</span><strong>3-car arrangement</strong></div></div><div class="info-disclosure__content compact-grid car-grid">{cars.map(([car, people, pic, phone]) => <article class="compact-card car-card"><h3>{car}</h3><p>{people}</p><a class="car-pic" href={`tel:${phone}`}><span>PIC · {pic}</span><b>{phone}</b></a></article>)}</div></div>
       <!-- <article class="notice notice--info"><span class="notice-mark">i</span><div><h3>Travelling with a child</h3><p>Nayla is an infant. Confirm infant ferry rules, pricing, insurance and medical arrangements separately.</p></div></article> -->
     </section>
 
-    <section class="section-block" id="supir">
+    <section class="section-block" id="supir" data-section-view="supir">
       <div class="section-heading"><p class="eyebrow">LOCAL TRANSPORT</p><h2>Supir</h2></div>
       <article class="panel supir-profile"><div class="supir-avatar" aria-hidden="true">CR</div><div><span class="badge badge--confirmed">Driver confirmed</span><h3>Christina Rahmawati</h3><p>Local driver · Batam · +62 852-3266-1117</p></div><a href="https://www.tiktok.com/@dlapandlapan.tour" target="_blank" rel="noopener noreferrer">TikTok · @dlapandlapan.tour</a></article>
       <article class="panel feature-card transport"><div><span class="badge badge--confirmed">2 cars · Booked for 2 days</span><h3>28–29 August · 9:00 AM–10:00 PM</h3><div class="transport-rate"><div><span>Daily rate · 2 cars</span><strong>IDR 1,500,000</strong><small>≈ RM343.27</small></div><div><span>2-day total</span><strong>IDR 3,000,000</strong><small>≈ RM686.54</small></div></div><p class="price">IDR 375,000 <span>≈ RM85.82</span><small>per paying adult · 8 adults · Nayla excluded</small></p><p>Pickup at Batam Centre ferry terminal is confirmed. Car models are still pending; registration plates are not required for this portal.</p><p class="conversion-note">MYR estimates use the Wise mid-market rate checked 25 Aug 2026: RM1 = IDR 4,369.71.</p></div><div class="actions"><a href="https://wa.me/6285232661117" target="_blank" rel="noopener">WhatsApp</a><a href="tel:+6285232661117">Call</a></div></article>
-      <article class="panel bank-card"><div class="card-top"><div><p class="eyebrow">PAYMENT ACCOUNT</p><h3>BRI · Christina Rahmawati</h3></div><span class="badge badge--confirmed">Confirmed</span></div><code>0621 0108 8401 509</code><button type="button" data-copy-account="062101088401509">Copy account number</button></article>
-      <details class="panel info-disclosure"><summary><div><span class="eyebrow">PAYMENT & BOOKING</span><strong>Deposit paid · IDR 2,800,000 (≈ RM640.77) remaining</strong></div><i aria-hidden="true">+</i></summary><div class="info-disclosure__content"><div class="pending-grid booking-facts"><div><span>Arrangement</span><b>Personal</b></div><div><span>Payment status</span><b>Deposit paid</b></div><div><span>Deposit · 8 August</span><b>IDR 200,000 <small>≈ RM45.77</small></b></div><div><span>Remaining balance</span><b>IDR 2,800,000 <small>≈ RM640.77</small></b></div><div><span>Balance per adult · 8 adults</span><b>IDR 350,000 <small>≈ RM80.10</small></b></div></div><p class="balance-calculation">IDR 3,000,000 (≈ RM686.54) total − IDR 200,000 (≈ RM45.77) deposit = IDR 2,800,000 (≈ RM640.77) remaining.</p></div></details>
     </section>
 
-    <section class="section-block" id="esim">
+    <section class="section-block" id="esim" data-section-view="esim">
       <div class="section-heading"><p class="eyebrow">CONNECTIVITY</p><h2>eSIM</h2></div>
       <article class="panel readiness esim-summary"><div><span class="ready-check">✓</span><div><span class="badge badge--confirmed">Order ready</span><h3>Trip.com eSIM order</h3><p>Aniq will manage and distribute the travellers’ eSIMs from this shared order.</p></div></div><a class="esim-order-link" href={esimOrderUrl} target="_blank" rel="noopener noreferrer">Manage eSIMs on Trip.com ↗</a></article>
       <!-- <div class="esim-grid" aria-label="Traveller connectivity status">
         <article><span class="badge badge--confirmed">Own roaming</span><strong>Badiuz</strong></article>
         <article><span class="badge badge--tbc">Not required</span><strong>Nayla</strong><small>1 year old · no phone</small></article>
       </div> -->
-      <details class="panel info-disclosure esim-guide"><summary><div><span class="eyebrow">SETUP GUIDE</span><strong>Before eSIM installation</strong></div><i aria-hidden="true">+</i></summary><div class="info-disclosure__content"><ol><li>Use a stable internet connection.</li><li>Install on the phone that will use it—the eSIM cannot be transferred after installation.</li><li>Activate after arriving at the destination.</li><li>Turn on the eSIM line and data roaming.</li></ol></div></details>
+      <article class="panel info-disclosure info-disclosure--static esim-guide"><div class="info-disclosure__header"><div><span class="eyebrow">SETUP GUIDE</span><strong>Before eSIM installation</strong></div></div><div class="info-disclosure__content"><ol><li>Use a stable internet connection.</li><li>Install on the phone that will use it—the eSIM cannot be transferred after installation.</li><li>Activate after arriving at the destination.</li><li>Turn on the eSIM line and data roaming.</li></ol></div></article>
     </section>
 
-    <section class="section-block" id="insurance">
+    <section class="section-block" id="insurance" data-section-view="insurance">
       <div class="section-heading"><p class="eyebrow">COVERAGE</p><h2>Insurance</h2></div>
       <article class="panel insurance-summary">
-        <div class="card-top"><span class="badge badge--confirmed">6 covered · 3 policy pending</span><span>28–30 Aug 2026</span></div>
+        <div class="card-top"><span class="badge badge--confirmed">6 travellers covered</span><span>28–30 Aug 2026</span></div>
         <h3>Zurich Travel Takaful</h3><p>International · Basic Plan · Southeast Asia · Group return cover</p>
         <div class="insurance-actions"><a href="/trip-files/zt-2026-6p-a8f31c7d92e64b0f.pdf" target="_blank" rel="noopener">Open protected policy PDF</a><a class="insurance-action--secondary" href="tel:1300888622">Call Zurich customer care</a></div>
         <details class="insurance-details"><summary>Policy details, covered names & benefits <span>View</span></summary><div class="insurance-details__content"><dl><div><dt>Certificate</dt><dd>PZTIMYGT038514</dd></div><div><dt>Travel Assist</dt><dd>Included</dd></div><div><dt>Total contribution</dt><dd>RM140.29</dd></div></dl><div class="covered-people"><span>People covered</span><ul><li>Muhammad Amrun Aniq bin Mohamed Saidi</li><li>Azilah binti Abd Aziz</li><li>Dedi bin Jalinas</li><li>Khairrin Naim bin Redzuan</li><li>Intan Nurshahira binti Razaly</li><li>Muhammad Faisal bin Hasan</li></ul></div><div class="benefit-grid" aria-label="Key insurance benefits"><article><span>Overseas medical</span><strong>Up to RM100,000</strong></article><article><span>Medical evacuation</span><strong>Unlimited</strong></article><article><span>Personal accident</span><strong>RM150,000</strong></article><article><span>Personal liability</span><strong>RM750,000</strong></article><article><span>Travel cancellation</span><strong>Up to RM20,000</strong></article><article><span>Baggage & effects</span><strong>Up to RM3,000</strong></article></div><p class="policy-note">The attached policy remains password-protected; its password is not displayed or stored on this page. Coverage remains subject to the certificate terms, conditions and exclusions. Zurich’s listed number is customer care, not a confirmed overseas emergency hotline.</p></div></details>
       </article>
-      <article class="notice notice--pending insurance-pending"><span class="notice-mark">!</span><div><h3>Takaful Malaysia family plan · Policy pending</h3><p>Badiuz · Nasuha · Nayla (infant) will be insured under the family plan. Certificate, coverage dates, benefits and child coverage confirmation are still pending.</p></div></article>
+      <article class="panel insurance-summary takaful-summary">
+        <div class="card-top"><span class="badge badge--confirmed">3 travellers covered</span><span>28–30 Aug 2026</span></div>
+        <h3>Takaful Malaysia myTRAVEL PA</h3><p>Family plan · Bronze · Region 1 · Overseas coverage</p>
+        <div class="insurance-actions"><a href="tel:+60376283905">Call 24-hour assistance</a><a class="insurance-action--secondary" href="tel:130088252385">Call customer care</a></div>
+        <details class="insurance-details"><summary>Policy details, covered names & benefits <span>View</span></summary><div class="insurance-details__content"><dl><div><dt>Certificate</dt><dd>TPAF00026645</dd></div><div><dt>Total contribution</dt><dd>RM55.00</dd></div><div><dt>Travel assistance</dt><dd>Included</dd></div></dl><div class="covered-people"><span>People covered</span><ul><li>Badiuz Zaman bin Badrul Idza</li><li>Nur Nasuha binti Mazalan</li><li>Nur Nayla Bahiyyah binti Badiuz Zaman</li></ul></div><div class="benefit-grid" aria-label="Key Takaful Malaysia benefits"><article><span>Personal accident · family</span><strong>Up to RM300,000</strong></article><article><span>Medical expenses · family</span><strong>Up to RM300,000</strong></article><article><span>Medical evacuation</span><strong>Unlimited</strong></article><article><span>Baggage & effects · family</span><strong>Up to RM7,500</strong></article><article><span>Personal liability · family</span><strong>Up to RM750,000</strong></article><article><span>Travel cancellation · family</span><strong>Up to RM15,000</strong></article></div><p class="policy-note">The original certificate is not linked here because it contains identity numbers, birth dates and a home address. Coverage remains subject to the certificate wording, terms and exclusions.</p></div></details>
+      </article>
     </section>
 
-    <section class="section-block" id="essentials">
-      <div class="section-heading"><p class="eyebrow">BEFORE WE GO</p><h2>Trip essentials</h2></div>
-      <details class="panel info-disclosure"><summary><div><span class="eyebrow">PACKING CHECKLIST</span><strong>11 trip essentials</strong></div><i aria-hidden="true">+</i></summary><div class="info-disclosure__content checklist">{essentials.map((item) => <label><input type="checkbox" /><span>{item}</span></label>)}</div></details>
-      <details class="panel info-disclosure currency-card"><summary><div><span class="eyebrow">PAYMENT NOTES</span><strong>Cash, Wise & QRIS</strong></div><i aria-hidden="true">+</i></summary><div class="info-disclosure__content"><div class="currency"><div><span>Malaysia</span><strong>MYR</strong><p>Terminal fees and Malaysia-side expenses</p></div><div><span>Batam</span><strong>IDR</strong><p>Terminal fees, local and cash-only expenses</p></div></div><small>Wise / QRIS may work where supported. Carry physical cash as backup.</small></div></details>
+    <section class="section-block" id="photos" data-section-view="photos">
+      <div class="section-heading"><p class="eyebrow">SHARED MEMORIES</p><h2>Trip photos</h2></div>
+      <article class="panel album-card"><div class="album-card__visual" aria-hidden="true"><span>BATAM</span><strong>2026</strong><div><i></i><i></i><i></i></div></div><div class="album-card__copy"><span class="badge badge--confirmed">Public album live</span><h3>Batam 2026 Shared Album</h3><p>View the group’s latest photos and videos in any browser—useful for Android users and anyone without the Apple Photos invitation.</p><a href={sharedAlbumUrl} target="_blank" rel="noopener noreferrer">View shared album ↗</a><small>Invited Apple users can contribute through Shared Albums. The public web link is primarily for viewing.</small></div></article>
     </section>
 
-    <section class="section-block emergency" id="emergency">
+    <section class="section-block" id="payments" data-section-view="payments">
+      <div class="section-heading"><p class="eyebrow">MONEY NOTES</p><h2>Payments</h2></div>
+      <section class="panel fx-converter" id="currency" aria-labelledby="fx-title" data-rate="4369.71">
+        <div class="fx-heading"><div><p class="eyebrow">WISE RATE SNAPSHOT</p><h2 id="fx-title">Quick currency check</h2></div><span>Checked 25 Aug 2026</span></div>
+        <div class="fx-fields">
+          <label><span>You have</span><div><b id="fx-from-symbol">RM</b><input id="fx-amount" type="number" min="0" step="any" inputmode="decimal" value="100" aria-describedby="fx-rate-note" /><strong id="fx-from-code">MYR</strong></div></label>
+          <button class="fx-swap" id="fx-swap" type="button" aria-label="Swap MYR and IDR">⇄</button>
+          <div class="fx-result" aria-live="polite"><span>You get approximately</span><div><b id="fx-to-symbol">Rp</b><output id="fx-output" for="fx-amount">436,971</output><strong id="fx-to-code">IDR</strong></div></div>
+        </div>
+        <div class="fx-footer"><details><summary>Rate details</summary><p id="fx-rate-note">Wise mid-market reference on 25 Aug 2026: RM1 = Rp4,369.71. Rates change; fees and the final card or transfer amount may differ.</p></details><a href="https://wise.com/my/currency-converter/myr-to-idr-rate" target="_blank" rel="noopener noreferrer">Live Wise rate ↗</a></div>
+      </section>
+      <article class="panel info-disclosure info-disclosure--static currency-card"><div class="info-disclosure__header"><div><span class="eyebrow">PAYMENT NOTES</span><strong>Cash, Wise & QRIS</strong></div></div><div class="info-disclosure__content"><div class="currency"><div><span>Malaysia</span><strong>MYR</strong><p>Terminal fees and Malaysia-side expenses</p></div><div><span>Batam</span><strong>IDR</strong><p>Terminal fees, local and cash-only expenses</p></div></div><small>Wise / QRIS may work where supported. Carry physical cash as backup.</small></div></article>
+      <article class="panel bank-card"><div class="card-top"><div><p class="eyebrow">SUPIR PAYMENT ACCOUNT</p><h3>BRI · Christina Rahmawati</h3></div><span class="badge badge--confirmed">Confirmed</span></div><code>0621 0108 8401 509</code><button type="button" data-copy-account="062101088401509">Copy account number</button></article>
+      <div class="panel info-disclosure info-disclosure--static"><div class="info-disclosure__header"><div><span class="eyebrow">SUPIR PAYMENT</span><strong>Deposit paid · IDR 2,800,000 (≈ RM640.77) remaining</strong></div></div><div class="info-disclosure__content"><div class="pending-grid booking-facts"><div><span>Arrangement</span><b>Personal</b></div><div><span>Payment status</span><b>Deposit paid</b></div><div><span>Deposit · 8 August</span><b>IDR 200,000 <small>≈ RM45.77</small></b></div><div><span>Remaining balance</span><b>IDR 2,800,000 <small>≈ RM640.77</small></b></div><div><span>Balance per adult · 8 adults</span><b>IDR 350,000 <small>≈ RM80.10</small></b></div></div><p class="balance-calculation">IDR 3,000,000 (≈ RM686.54) total − IDR 200,000 (≈ RM45.77) deposit = IDR 2,800,000 (≈ RM640.77) remaining.</p></div></div>
+    </section>
+
+    <section class="section-block emergency" id="emergency" data-section-view="emergency">
       <div class="section-heading"><p class="eyebrow">HELP & CONTACTS</p><h2>Emergency</h2></div>
       <article class="emergency-hotline"><div><span>BATAM EMERGENCY · 24 HOURS</span><strong>112</strong><p>Medical emergency · accident · fire · crime · disaster</p></div><a href="tel:112">Call 112</a></article>
       <details class="panel emergency-guide"><summary><div><span class="badge badge--important">Lost passport</span><strong>Emergency Certificate steps</strong></div><i aria-hidden="true">+</i></summary><div class="emergency-guide__content"><ol><li>Report the loss immediately at the nearest Indonesian police station and obtain the written police report.</li><li>Contact the Consulate of Malaysia in Pekanbaru before travelling there; request an appointment and confirm its current document checklist and processing time.</li><li>Prepare the police report, MyKad or other citizenship proof, a copy of the lost passport if available, completed forms IM.42 and IM.42C, and two recent 3.5 × 5 cm white-background photos.</li><li>Attend in person. The Emergency Certificate costs RM50 or its local-currency equivalent and is for a one-way return to Malaysia.</li><li>Ask the Consulate and Indonesian Immigration about any exit permit or other clearance required before buying replacement travel.</li></ol><p><b>Important:</b> Pekanbaru can issue an Emergency Certificate, but a new Malaysian passport in Indonesia is issued only through the Embassy in Jakarta.</p><div class="emergency-guide__actions"><a href="tel:+62761856166">Call Pekanbaru</a><a href="https://wa.me/6282171742841" target="_blank" rel="noopener noreferrer">WhatsApp</a><a href="https://www.kln.gov.my/web/idn_pekanbaru/mysafe-travel" target="_blank" rel="noopener noreferrer">MySafe guidance ↗</a></div></div></details>
@@ -164,32 +197,21 @@ const esimOrderUrl = 'https://uk.trip.com/m/tntorder/orderdetailwkp?orderid=1433
       <div class="compact-grid emergency-grid">
         <article class="panel compact-card"><span class="badge badge--confirmed">Confirmed</span><h3>Lovina Inn Nagoya</h3><p>+62 778 421789 · 24-hour front desk</p><a class="contact-action" href="tel:+62778421789">Call hotel</a></article>
         <article class="panel compact-card"><span class="badge badge--confirmed">Confirmed</span><h3>Supir</h3><p>Christina Rahmawati · +62 852-3266-1117</p><div class="emergency-actions"><a class="contact-action" href="https://wa.me/6285232661117" target="_blank" rel="noopener">WhatsApp</a><a class="contact-action contact-action--secondary" href="tel:+6285232661117">Call</a></div></article>
-        <article class="panel compact-card"><span class="badge badge--confirmed">6 covered · 3 policy pending</span><h3>Travel insurance</h3><p>Zurich: 6 covered · Takaful Malaysia family plan: 3 awaiting policy</p><a class="contact-action" href="tel:1300888622">Call Zurich customer care</a></article>
+        <article class="panel compact-card"><span class="badge badge--confirmed">All 9 covered</span><h3>Travel insurance</h3><p>Zurich: 6 travellers · Takaful Malaysia: 3 travellers</p><div class="emergency-actions"><a class="contact-action" href="tel:+60376283905">Takaful 24-hour assistance</a><a class="contact-action contact-action--secondary" href="tel:1300888622">Zurich customer care</a></div></article>
       </div>
     </section>
 
-    <footer class="trip-footer"><a href="#top">Back to top ↑</a><p>Batam 2026 · Keep this link within the travel group.</p></footer>
+    <footer class="trip-footer" data-home-view><a href="#top">Back to top ↑</a><p>Batam 2026 · Keep this link within the travel group.</p></footer>
   </main>
 
-  <div class="nav-dock">
-    <nav class="trip-nav" aria-label="Trip navigation">
-      <a class="active" href="#top" data-nav="top" aria-current="location"><span aria-hidden="true">⌂</span><b>Home</b></a>
-      <a href="#itinerary" data-nav="itinerary"><span aria-hidden="true">▤</span><b>Plan</b></a>
-      <button class="nav-more-button" type="button" aria-expanded="false" aria-controls="quick-sheet"><span aria-hidden="true">+</span><b>More</b></button>
-      <a href="#ferry" data-nav="ferry"><span aria-hidden="true">↔</span><b>Ferry</b></a>
-      <a href="#emergency" data-nav="emergency"><span aria-hidden="true">!</span><b>Emergency</b></a>
-    </nav>
-  </div>
-  <button class="quick-sheet-backdrop" type="button" aria-label="Close quick access" hidden></button>
-  <section class="quick-sheet" id="quick-sheet" aria-labelledby="quick-sheet-title" aria-hidden="true">
-    <div class="quick-sheet__handle" aria-hidden="true"></div>
-    <div class="quick-sheet__head"><div><p class="eyebrow">QUICK ACCESS</p><h2 id="quick-sheet-title">Where to?</h2></div><button class="quick-sheet__close" type="button" aria-label="Close quick access">×</button></div>
-    <div class="quick-sheet__grid">
-      <a href="#itinerary"><span>▤</span><b>Itinerary</b></a><a href="#ferry"><span>↔</span><b>Ferry</b></a><a href="#hotel"><span>⌂</span><b>Hotel</b></a>
-      <a href="#crew"><span>●</span><b>Crew</b></a><a href="#supir"><span>▣</span><b>Supir</b></a><a href="#esim"><span>⌁</span><b>eSIM</b></a>
-      <a href="#insurance"><span>◇</span><b>Insurance</b></a><a href="#essentials"><span>✓</span><b>Essentials</b></a><a href="#emergency"><span>+</span><b>Emergency</b></a>
-    </div>
-  </section>
+  <dialog class="entry-reminder" id="entry-reminder" data-hide-after="2026-08-27T00:00:00+08:00" aria-labelledby="entry-reminder-title">
+    <button class="entry-reminder__close" type="button" aria-label="Close immigration reminder">×</button>
+    <span class="priority-deadline">Action required · Complete 26 August</span>
+    <h2 id="entry-reminder-title">Indonesia entry forms are due</h2>
+    <p class="entry-reminder__countdown"><span>Time remaining</span><strong id="entry-countdown">Calculating…</strong></p>
+    <p>Complete both items before the deadline so eligible travellers can use the Batam immigration autogate.</p>
+    <div class="entry-reminder__actions"><a href="https://allindonesia.imigrasi.go.id/" target="_blank" rel="noopener noreferrer"><span>Step 1</span>All Indonesia ↗</a><a href="https://evisa.imigrasi.go.id/" target="_blank" rel="noopener noreferrer"><span>Step 2</span>Visa Exemption ↗</a></div>
+  </dialog>
 
   <script define:vars={{ itinerary, allEvents }}>
     const fxCard = document.querySelector('.fx-converter');
@@ -219,6 +241,54 @@ const esimOrderUrl = 'https://uk.trip.com/m/tntorder/orderdetailwkp?orderid=1433
 
     const formatDateTime = (date, zone) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: zone }).format(date).replace(',', ' ·');
     const now = new Date();
+    const tripStatus = document.getElementById('trip-status');
+    const tripStages = [
+      ['2026-08-27T22:00:00+08:00', 'Awaiting departure · 27 Aug at approximately 10:00 PM MYT'],
+      ['2026-08-28T04:00:00+08:00', 'En route to Pasir Gudang'],
+      ['2026-08-28T08:45:00+08:00', 'At Pasir Gudang · Preparing for ferry departure'],
+      ['2026-08-28T08:45:00+07:00', 'Crossing to Batam Centre'],
+      ['2026-08-30T11:20:00+07:00', 'In Batam · Following the live itinerary'],
+      ['2026-08-30T13:20:00+08:00', 'Returning by ferry to Pasir Gudang'],
+      ['2026-08-30T19:20:00+08:00', 'Arrived at Pasir Gudang · Driving home'],
+      ['9999-12-31T23:59:59+00:00', 'Trip complete · Welcome home'],
+    ];
+    const updateTripStatus = () => {
+      const currentTime = Date.now();
+      const stage = tripStages.find(([until]) => currentTime < new Date(until).getTime());
+      if (!tripStatus || !stage) return;
+      if (stage[1].startsWith('In Batam')) {
+        const nextBatamEvent = allEvents.find((event) => new Date(event.datetime).getTime() > currentTime);
+        tripStatus.textContent = nextBatamEvent ? `In Batam · Next: ${nextBatamEvent.title}` : stage[1];
+      } else tripStatus.textContent = stage[1];
+    };
+    updateTripStatus();
+    window.setInterval(updateTripStatus, 60000);
+    document.querySelectorAll('[data-hide-after]').forEach((element) => {
+      const hideAfter = new Date(element.getAttribute('data-hide-after'));
+      if (!Number.isNaN(hideAfter.getTime()) && now >= hideAfter) {
+        element.dataset.expired = 'true';
+        element.hidden = true;
+      }
+    });
+    const entryReminder = document.getElementById('entry-reminder');
+    const entryCountdown = document.getElementById('entry-countdown');
+    const entryDeadline = new Date(entryReminder?.getAttribute('data-hide-after') || '2026-08-27T00:00:00+08:00');
+    const updateEntryCountdown = () => {
+      const remaining = Math.max(0, entryDeadline.getTime() - Date.now());
+      const totalMinutes = Math.floor(remaining / 60000);
+      const days = Math.floor(totalMinutes / 1440);
+      const hours = Math.floor((totalMinutes % 1440) / 60);
+      const minutes = totalMinutes % 60;
+      if (entryCountdown) entryCountdown.textContent = days > 0 ? `${days}d ${hours}h ${minutes}m` : `${hours}h ${minutes}m`;
+      if (remaining === 0 && entryReminder?.open) entryReminder.close();
+    };
+    if (entryReminder && now < entryDeadline) {
+      updateEntryCountdown();
+      window.setInterval(updateEntryCountdown, 60000);
+      window.requestAnimationFrame(() => entryReminder.showModal());
+    }
+    entryReminder?.querySelector('.entry-reminder__close')?.addEventListener('click', () => entryReminder.close());
+    entryReminder?.addEventListener('click', (event) => { if (event.target === entryReminder) entryReminder.close(); });
     const next = allEvents.find((event) => new Date(event.datetime) > now);
     if (next) {
       document.getElementById('up-next-title').textContent = next.title;
@@ -235,7 +305,6 @@ const esimOrderUrl = 'https://uk.trip.com/m/tntorder/orderdetailwkp?orderid=1433
     const todayEl = document.getElementById('today-events');
     if (today && todayEl) {
       todayEl.innerHTML = today.events.map((event) => `<div><time>${event.time} <b>${event.timezone}</b></time><span>${event.title}</span></div>`).join('');
-      document.querySelector(`[data-date="${dayKey}"]`)?.setAttribute('open', '');
     }
 
     document.querySelectorAll('.checklist input').forEach((input) => {
@@ -250,96 +319,45 @@ const esimOrderUrl = 'https://uk.trip.com/m/tntorder/orderdetailwkp?orderid=1433
       window.setTimeout(() => { button.textContent = original; }, 1600);
     }));
 
-    const navLinks = [...document.querySelectorAll('[data-nav]')];
-    const moreButton = document.querySelector('.nav-more-button');
-    const quickSheet = document.querySelector('.quick-sheet');
-    const sheetBackdrop = document.querySelector('.quick-sheet-backdrop');
-    const sheetClose = document.querySelector('.quick-sheet__close');
-    const setQuickSheet = (open, restoreTriggerFocus = false) => {
-      quickSheet?.classList.toggle('quick-sheet--open', open);
-      quickSheet?.setAttribute('aria-hidden', String(!open));
-      moreButton?.setAttribute('aria-expanded', String(open));
-      if (sheetBackdrop) sheetBackdrop.hidden = !open;
-      document.body.classList.toggle('quick-sheet-open', open);
-      if (open) sheetClose?.focus();
-      else if (restoreTriggerFocus) moreButton?.focus({ preventScroll: true });
+    const viewButtons = [...document.querySelectorAll('[data-view]')];
+    const viewPanels = [...new Set([...document.querySelectorAll('[data-home-view], [data-section-view]')])];
+    const validViews = new Set(viewButtons.map((button) => button.dataset.view));
+    const sectionForHash = (hash) => {
+      const id = hash.replace(/^#/, '');
+      if (validViews.has(id)) return id;
+      return document.getElementById(id)?.closest('[data-section-view]')?.dataset.sectionView || 'home';
     };
-    moreButton?.addEventListener('click', () => setQuickSheet(true));
-    sheetClose?.addEventListener('click', () => setQuickSheet(false));
-    sheetBackdrop?.addEventListener('click', () => setQuickSheet(false));
-    quickSheet?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setQuickSheet(false)));
-    document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && quickSheet?.classList.contains('quick-sheet--open')) setQuickSheet(false, true); });
-
-    let dragStartY = 0;
-    let dragStartX = 0;
-    let dragDistance = 0;
-    let dragStartedAt = 0;
-    let draggingSheet = false;
-    let sheetDragActivated = false;
-    let suppressSheetClick = false;
-    quickSheet?.addEventListener('pointerdown', (event) => {
-      if (event.pointerType === 'mouse') return;
-      draggingSheet = true;
-      dragStartY = event.clientY;
-      dragStartX = event.clientX;
-      dragDistance = 0;
-      sheetDragActivated = false;
-      dragStartedAt = performance.now();
-      quickSheet.setPointerCapture(event.pointerId);
-    });
-    quickSheet?.addEventListener('pointermove', (event) => {
-      if (!draggingSheet) return;
-      const deltaY = event.clientY - dragStartY;
-      const deltaX = Math.abs(event.clientX - dragStartX);
-      if (!sheetDragActivated) {
-        if (deltaY < 8 || deltaY < deltaX) return;
-        sheetDragActivated = true;
-        suppressSheetClick = true;
-        quickSheet.classList.add('quick-sheet--dragging');
-      }
-      dragDistance = Math.max(0, deltaY);
-      quickSheet.style.setProperty('--sheet-drag-y', `${dragDistance}px`);
-    });
-    const finishSheetDrag = (event) => {
-      if (!draggingSheet) return;
-      draggingSheet = false;
-      quickSheet?.classList.remove('quick-sheet--dragging');
-      const elapsed = Math.max(1, performance.now() - dragStartedAt);
-      const shouldClose = dragDistance > 84 || (dragDistance / elapsed > .55 && dragDistance > 28);
-      if (shouldClose) setQuickSheet(false);
-      quickSheet?.style.setProperty('--sheet-drag-y', '0px');
-      if (quickSheet?.hasPointerCapture(event.pointerId)) quickSheet.releasePointerCapture(event.pointerId);
-      window.setTimeout(() => { suppressSheetClick = false; }, 0);
-    };
-    quickSheet?.addEventListener('pointerup', finishSheetDrag);
-    quickSheet?.addEventListener('pointercancel', finishSheetDrag);
-    quickSheet?.addEventListener('click', (event) => {
-      if (!suppressSheetClick) return;
-      event.preventDefault();
-      event.stopPropagation();
-    }, { capture: true });
-    const trackedSections = ['top', 'itinerary', 'ferry', 'hotel', 'crew', 'supir', 'esim', 'insurance', 'essentials', 'emergency'].map((id) => document.getElementById(id)).filter(Boolean);
-    const activeObserver = new IntersectionObserver((entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (!visible) return;
-      navLinks.forEach((link) => {
-        const active = link.dataset.nav === visible.target.id;
-        link.classList.toggle('active', active);
-        if (active) link.setAttribute('aria-current', 'location');
-        else link.removeAttribute('aria-current');
+    let activeView = 'home';
+    const setView = (requestedView, { updateHistory = true, toggle = false } = {}) => {
+      const requested = validViews.has(requestedView) ? requestedView : 'home';
+      const view = toggle && requested === activeView && requested !== 'home' ? 'home' : requested;
+      activeView = view;
+      viewPanels.forEach((panel) => {
+        const visible = view === 'home' ? panel.hasAttribute('data-home-view') : panel.dataset.sectionView === view;
+        panel.hidden = !visible || panel.dataset.expired === 'true';
       });
-      const secondary = ['hotel', 'crew', 'supir', 'esim', 'insurance', 'essentials'].includes(visible.target.id);
-      moreButton?.classList.toggle('active', secondary);
-    }, { rootMargin: '-20% 0px -65% 0px', threshold: [0, .1, .5] });
-    trackedSections.forEach((section) => activeObserver.observe(section));
+      viewButtons.forEach((button) => {
+        const active = button.dataset.view === view;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
+      if (updateHistory) {
+        const url = view === 'home' ? `${location.pathname}${location.search}` : `#${view}`;
+        history.pushState({ view }, '', url);
+      }
+    };
+    viewButtons.forEach((button) => button.addEventListener('click', () => setView(button.dataset.view || 'home', { toggle: true })));
+    const initialView = sectionForHash(location.hash);
+    setView(initialView, { updateHistory: false });
+    window.addEventListener('popstate', () => setView(sectionForHash(location.hash), { updateHistory: false }));
     document.querySelectorAll('.hotel-itinerary-link').forEach((link) => link.addEventListener('click', (event) => {
       const targetId = link.getAttribute('href')?.slice(1);
       const target = targetId ? document.getElementById(targetId) : null;
-      const day = target?.closest('details');
+      const day = target?.closest('.day-card');
       if (!target || !day) return;
       event.preventDefault();
-      day.open = true;
-      history.replaceState(null, '', `#${targetId}`);
+      setView('itinerary', { updateHistory: false });
+      history.pushState({ view: 'itinerary' }, '', `#${targetId}`);
       requestAnimationFrame(() => target.scrollIntoView({ behavior: 'smooth', block: 'center' }));
     }));
   </script>
