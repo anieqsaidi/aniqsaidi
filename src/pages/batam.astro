@@ -29,46 +29,46 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     <header class="trip-hero" id="top">
       <!-- <div class="hero-topline"><span class="eyebrow">GROUP TRIP · PRIVATE LINK</span><span class="status-dot">Plan active</span></div> -->
       <h1>BATAM <span>2026</span></h1>
-      <p class="trip-date">28–30 August 2026</p>
+      <p class="trip-date">🏙️ 🇲🇾 &nbsp; 28th ~ 30th August &nbsp; 🇮🇩 🛕</p>
       <!-- <div class="trip-stats" aria-label="Trip summary"><span>3 Days · 2 Nights</span><span>9 Travellers</span></div> -->
       <div class="route"><span>Sungai Buloh</span><b>→</b><span>Pasir Gudang</span><b>→</b><span>Batam</span></div>
-      <p class="departure-note"><b>Status:</b> <span id="trip-status" aria-live="polite">Awaiting departure · 27 Aug at approximately 10:00 PM MYT</span></p>
     </header>
 
     <nav class="section-switcher" aria-label="Quick access">
       <div class="section-switcher__scroll">
         <button class="active" type="button" data-view="home" aria-pressed="true">Home</button>
         <button type="button" data-view="itinerary" aria-pressed="false">Plan</button>
-        <button type="button" data-view="ferry" aria-pressed="false">Ferry</button>
+        <button type="button" data-view="transport" aria-pressed="false">Transport</button>
         <button type="button" data-view="hotel" aria-pressed="false">Hotel</button>
-        <button type="button" data-view="crew" aria-pressed="false">Crew</button>
-        <button type="button" data-view="supir" aria-pressed="false">Supir</button>
+        <button type="button" data-view="payments" aria-pressed="false">Payments</button>
         <button type="button" data-view="insurance" aria-pressed="false">Insurance</button>
         <button type="button" data-view="esim" aria-pressed="false">eSIM</button>
         <button type="button" data-view="photos" aria-pressed="false">Photos</button>
-        <button type="button" data-view="payments" aria-pressed="false">Payments</button>
         <button type="button" data-view="emergency" aria-pressed="false">Emergency</button>
       </div>
       <span class="section-switcher__hint" aria-hidden="true"> <b>→</b></span>
     </nav>
 
     <div class="trip-content" id="trip-content">
-    <section class="panel immigration-card immigration-card--priority" data-home-view data-hide-after="2026-08-27T00:00:00+08:00" aria-labelledby="entry-forms-title"><div class="immigration-card__icon" aria-hidden="true">!</div><div><span class="priority-deadline">High priority · Complete 26 August</span><h2 id="entry-forms-title">2 Indonesia entry forms</h2><div class="entry-form-steps"><article><span>1</span><div><h3>All Indonesia declaration</h3><p>Required arrival, immigration, customs and health declaration. Save the QR code after submission.</p><a href="https://allindonesia.imigrasi.go.id/" target="_blank" rel="noopener noreferrer">Complete All Indonesia ↗</a></div></article><article><span>2</span><div><h3>Visa Exemption for autogate</h3><p>A separate free application for each eligible foreign traveller. All Indonesia may offer this next, but it is processed through Indonesia eVisa.</p><a href="https://evisa.imigrasi.go.id/" target="_blank" rel="noopener noreferrer">Apply for Visa Exemption ↗</a></div></article></div></div></section>
+    <section class="panel immigration-card immigration-card--priority" data-home-view data-hide-after="2026-08-27T00:00:00+08:00" aria-labelledby="entry-forms-title"><div class="immigration-card__icon" aria-hidden="true">!</div><div><span class="priority-deadline">High priority · Complete 26 August</span><h2 id="entry-forms-title">Complete both in All Indonesia</h2><div class="entry-form-steps"><article><span>1</span><div><h3>Arrival declaration</h3><p>Complete the immigration, customs and health declaration, then save its QR code.</p></div></article><article><span>2</span><div><h3>Visa Exemption for autogate</h3><p>From the completed declaration screen, select “Apply for Visa Exemption” for each eligible traveller. The certificate is sent by email.</p><a href="https://allindonesia.imigrasi.go.id/" target="_blank" rel="noopener noreferrer">Start in All Indonesia ↗</a></div></article></div></div></section>
 
     <section class="top-essentials" id="essentials" data-home-view aria-labelledby="essentials-title">
       <div class="section-heading"><p class="eyebrow">NEXT PRIORITY</p><h2 id="essentials-title">Trip checklist</h2></div>
       <div class="panel info-disclosure info-disclosure--static"><div class="info-disclosure__header"><div><span class="eyebrow">BEFORE WE GO</span><strong>13 essentials to prepare</strong></div></div><div class="info-disclosure__content checklist">{essentials.map((item) => <label><input type="checkbox" /><span>{item}</span></label>)}</div></div>
     </section>
 
-    <section class="up-next" data-home-view aria-labelledby="up-next-title">
-      <div><p class="eyebrow">UP NEXT</p><h2 id="up-next-title">Depart Sungai Buloh</h2><p id="next-time">27 Aug · 10:00 PM MYT</p></div>
+    <section class="up-next" data-home-view aria-labelledby="current-title">
+      <div><p class="eyebrow">CURRENT</p><h2 id="current-title">Preparing for departure</h2><p id="current-time">Departure · 27 Aug at 10:00 PM MYT</p></div>
       <div class="next-icon" aria-hidden="true">→</div>
-      <p class="next-detail" id="next-detail">3 cars · 9 travellers · Overnight drive</p>
-    </section>
-
-    <section class="panel today-panel" data-home-view aria-labelledby="today-title">
-      <div class="section-heading"><p class="eyebrow">AT A GLANCE</p><h2 id="today-title">Today’s itinerary</h2></div>
-      <div id="today-events" class="today-events"><p class="muted">&rarr; The trip begins Thursday, 27 August.</p></div>
+      <p class="next-detail" id="current-detail">Get ready and complete the remaining checklist.</p>
+      <div class="future-event" id="next-event">
+        <p class="eyebrow">UP NEXT</p>
+        <div><h3 id="next-title">Depart Sungai Buloh</h3><p id="next-time">27 Aug · 10:00 PM MYT</p></div>
+      </div>
+      <div class="future-event" id="later-event">
+        <p class="eyebrow">LATER</p>
+        <div><h3 id="later-title">Arrive near Pasir Gudang terminal</h3><p id="later-time">28 Aug · 4:00 AM MYT</p></div>
+      </div>
     </section>
 
     <section class="notice-stack" data-home-view aria-label="Important notices">
@@ -94,8 +94,13 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       </div>
     </section>
 
-    <section class="section-block" id="ferry" data-section-view="ferry">
-      <div class="section-heading"><p class="eyebrow">CROSSING</p><h2>Ferry</h2></div>
+    <section class="section-block transport-stage" id="crew" data-stage="1" data-section-view="transport">
+      <div class="section-heading"><p class="eyebrow">TRANSPORT · 1 OF 3</p><h2>Road to Pasir Gudang</h2><span class="stage-note">Three cars, one overnight convoy</span></div>
+      <div class="panel info-disclosure info-disclosure--static"><div class="info-disclosure__header"><div><span class="eyebrow">CAR ALLOCATION</span><strong>9 travellers · 3 cars</strong></div></div><div class="info-disclosure__content compact-grid car-grid">{cars.map(([car, people, pic, phone]) => <article class="compact-card car-card"><h3>{car}</h3><p>{people}</p><a class="car-pic" href={`tel:${phone}`}><span>PIC · {pic}</span><b>{phone}</b></a></article>)}</div></div>
+    </section>
+
+    <section class="section-block transport-stage" id="ferry" data-stage="2" data-section-view="transport">
+      <div class="section-heading"><p class="eyebrow">TRANSPORT · 2 OF 3</p><h2>Crossing border</h2><span class="stage-note">Pasir Gudang ↔ Batam Centre</span></div>
       <div class="two-col">
         <article class="panel booking-card"><div class="card-top"><span class="badge badge--confirmed">Outbound · Confirmed</span><span>28 Aug 2026</span></div><h3>Pasir Gudang <b>→</b> Batam Centre</h3><p class="big-time">8:45 AM <small>MYT</small></p><p class="equivalent">Be at the counter by 7:15 AM MYT</p><dl><div><dt>Depart</dt><dd>Pelabuhan Pasir Gudang</dd></div><div><dt>Arrive</dt><dd>Batam Centre</dd></div></dl></article>
         <article class="panel booking-card"><div class="card-top"><span class="badge badge--confirmed">Return · Confirmed</span><span>30 Aug 2026</span></div><h3>Batam Centre <b>→</b> Pasir Gudang</h3><p class="big-time">11:20 AM <small>WIB</small></p><p class="equivalent">12:20 PM MYT · counter by 9:50 AM WIB</p><dl><div><dt>Depart</dt><dd>Batam Centre</dd></div><div><dt>Arrive</dt><dd>Pelabuhan Pasir Gudang</dd></div></dl></article>
@@ -125,14 +130,8 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       <div class="panel info-disclosure info-disclosure--static"><div class="info-disclosure__header"><div><span class="eyebrow">ROOM ALLOCATION</span><strong>4 rooms · 9 travellers</strong></div></div><div class="info-disclosure__content compact-grid">{rooms.map(([room, type, guests]) => <article class="compact-card"><span>{room}</span><h3>{type}</h3><p>{guests}</p></article>)}</div></div>
     </section>
 
-    <section class="section-block" id="crew" data-section-view="crew">
-      <div class="section-heading"><p class="eyebrow">9 TRAVELLERS · 3 CARS</p><h2>Crew</h2></div>
-      <div class="panel info-disclosure info-disclosure--static"><div class="info-disclosure__header"><div><span class="eyebrow">CAR ALLOCATION</span><strong>3-car arrangement</strong></div></div><div class="info-disclosure__content compact-grid car-grid">{cars.map(([car, people, pic, phone]) => <article class="compact-card car-card"><h3>{car}</h3><p>{people}</p><a class="car-pic" href={`tel:${phone}`}><span>PIC · {pic}</span><b>{phone}</b></a></article>)}</div></div>
-      <!-- <article class="notice notice--info"><span class="notice-mark">i</span><div><h3>Travelling with a child</h3><p>Nayla is an infant. Confirm infant ferry rules, pricing, insurance and medical arrangements separately.</p></div></article> -->
-    </section>
-
-    <section class="section-block" id="supir" data-section-view="supir">
-      <div class="section-heading"><p class="eyebrow">LOCAL TRANSPORT</p><h2>Supir</h2></div>
+    <section class="section-block transport-stage" id="supir" data-stage="3" data-section-view="transport">
+      <div class="section-heading"><p class="eyebrow">TRANSPORT · 3 OF 3</p><h2>Playing tourist</h2><span class="stage-note">Two cars and a local who knows the way</span></div>
       <article class="panel supir-profile"><div class="supir-avatar" aria-hidden="true">CR</div><div><span class="badge badge--confirmed">Driver confirmed</span><h3>Christina Rahmawati</h3><p>Local driver · Batam · +62 852-3266-1117</p></div><a href="https://www.tiktok.com/@dlapandlapan.tour" target="_blank" rel="noopener noreferrer">TikTok · @dlapandlapan.tour</a></article>
       <article class="panel feature-card transport"><div><span class="badge badge--confirmed">2 cars · Booked for 2 days</span><h3>28–29 August · 9:00 AM–10:00 PM</h3><div class="transport-rate"><div><span>Daily rate · 2 cars</span><strong>IDR 1,500,000</strong><small>≈ RM343.27</small></div><div><span>2-day total</span><strong>IDR 3,000,000</strong><small>≈ RM686.54</small></div></div><p class="price">IDR 375,000 <span>≈ RM85.82</span><small>per paying adult · 8 adults · Nayla excluded</small></p><p>Pickup at Batam Centre ferry terminal is confirmed. Car models are still pending; registration plates are not required for this portal.</p><p class="conversion-note">MYR estimates use the Wise mid-market rate checked 25 Aug 2026: RM1 = IDR 4,369.71.</p></div><div class="actions"><a href="https://wa.me/6285232661117" target="_blank" rel="noopener">WhatsApp</a><a href="tel:+6285232661117">Call</a></div></article>
     </section>
@@ -202,7 +201,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       </div>
     </section>
 
-    <footer class="trip-footer" data-home-view><a href="#top">Back to top ↑</a><p>Batam 2026 · Keep this link within the travel group.</p></footer>
+    <footer class="trip-footer"><a href="#top" data-back-to-top>Back to top ↑</a><p>Batam 2026 · Made by Aniq</p></footer>
     </div>
   </main>
 
@@ -211,11 +210,11 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     <span class="priority-deadline">Action required · Complete 26 August</span>
     <h2 id="entry-reminder-title">Indonesia entry forms are due</h2>
     <p class="entry-reminder__countdown"><span>Time remaining</span><strong id="entry-countdown">Calculating…</strong></p>
-    <p>Complete both items before the deadline so eligible travellers can use the Batam immigration autogate.</p>
-    <div class="entry-reminder__actions"><a href="https://allindonesia.imigrasi.go.id/" target="_blank" rel="noopener noreferrer"><span>Step 1</span>All Indonesia ↗</a><a href="https://evisa.imigrasi.go.id/" target="_blank" rel="noopener noreferrer"><span>Step 2</span>Visa Exemption ↗</a></div>
+    <p>Complete the arrival declaration, then use “Apply for Visa Exemption” on its completed screen so eligible travellers can use the Batam immigration autogate.</p>
+    <div class="entry-reminder__actions"><a href="https://allindonesia.imigrasi.go.id/" target="_blank" rel="noopener noreferrer"><span>Single official entry point</span>Open All Indonesia ↗</a></div>
   </dialog>
 
-  <script define:vars={{ itinerary, allEvents }}>
+  <script define:vars={{ allEvents }}>
     const fxCard = document.querySelector('.fx-converter');
     const fxInput = document.getElementById('fx-amount');
     const fxOutput = document.getElementById('fx-output');
@@ -243,28 +242,6 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
 
     const formatDateTime = (date, zone) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: zone }).format(date).replace(',', ' ·');
     const now = new Date();
-    const tripStatus = document.getElementById('trip-status');
-    const tripStages = [
-      ['2026-08-27T22:00:00+08:00', 'Awaiting departure · 27 Aug · 10:00 PM MYT'],
-      ['2026-08-28T04:00:00+08:00', 'En route to Pasir Gudang'],
-      ['2026-08-28T08:45:00+08:00', 'At Pasir Gudang · Preparing for ferry departure'],
-      ['2026-08-28T08:45:00+07:00', 'Crossing to Batam Centre'],
-      ['2026-08-30T11:20:00+07:00', 'In Batam · Following the live itinerary'],
-      ['2026-08-30T13:20:00+08:00', 'Returning by ferry to Pasir Gudang'],
-      ['2026-08-30T19:20:00+08:00', 'Arrived at Pasir Gudang · Driving home'],
-      ['9999-12-31T23:59:59+00:00', 'Trip complete · Welcome home'],
-    ];
-    const updateTripStatus = () => {
-      const currentTime = Date.now();
-      const stage = tripStages.find(([until]) => currentTime < new Date(until).getTime());
-      if (!tripStatus || !stage) return;
-      if (stage[1].startsWith('In Batam')) {
-        const nextBatamEvent = allEvents.find((event) => new Date(event.datetime).getTime() > currentTime);
-        tripStatus.textContent = nextBatamEvent ? `In Batam · Next: ${nextBatamEvent.title}` : stage[1];
-      } else tripStatus.textContent = stage[1];
-    };
-    updateTripStatus();
-    window.setInterval(updateTripStatus, 60000);
     document.querySelectorAll('[data-hide-after]').forEach((element) => {
       const hideAfter = new Date(element.getAttribute('data-hide-after'));
       if (!Number.isNaN(hideAfter.getTime()) && now >= hideAfter) {
@@ -291,23 +268,42 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     }
     entryReminder?.querySelector('.entry-reminder__close')?.addEventListener('click', () => entryReminder.close());
     entryReminder?.addEventListener('click', (event) => { if (event.target === entryReminder) entryReminder.close(); });
-    const next = allEvents.find((event) => new Date(event.datetime) > now);
-    if (next) {
-      document.getElementById('up-next-title').textContent = next.title;
-      document.getElementById('next-time').textContent = `${formatDateTime(new Date(next.datetime), next.timezone === 'MYT' ? 'Asia/Kuala_Lumpur' : 'Asia/Jakarta')} ${next.timezone}`;
-      document.getElementById('next-detail').textContent = next.description || 'See the full itinerary below.';
-    } else {
-      document.getElementById('up-next-title').textContent = 'Trip complete';
-      document.getElementById('next-time').textContent = 'Thanks for the memories';
-      document.getElementById('next-detail').textContent = 'Batam 2026 · 3 days, 2 nights';
-    }
-
-    const dayKey = new Intl.DateTimeFormat('en-CA', { timeZone: now < new Date('2026-08-28T00:00:00+07:00') ? 'Asia/Kuala_Lumpur' : 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
-    const today = itinerary.find((day) => day.date === dayKey);
-    const todayEl = document.getElementById('today-events');
-    if (today && todayEl) {
-      todayEl.innerHTML = today.events.map((event) => `<div><time>${event.time} <b>${event.timezone}</b></time><span>${event.title}</span></div>`).join('');
-    }
+    const updateLiveTimeline = () => {
+      const currentTime = Date.now();
+      const upcomingIndex = allEvents.findIndex((event) => new Date(event.datetime).getTime() > currentTime);
+      const beforeTrip = upcomingIndex === 0;
+      const tripComplete = upcomingIndex === -1;
+      const current = beforeTrip || tripComplete ? null : allEvents[upcomingIndex - 1];
+      const next = beforeTrip ? allEvents[0] : tripComplete ? null : allEvents[upcomingIndex];
+      const later = beforeTrip ? allEvents[1] : tripComplete ? null : allEvents[upcomingIndex + 1];
+      if (current) {
+        document.getElementById('current-title').textContent = current.title;
+        document.getElementById('current-time').textContent = `${formatDateTime(new Date(current.datetime), current.timezone === 'MYT' ? 'Asia/Kuala_Lumpur' : 'Asia/Jakarta')} ${current.timezone}`;
+        document.getElementById('current-detail').textContent = current.description || 'Follow the itinerary and allow time for the next activity.';
+      } else if (tripComplete) {
+        document.getElementById('current-title').textContent = 'Trip complete';
+        document.getElementById('current-time').textContent = 'Welcome home';
+        document.getElementById('current-detail').textContent = 'Batam 2026 · 3 days, 2 nights';
+      } else {
+        document.getElementById('current-title').textContent = 'Preparing for departure';
+        document.getElementById('current-time').textContent = 'Departure · 27 Aug at 10:00 PM MYT';
+        document.getElementById('current-detail').textContent = 'Get ready and complete the remaining checklist.';
+      }
+      const nextEvent = document.getElementById('next-event');
+      if (next && nextEvent) {
+        nextEvent.hidden = false;
+        document.getElementById('next-title').textContent = next.title;
+        document.getElementById('next-time').textContent = `${formatDateTime(new Date(next.datetime), next.timezone === 'MYT' ? 'Asia/Kuala_Lumpur' : 'Asia/Jakarta')} ${next.timezone}`;
+      } else if (nextEvent) nextEvent.hidden = true;
+      const laterEvent = document.getElementById('later-event');
+      if (later && laterEvent) {
+        laterEvent.hidden = false;
+        document.getElementById('later-title').textContent = later.title;
+        document.getElementById('later-time').textContent = `${formatDateTime(new Date(later.datetime), later.timezone === 'MYT' ? 'Asia/Kuala_Lumpur' : 'Asia/Jakarta')} ${later.timezone}`;
+      } else if (laterEvent) laterEvent.hidden = true;
+    };
+    updateLiveTimeline();
+    window.setInterval(updateLiveTimeline, 60000);
 
     document.querySelectorAll('.checklist input').forEach((input) => {
       input.addEventListener('change', () => input.closest('label')?.classList.toggle('checked', input.checked));
@@ -319,6 +315,12 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       const original = button.textContent;
       button.textContent = 'Copied';
       window.setTimeout(() => { button.textContent = original; }, 1600);
+    }));
+    const tripContent = document.getElementById('trip-content');
+    document.querySelectorAll('[data-back-to-top]').forEach((link) => link.addEventListener('click', (event) => {
+      event.preventDefault();
+      tripContent?.scrollTo({ top: 0, behavior: 'smooth' });
+      history.replaceState(history.state, '', `${location.pathname}${location.search}`);
     }));
 
     const viewButtons = [...document.querySelectorAll('[data-view]')];
@@ -348,7 +350,10 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
         history.pushState({ view }, '', url);
       }
     };
-    viewButtons.forEach((button) => button.addEventListener('click', () => setView(button.dataset.view || 'home', { toggle: true })));
+    viewButtons.forEach((button) => button.addEventListener('click', () => {
+      setView(button.dataset.view || 'home', { toggle: true });
+      if (tripContent) tripContent.scrollTop = 0;
+    }));
     const initialView = sectionForHash(location.hash);
     setView(initialView, { updateHistory: false });
     window.addEventListener('popstate', () => setView(sectionForHash(location.hash), { updateHistory: false }));
