@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { adminSnapshot, BATAM_ACCOUNTS, BATAM_TRAVELLERS, documentForAccount, profileForAccount } from '../functions/batam-trip.mjs';
+import { readFileSync } from 'node:fs';
 
 const expectedMembers = {
   aniq: ['aniq'], faisal: ['faisal'],
@@ -82,4 +83,13 @@ test('nonexistent accounts and unknown documents are denied', () => {
   assert.equal(documentForAccount('unknown', 'ferry'), null);
   assert.equal(documentForAccount('aniq', 'evisa-faisal'), null);
   assert.equal(documentForAccount('faisal', 'arrival-aniq'), null);
+});
+
+test('family profile accordion closes the previously expanded card content', () => {
+  const source = readFileSync(new URL('../src/pages/batam.astro', import.meta.url), 'utf8');
+  assert.match(source, /const disclosureContent = new WeakMap\(\)/);
+  assert.match(source, /disclosureContent\.set\(container, content\)/);
+  assert.match(source, /const otherContent = disclosureContent\.get\(other\)/);
+  assert.match(source, /other\.classList\.remove\('is-open'\)/);
+  assert.match(source, /otherContent instanceof HTMLElement\) otherContent\.hidden = true/);
 });
