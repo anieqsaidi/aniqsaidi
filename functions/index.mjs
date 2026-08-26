@@ -114,8 +114,10 @@ export const batamDocument = onRequest({ region: REGION, timeoutSeconds: 30, mem
     if (!upstream.ok) throw new Error(`Drive returned ${upstream.status}`);
     const bytes = Buffer.from(await upstream.arrayBuffer());
     if (!bytes.length || bytes.length > 15 * 1024 * 1024) throw new Error('Invalid document size');
-    response.set('Content-Type', 'application/pdf');
-    response.set('Content-Disposition', `inline; filename="${document.id}.pdf"`);
+    const contentType = document.mimeType || 'application/pdf';
+    const extension = contentType === 'image/jpeg' ? 'jpg' : contentType === 'image/png' ? 'png' : 'pdf';
+    response.set('Content-Type', contentType);
+    response.set('Content-Disposition', `inline; filename="${document.id}.${extension}"`);
     return response.status(200).send(bytes);
   } catch (error) {
     logger.error('Batam document failed.', error);

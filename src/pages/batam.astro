@@ -318,6 +318,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     const makeDisclosure = (container, trigger, content, open = false, exclusive = false) => {
       if (!container || !trigger || !content || container.dataset.disclosureReady === 'true') return;
       container.dataset.disclosureReady = 'true'; container.classList.add('ui-disclosure');
+      content.classList.add('ui-disclosure__content');
       trigger.classList.add('ui-disclosure__trigger'); trigger.setAttribute('role', 'button'); trigger.setAttribute('tabindex', '0');
       const setOpen = (next) => {
         if (next && exclusive) {
@@ -325,7 +326,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
             if (other === container) return;
             other.classList.remove('is-open');
             const otherTrigger = other.querySelector(':scope > .ui-disclosure__trigger');
-            const otherContent = other.querySelector(':scope > .timeline');
+            const otherContent = other.querySelector(':scope > .ui-disclosure__content');
             if (otherTrigger) otherTrigger.setAttribute('aria-expanded', 'false');
             if (otherContent instanceof HTMLElement) otherContent.hidden = true;
           });

@@ -10,13 +10,13 @@ const expectedMembers = {
 };
 const expectedCoreDocuments = {
   aniq: ['arrival-aniq', 'esim-aniq', 'evisa-aniq', 'ferry', 'hotel-af', 'insurance-zurich'],
-  faisal: ['esim-faisal', 'evisa-faisal', 'ferry', 'hotel-af', 'insurance-zurich'],
-  khairrin: ['esim-intan', 'esim-khairrin', 'evisa-intan', 'evisa-khairrin', 'ferry', 'hotel-families', 'insurance-zurich'],
-  intan: ['esim-intan', 'esim-khairrin', 'evisa-intan', 'evisa-khairrin', 'ferry', 'hotel-families', 'insurance-zurich'],
-  dedi: ['esim-azilah', 'esim-dedi', 'evisa-azilah', 'evisa-dedi', 'ferry', 'hotel-families', 'insurance-zurich'],
-  azilah: ['esim-azilah', 'esim-dedi', 'evisa-azilah', 'evisa-dedi', 'ferry', 'hotel-families', 'insurance-zurich'],
-  badiuz: ['esim-nasuha', 'evisa-badiuz', 'evisa-nasuha', 'evisa-nayla', 'ferry', 'hotel-families', 'insurance-takaful'],
-  nasuha: ['esim-nasuha', 'evisa-badiuz', 'evisa-nasuha', 'evisa-nayla', 'ferry', 'hotel-families', 'insurance-takaful'],
+  faisal: ['arrival-faisal', 'esim-faisal', 'evisa-faisal', 'ferry', 'hotel-af', 'insurance-zurich'],
+  khairrin: ['arrival-khairrin-intan-dedi-azilah', 'esim-intan', 'esim-khairrin', 'evisa-intan', 'evisa-khairrin', 'ferry', 'hotel-families', 'insurance-zurich'],
+  intan: ['arrival-khairrin-intan-dedi-azilah', 'esim-intan', 'esim-khairrin', 'evisa-intan', 'evisa-khairrin', 'ferry', 'hotel-families', 'insurance-zurich'],
+  dedi: ['arrival-khairrin-intan-dedi-azilah', 'esim-azilah', 'esim-dedi', 'evisa-azilah', 'evisa-dedi', 'ferry', 'hotel-families', 'insurance-zurich'],
+  azilah: ['arrival-khairrin-intan-dedi-azilah', 'esim-azilah', 'esim-dedi', 'evisa-azilah', 'evisa-dedi', 'ferry', 'hotel-families', 'insurance-zurich'],
+  badiuz: ['arrival-badiuz-family', 'esim-nasuha', 'evisa-badiuz', 'evisa-nasuha', 'evisa-nayla', 'ferry', 'hotel-families', 'insurance-takaful'],
+  nasuha: ['arrival-badiuz-family', 'esim-nasuha', 'evisa-badiuz', 'evisa-nasuha', 'evisa-nayla', 'ferry', 'hotel-families', 'insurance-takaful'],
 };
 
 test('the participant and traveller matrix is complete', () => {
@@ -72,7 +72,7 @@ test('admin snapshot is complete and does not expose login PINs or Drive IDs', (
   assert.equal(snapshot.trip.accounts, 8);
   assert.equal(snapshot.travellers.length, 9);
   assert.equal(snapshot.accounts.length, 8);
-  assert.equal(snapshot.documents.length, 22);
+  assert.equal(snapshot.documents.length, 25);
   assert.equal(serialized.includes('driveId'), false);
   for (const account of Object.values(BATAM_ACCOUNTS)) assert.equal(serialized.includes(`"pin":"${account.pin}"`), false);
 });

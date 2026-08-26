@@ -28,6 +28,9 @@ const DOCUMENTS = {
   zurich: { id: 'insurance-zurich', kind: 'Insurance', title: 'Zurich Travel Takaful policy', driveId: '1as5AgvBXLsTuftf5TTl3zTlDA5XPUYml', members: ['aniq', 'faisal', 'khairrin', 'intan', 'dedi', 'azilah'] },
   takaful: { id: 'insurance-takaful', kind: 'Insurance', title: 'Takaful Malaysia family policy', driveId: '1mMb3hyjqnfKPc_rp_JkKr_rhfOmOvwQ1', members: ['badiuz', 'nasuha', 'nayla'] },
   arrivalAniq: { id: 'arrival-aniq', kind: 'Immigration', title: 'Arrival card · Aniq', driveId: '1AYKjN60d3ML1ad4Pw9Xzluj57ms9z-u6', members: ['aniq'] },
+  arrivalFaisal: { id: 'arrival-faisal', kind: 'Immigration', title: 'Arrival card · Faisal', driveId: '1xIvefutjkqJqgc4cKb4JEzMe9zGc1QKq', mimeType: 'image/jpeg', members: ['faisal'] },
+  arrivalKhairrinIntanDediAzilah: { id: 'arrival-khairrin-intan-dedi-azilah', kind: 'Immigration', title: 'Arrival card · Khairrin, Intan, Dedi & Azilah', driveId: '1_vxtg-dZ9XCnqwmoFdb9Fk2WPbLM1TBj', mimeType: 'image/jpeg', members: ['khairrin', 'intan', 'dedi', 'azilah'] },
+  arrivalBadiuzFamily: { id: 'arrival-badiuz-family', kind: 'Immigration', title: 'Arrival card · Badiuz family', driveId: '1w3igMhfMW8OCti8mdNJfmpR72YwsM1Az', mimeType: 'image/jpeg', members: ['badiuz', 'nasuha', 'nayla'] },
 };
 
 const EVISA_IDS = { aniq: '1u5AAmPmRvlPMEibf4ngx2dezhJLtJ8p1', faisal: '1-FpDRlkZLmv1dTLPBpQc9Z0V8ju8bOu4', khairrin: '1Lx5WAYokgEESzSiYbA7uUhVHCEkhf7Gx', intan: '1SB1yJRNvUc9_alrQbY2LUATb1Zdz-0Qx', dedi: '1J-Nbb3rWYDjD23y5MgLSCUmPGgp666nR', azilah: '1E1e57H1o2PYilT1-rHcsvdd0NhtwfB2r', badiuz: '1m2kLBwRFeEgDqVgrtSwaeaYS8vwXEZEs', nasuha: '1sM018l7iDJeOlzNFH2kKYbvERNC7205d', nayla: '1seueW-E6hASoY3V6HsXqrHXChZtAtryE' };
