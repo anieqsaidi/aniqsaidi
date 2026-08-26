@@ -1,0 +1,85 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { adminSnapshot, BATAM_ACCOUNTS, BATAM_TRAVELLERS, documentForAccount, profileForAccount } from '../functions/batam-trip.mjs';
+
+const expectedMembers = {
+  aniq: ['aniq'], faisal: ['faisal'],
+  khairrin: ['khairrin', 'intan'], intan: ['khairrin', 'intan'],
+  dedi: ['dedi', 'azilah'], azilah: ['dedi', 'azilah'],
+  badiuz: ['badiuz', 'nasuha', 'nayla'], nasuha: ['badiuz', 'nasuha', 'nayla'],
+};
+const expectedCoreDocuments = {
+  aniq: ['arrival-aniq', 'esim-aniq', 'evisa-aniq', 'ferry', 'hotel-af', 'insurance-zurich'],
+  faisal: ['esim-faisal', 'evisa-faisal', 'ferry', 'hotel-af', 'insurance-zurich'],
+  khairrin: ['esim-intan', 'esim-khairrin', 'evisa-intan', 'evisa-khairrin', 'ferry', 'hotel-families', 'insurance-zurich'],
+  intan: ['esim-intan', 'esim-khairrin', 'evisa-intan', 'evisa-khairrin', 'ferry', 'hotel-families', 'insurance-zurich'],
+  dedi: ['esim-azilah', 'esim-dedi', 'evisa-azilah', 'evisa-dedi', 'ferry', 'hotel-families', 'insurance-zurich'],
+  azilah: ['esim-azilah', 'esim-dedi', 'evisa-azilah', 'evisa-dedi', 'ferry', 'hotel-families', 'insurance-zurich'],
+  badiuz: ['esim-nasuha', 'evisa-badiuz', 'evisa-nasuha', 'evisa-nayla', 'ferry', 'hotel-families', 'insurance-takaful'],
+  nasuha: ['esim-nasuha', 'evisa-badiuz', 'evisa-nasuha', 'evisa-nayla', 'ferry', 'hotel-families', 'insurance-takaful'],
+};
+
+test('the participant and traveller matrix is complete', () => {
+  assert.equal(Object.keys(BATAM_ACCOUNTS).length, 8);
+  assert.equal(Object.keys(BATAM_TRAVELLERS).length, 9);
+  assert.deepEqual(Object.keys(BATAM_ACCOUNTS).sort(), Object.keys(expectedMembers).sort());
+  assert.ok(BATAM_TRAVELLERS.nayla, 'Nayla must exist as a linked traveller without a login account');
+});
+
+for (const [username, memberIds] of Object.entries(expectedMembers)) {
+  test(`${username} receives the correct personal or linked-family profile`, () => {
+    const profile = profileForAccount(username);
+    assert.ok(profile);
+    assert.deepEqual(profile.members.map(({ id }) => id), memberIds);
+    assert.equal(profile.username, username);
+    for (const member of profile.members) {
+      for (const field of ['name', 'phone', 'passport', 'arrivalCard', 'evisa', 'ferryOutbound', 'ferryReturn', 'insurance', 'room', 'esim']) assert.ok(member[field], `${member.id}.${field} is required`);
+    }
+  });
+
+  test(`${username} receives only the intended travel documents`, () => {
+    const profile = profileForAccount(username);
+    const ids = profile.documents.map(({ id }) => id).sort();
+    assert.deepEqual(ids, expectedCoreDocuments[username].sort());
+    for (const document of profile.documents) assert.ok(documentForAccount(username, document.id), `${username} must be authorized for ${document.id}`);
+    assert.equal(JSON.stringify(profile).includes('driveId'), false, 'Drive IDs must not be exposed in profile JSON');
+    assert.equal(Object.hasOwn(profile, 'pin'), false, 'PIN properties must not be exposed in profile JSON');
+    assert.equal(profile.members.some((member) => Object.hasOwn(member, 'pin')), false, 'PIN properties must not be exposed on travellers');
+  });
+}
+
+test('linked-family usernames resolve to the same members and document wallet', () => {
+  for (const [left, right] of [['khairrin', 'intan'], ['dedi', 'azilah'], ['badiuz', 'nasuha']]) {
+    const a = profileForAccount(left); const b = profileForAccount(right);
+    assert.deepEqual(a.members, b.members);
+    assert.deepEqual(a.documents, b.documents);
+  }
+});
+
+test('documents cannot cross participant or family boundaries', () => {
+  const snapshot = adminSnapshot();
+  for (const account of snapshot.accounts) {
+    for (const document of snapshot.documents) {
+      const expected = document.members.some((id) => account.memberIds.includes(id));
+      assert.equal(Boolean(documentForAccount(account.username, document.id)), expected, `${account.username} access mismatch for ${document.id}`);
+    }
+  }
+});
+
+test('admin snapshot is complete and does not expose login PINs or Drive IDs', () => {
+  const snapshot = adminSnapshot(); const serialized = JSON.stringify(snapshot);
+  assert.equal(snapshot.trip.travellers, 9);
+  assert.equal(snapshot.trip.accounts, 8);
+  assert.equal(snapshot.travellers.length, 9);
+  assert.equal(snapshot.accounts.length, 8);
+  assert.equal(snapshot.documents.length, 22);
+  assert.equal(serialized.includes('driveId'), false);
+  for (const account of Object.values(BATAM_ACCOUNTS)) assert.equal(serialized.includes(`"pin":"${account.pin}"`), false);
+});
+
+test('nonexistent accounts and unknown documents are denied', () => {
+  assert.equal(profileForAccount('unknown'), null);
+  assert.equal(documentForAccount('unknown', 'ferry'), null);
+  assert.equal(documentForAccount('aniq', 'evisa-faisal'), null);
+  assert.equal(documentForAccount('faisal', 'arrival-aniq'), null);
+});

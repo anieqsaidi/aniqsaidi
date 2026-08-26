@@ -4,43 +4,57 @@ import { itinerary, allEvents } from '../data/batamTrip';
 import '../styles/batam.css';
 
 const notices = [
-  { kind: 'info', label: 'Seaport tax included', text: 'The Easybook order summary states that seaport tax is included. Keep some MYR and IDR cash for any separate terminal charges.' },
-  { kind: 'info', label: 'Timezone', text: 'Batam is 1 hour behind Malaysia. MYT = UTC+8 · WIB = UTC+7.' },
-  { kind: 'confirmed', label: 'Ferry confirmed', text: 'Two-way booking · PPT Ticketing · Easybook order BRKR5HYN. Check in 90 minutes before departure.' },
+  { kind: 'info', icon: '🧾', label: 'Seaport tax included', text: 'The Easybook order summary states that seaport tax is included. Keep some MYR and IDR cash for any separate terminal charges.' },
+  { kind: 'info', icon: '🕐', label: 'Timezone', text: 'Batam is 1 hour behind Malaysia. MYT = UTC+8 · WIB = UTC+7.' },
+  { kind: 'confirmed', icon: '⛴', label: 'Ferry confirmed', text: 'Two-way booking · PPT Ticketing · Easybook order BRKR5HYN. Check in 90 minutes before departure.' },
 ];
 const rooms = [
   ['Room 1', 'Superior Twin Room', 'Aniq · Faisal'],
   ['Room 2', 'Superior Twin Room', 'Intan · Khairrin'],
-  ['Room 3', 'Deluxe Room', 'Nasuha · Badiuz · Nayla (Infant)'],
-  ['Room 4', 'Deluxe Room', "Dato' Sri Dedi · Datin Sri Azilah"],
+  ['Room 3', 'Standard Double Room', "Dato' Sri Dedi · Datin Sri Azilah"],
+  ['Room 4', 'Standard Double Room', 'Nasuha · Badiuz · Nayla (Infant)'],
 ];
 const cars = [
   ['Car 1 · Toyota Innova · 4 people', "Intan · Khairrin · Dato' Sri Dedi · Datin Sri Azilah", 'Khairrin', '+60172783568'],
   ['Car 2 · Perodua Myvi · 2 people', 'Aniq · Faisal', 'Aniq', '+60192427685'],
   ['Car 3 · Perodua Myvi · 3 people', 'Badiuz · Nasuha · Nayla (Infant)', 'Badiuz', '+60133593495'],
 ];
-const essentials = ['Passport', 'All Indonesia arrival declaration', 'Visa Exemption for autogate', 'Ferry ticket', 'Travel insurance', 'eSIM installed / downloaded', 'MYR cash', 'IDR cash', 'Phone charger', 'Power bank', 'Medication', 'Hotel booking', 'Supir contact'];
+const essentials = ['Passport', 'Ferry ticket', 'Travel insurance', 'eSIM installed / downloaded', 'MYR cash', 'IDR cash', 'Phone charger', 'Power bank', 'Medication', 'Hotel booking', 'Supir contact'];
 const esimOrderUrl = 'https://uk.trip.com/m/tntorder/orderdetailwkp?orderid=1433814105962330&tripsignature=AAEAAQAHb3JkZXJpZLgkM4pZVj-CMf58nIKCREeF7l5WYjghsP0J000cKpxv-tripsign';
 const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
 ---
 
 <TripLayout title="Batam 2026 · Trip Portal" description="Private travel companion for the Batam 2026 group trip.">
-  <main class="trip-shell">
+  <section class="trip-login" id="trip-login" aria-labelledby="trip-login-title">
+    <form class="trip-login__card" id="trip-login-form" autocomplete="off">
+      <span class="trip-login__mark" aria-hidden="true">B26</span>
+      <p class="eyebrow">PRIVATE TRIP PORTAL</p>
+      <h1 id="trip-login-title">Welcome aboard</h1>
+      <p>Use your first name and the last four digits of your phone number.</p>
+      <label><span>Username</span><input id="trip-username" name="trip-user" type="text" inputmode="text" autocomplete="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore required /></label>
+      <label><span>4-digit PIN</span><input id="trip-pin" name="pin" type="password" inputmode="numeric" autocomplete="current-password" pattern="[0-9]{4}" maxlength="4" required /></label>
+      <button type="submit">Open trip portal</button>
+      <p class="trip-login__message" id="trip-login-message" role="status">Checking this device…</p>
+    </form>
+  </section>
+
+  <main class="trip-shell" id="trip-app" hidden>
     <header class="trip-hero" id="top">
       <!-- <div class="hero-topline"><span class="eyebrow">GROUP TRIP · PRIVATE LINK</span><span class="status-dot">Plan active</span></div> -->
       <h1>BATAM <span>2026</span></h1>
-      <p class="trip-date">🏙️ 🇲🇾 &nbsp; 28th ~ 30th August &nbsp; 🇮🇩 🛕</p>
+      <p class="trip-date">🏙️ 🇲🇾 &nbsp; 28–30 August &nbsp; 🇮🇩 🛕</p>
       <!-- <div class="trip-stats" aria-label="Trip summary"><span>3 Days · 2 Nights</span><span>9 Travellers</span></div> -->
-      <div class="route"><span>Sungai Buloh</span><b>→</b><span>Pasir Gudang</span><b>→</b><span>Batam</span></div>
+      <div class="route"><span>Sungai Buloh</span><b class="route-mode--forward" role="img" aria-label="Travel by car" title="By car">🚗</b><span>Pasir Gudang</span><b class="route-mode--forward" role="img" aria-label="Travel by ferry" title="By ferry">⛴️</b><span>Batam</span></div>
     </header>
 
     <nav class="section-switcher" aria-label="Quick access">
       <div class="section-switcher__scroll">
         <button class="active" type="button" data-view="home" aria-pressed="true">Home</button>
+        <button type="button" data-view="profile" aria-pressed="false">Profile</button>
         <button type="button" data-view="itinerary" aria-pressed="false">Plan</button>
         <button type="button" data-view="transport" aria-pressed="false">Transport</button>
         <button type="button" data-view="hotel" aria-pressed="false">Hotel</button>
-        <button type="button" data-view="payments" aria-pressed="false">Payments</button>
+        <button type="button" data-view="payments" aria-pressed="false">Cost</button>
         <button type="button" data-view="insurance" aria-pressed="false">Insurance</button>
         <button type="button" data-view="esim" aria-pressed="false">eSIM</button>
         <button type="button" data-view="photos" aria-pressed="false">Photos</button>
@@ -50,11 +64,14 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     </nav>
 
     <div class="trip-content" id="trip-content">
-    <section class="panel immigration-card immigration-card--priority" data-home-view data-hide-after="2026-08-27T00:00:00+08:00" aria-labelledby="entry-forms-title"><div class="immigration-card__icon" aria-hidden="true">!</div><div><span class="priority-deadline">High priority · Complete 26 August</span><h2 id="entry-forms-title">Complete both in All Indonesia</h2><div class="entry-form-steps"><article><span>1</span><div><h3>Arrival declaration</h3><p>Complete the immigration, customs and health declaration, then save its QR code.</p></div></article><article><span>2</span><div><h3>Visa Exemption for autogate</h3><p>From the completed declaration screen, select “Apply for Visa Exemption” for each eligible traveller. The certificate is sent by email.</p><a href="https://allindonesia.imigrasi.go.id/" target="_blank" rel="noopener noreferrer">Start in All Indonesia ↗</a></div></article></div></div></section>
-
+    <section class="profile-welcome panel" id="profile-welcome" data-home-view aria-live="polite">
+      <div><p class="eyebrow">YOUR TRIP</p><h2 id="profile-greeting">Welcome to Batam!</h2><p id="profile-welcome-note">Your travel details are ready on this device.</p></div>
+      <button type="button" data-open-profile>View profile</button>
+    </section>
+    <section class="panel section-documents" id="documents-immigration" data-home-view hidden><div class="profile-documents__head"><div><p class="eyebrow">OFFICIAL DOCUMENTS</p><h3>Your immigration files</h3></div><span data-document-count></span></div><div class="profile-document-list" data-document-list="Immigration"></div></section>
     <section class="top-essentials" id="essentials" data-home-view aria-labelledby="essentials-title">
-      <div class="section-heading"><p class="eyebrow">NEXT PRIORITY</p><h2 id="essentials-title">Trip checklist</h2></div>
-      <div class="panel info-disclosure info-disclosure--static"><div class="info-disclosure__header"><div><span class="eyebrow">BEFORE WE GO</span><strong>13 essentials to prepare</strong></div></div><div class="info-disclosure__content checklist">{essentials.map((item) => <label><input type="checkbox" /><span>{item}</span></label>)}</div></div>
+      <div class="section-heading"><h2 id="essentials-title">Trip checklist</h2></div>
+      <div class="panel info-disclosure info-disclosure--static"><div class="info-disclosure__header"><div><span class="eyebrow">BEFORE WE GO</span><strong>{essentials.length} essentials to prepare</strong></div></div><div class="info-disclosure__content checklist">{essentials.map((item) => <label><input type="checkbox" /><span>{item}</span></label>)}</div></div>
     </section>
 
     <section class="up-next" data-home-view aria-labelledby="current-title">
@@ -72,7 +89,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     </section>
 
     <section class="notice-stack" data-home-view aria-label="Important notices">
-      {notices.map((notice) => <article class={`notice notice--${notice.kind}`}><span class="notice-mark" aria-hidden="true">{notice.kind === 'confirmed' ? '✓' : '!'}</span><div><h3>{notice.label}</h3><p>{notice.text}</p></div></article>)}
+      {notices.map((notice) => <article class={`notice notice--${notice.kind}`}><span class="notice-mark" aria-hidden="true">{notice.icon}</span><div><h3>{notice.label}</h3><p>{notice.text}</p></div></article>)}
     </section>
 
     <section class="section-block" id="itinerary" data-section-view="itinerary" aria-labelledby="itinerary-title">
@@ -94,21 +111,29 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       </div>
     </section>
 
+    <section class="section-block traveller-profile" id="profile" data-section-view="profile" aria-labelledby="profile-title">
+      <div class="section-heading"><p class="eyebrow">TRAVELLER DETAILS</p><h2 id="profile-title">My profile</h2><span class="stage-note">Personal information for this login</span></div>
+      <div class="profile-members" id="profile-members" aria-live="polite"></div>
+      <a class="profile-admin-link" id="profile-admin-link" href="/batam/admin" hidden>Open trip admin ↗</a>
+      <button class="profile-lock" id="profile-lock" type="button">Sign out & remove offline data</button>
+    </section>
+
     <section class="section-block transport-stage" id="crew" data-stage="1" data-section-view="transport">
       <div class="section-heading"><p class="eyebrow">TRANSPORT · 1 OF 3</p><h2>Road to Pasir Gudang</h2><span class="stage-note">Three cars, one overnight convoy</span></div>
       <div class="panel info-disclosure info-disclosure--static"><div class="info-disclosure__header"><div><span class="eyebrow">CAR ALLOCATION</span><strong>9 travellers · 3 cars</strong></div></div><div class="info-disclosure__content compact-grid car-grid">{cars.map(([car, people, pic, phone]) => <article class="compact-card car-card"><h3>{car}</h3><p>{people}</p><a class="car-pic" href={`tel:${phone}`}><span>PIC · {pic}</span><b>{phone}</b></a></article>)}</div></div>
     </section>
 
     <section class="section-block transport-stage" id="ferry" data-stage="2" data-section-view="transport">
-      <div class="section-heading"><p class="eyebrow">TRANSPORT · 2 OF 3</p><h2>Crossing border</h2><span class="stage-note">Pasir Gudang ↔ Batam Centre</span></div>
+      <div class="section-heading"><p class="eyebrow">TRANSPORT · 2 OF 3</p><h2>Crossing the border</h2><span class="stage-note">Pasir Gudang ↔ Batam Centre</span></div>
       <div class="two-col">
         <article class="panel booking-card"><div class="card-top"><span class="badge badge--confirmed">Outbound · Confirmed</span><span>28 Aug 2026</span></div><h3>Pasir Gudang <b>→</b> Batam Centre</h3><p class="big-time">8:45 AM <small>MYT</small></p><p class="equivalent">Be at the counter by 7:15 AM MYT</p><dl><div><dt>Depart</dt><dd>Pelabuhan Pasir Gudang</dd></div><div><dt>Arrive</dt><dd>Batam Centre</dd></div></dl></article>
         <article class="panel booking-card"><div class="card-top"><span class="badge badge--confirmed">Return · Confirmed</span><span>30 Aug 2026</span></div><h3>Batam Centre <b>→</b> Pasir Gudang</h3><p class="big-time">11:20 AM <small>WIB</small></p><p class="equivalent">12:20 PM MYT · counter by 9:50 AM WIB</p><dl><div><dt>Depart</dt><dd>Batam Centre</dd></div><div><dt>Arrive</dt><dd>Pelabuhan Pasir Gudang</dd></div></dl></article>
       </div>
-      <article class="panel ferry-order-card"><div class="card-top"><div><p class="eyebrow">EASYBOOK ORDER</p><h3>BRKR5HYN</h3></div><span class="badge badge--confirmed">Confirmed</span></div><dl><div><dt>Trip</dt><dd>Two way · 9 passengers</dd></div><div><dt>Operator</dt><dd>PPT Ticketing Sdn Bhd</dd></div><div><dt>Order code</dt><dd>EBMY-ON-2607229822</dd></div><div><dt>Seaport tax</dt><dd>Included</dd></div><div><dt>Luggage</dt><dd>15 kg per passenger</dd></div></dl><a class="ferry-support" href="https://wa.me/60189691080" target="_blank" rel="noopener noreferrer">Easybook WhatsApp support</a></article>
+      <article class="panel ferry-order-card"><div class="card-top"><div><p class="eyebrow">EASYBOOK ORDER</p><h3>BRKR5HYN</h3></div><span class="badge badge--confirmed">Confirmed</span></div><dl><div><dt>Trip</dt><dd>Return · 9 passengers</dd></div><div><dt>Operator</dt><dd>PPT Ticketing Sdn Bhd</dd></div><div><dt>Order code</dt><dd>EBMY-ON-2607229822</dd></div><div><dt>Seaport tax</dt><dd>Included</dd></div><div><dt>Luggage</dt><dd>15 kg per passenger</dd></div></dl><a class="ferry-support" href="https://wa.me/60189691080" target="_blank" rel="noopener noreferrer">Message Easybook on WhatsApp</a></article>
       <article class="panel info-disclosure info-disclosure--static ferry-guide"><div class="info-disclosure__header"><div><span class="eyebrow">BEFORE BOARDING</span><strong>Check-in & document reminders</strong></div></div><div class="info-disclosure__content"><ul><li>Check in at the ferry counter 90 minutes before departure.</li><li>Bring each traveller’s passport and required travel documents.</li><li>Keep the order summary available; print it if requested, as a screenshot may not be accepted.</li><li>The booking summary does not state an estimated arrival time or assigned seats.</li><li>Schedules can change—verify with the operator before travelling.</li></ul><p>The original order summary is not attached here because it contains travellers’ passport and identity details.</p></div></article>
     </section>
 
+      <article class="panel section-documents" id="documents-ferry" hidden><div class="profile-documents__head"><div><p class="eyebrow">OFFICIAL DOCUMENTS</p><h3>Ferry tickets</h3></div><span data-document-count></span></div><div class="profile-document-list" data-document-list="Ferry"></div></article>
     <section class="section-block" id="hotel" data-section-view="hotel">
       <div class="section-heading"><p class="eyebrow">2-NIGHT STAY</p><h2>Hotel</h2></div>
       <article class="panel hotel-card">
@@ -124,21 +149,22 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
           </div>
           <ul class="amenity-list" aria-label="Hotel amenities"><li>Free Wi-Fi</li><li>Basic breakfast</li><li>24-hour front desk</li><li>Air conditioning</li><li>Lift access</li><li>Halal dining</li><li>Free parking</li></ul>
         </div></div>
-        <div class="hotel-details booking-confirmation-details"><div class="hotel-details__header">Booking & check-in details</div><div class="hotel-details__content"><dl class="hotel-booking-facts"><div><dt>Check-in</dt><dd>28 Aug · from 3:00 PM</dd></div><div><dt>Check-out</dt><dd>30 Aug · by 12:00 PM</dd></div><div><dt>Confirmations</dt><dd>5440.336.138 · 6085.884.190</dd></div><div><dt>Meal plan</dt><dd>No meals included</dd></div></dl><p class="hotel-arrival-note">Arrive before 6:00 PM. Contact the hotel in advance if the group will be later, and present the confirmations with valid ID at check-in.</p></div></div>
+        <div class="hotel-details booking-confirmation-details"><div class="hotel-details__header">Booking & check-in details</div><div class="hotel-details__content"><dl class="hotel-booking-facts"><div><dt>Check-in</dt><dd>28 Aug · from 3:00 PM</dd></div><div><dt>Check-out</dt><dd>30 Aug · by 12:00 PM</dd></div><div><dt>Booking confirmation</dt><dd>5440.336.138 · 6085.884.190</dd></div><div><dt>Meal plan</dt><dd>No meals included</dd></div></dl><p class="hotel-arrival-note">Arrive before 6:00 PM. If the group will arrive later, contact the hotel in advance and present the booking confirmation with valid ID at check-in.</p></div></div>
         <div class="hotel-actions"><a href="tel:+62778421789">Call hotel</a><a class="hotel-action--secondary" href="https://www.lovinainn.com/" target="_blank" rel="noopener noreferrer">Official website</a></div>
       </article>
       <div class="panel info-disclosure info-disclosure--static"><div class="info-disclosure__header"><div><span class="eyebrow">ROOM ALLOCATION</span><strong>4 rooms · 9 travellers</strong></div></div><div class="info-disclosure__content compact-grid">{rooms.map(([room, type, guests]) => <article class="compact-card"><span>{room}</span><h3>{type}</h3><p>{guests}</p></article>)}</div></div>
     </section>
 
+      <article class="panel section-documents" id="documents-hotel" hidden><div class="profile-documents__head"><div><p class="eyebrow">OFFICIAL DOCUMENTS</p><h3>Hotel booking</h3></div><span data-document-count></span></div><div class="profile-document-list" data-document-list="Hotel"></div></article>
     <section class="section-block transport-stage" id="supir" data-stage="3" data-section-view="transport">
       <div class="section-heading"><p class="eyebrow">TRANSPORT · 3 OF 3</p><h2>Playing tourist</h2><span class="stage-note">Two cars and a local who knows the way</span></div>
-      <article class="panel supir-profile"><div class="supir-avatar" aria-hidden="true">CR</div><div><span class="badge badge--confirmed">Driver confirmed</span><h3>Christina Rahmawati</h3><p>Local driver · Batam · +62 852-3266-1117</p></div><a href="https://www.tiktok.com/@dlapandlapan.tour" target="_blank" rel="noopener noreferrer">TikTok · @dlapandlapan.tour</a></article>
+      <article class="panel supir-profile"><div class="supir-avatar" aria-hidden="true">CR</div><div><span class="badge badge--confirmed">Driver confirmed</span><h3>Christina Rahmawati</h3><p>Local driver · Batam</p></div><div class="supir-contact"><a href="https://wa.me/6285232661117" target="_blank" rel="noopener noreferrer">WhatsApp</a><a href="tel:+6285232661117">Call</a></div><a class="supir-social" href="https://www.tiktok.com/@dlapandlapan.tour" target="_blank" rel="noopener noreferrer">TikTok profile ↗</a></article>
       <article class="panel feature-card transport"><div><span class="badge badge--confirmed">2 cars · Booked for 2 days</span><h3>28–29 August · 9:00 AM–10:00 PM</h3><div class="transport-rate"><div><span>Daily rate · 2 cars</span><strong>IDR 1,500,000</strong><small>≈ RM343.27</small></div><div><span>2-day total</span><strong>IDR 3,000,000</strong><small>≈ RM686.54</small></div></div><p class="price">IDR 375,000 <span>≈ RM85.82</span><small>per paying adult · 8 adults · Nayla excluded</small></p><p>Pickup at Batam Centre ferry terminal is confirmed. Car models are still pending; registration plates are not required for this portal.</p><p class="conversion-note">MYR estimates use the Wise mid-market rate checked 25 Aug 2026: RM1 = IDR 4,369.71.</p></div><div class="actions"><a href="https://wa.me/6285232661117" target="_blank" rel="noopener">WhatsApp</a><a href="tel:+6285232661117">Call</a></div></article>
     </section>
 
     <section class="section-block" id="esim" data-section-view="esim">
       <div class="section-heading"><p class="eyebrow">CONNECTIVITY</p><h2>eSIM</h2></div>
-      <article class="panel readiness esim-summary"><div><span class="ready-check">✓</span><div><span class="badge badge--confirmed">Order ready</span><h3>Trip.com eSIM order</h3><p>Aniq will manage and distribute the travellers’ eSIMs from this shared order.</p></div></div><a class="esim-order-link" href={esimOrderUrl} target="_blank" rel="noopener noreferrer">Manage eSIMs on Trip.com ↗</a></article>
+      <article class="panel readiness esim-summary"><div><span class="ready-check">✓</span><div><span class="badge badge--confirmed">Allocated</span><h3>Trip.com eSIM order</h3><p>Each supported traveller has an individual eSIM document assigned to their login. Badiuz uses roaming and Nayla does not require a phone.</p></div></div><a class="esim-order-link" href={esimOrderUrl} target="_blank" rel="noopener noreferrer">Open shared Trip.com order ↗</a></article>
       <!-- <div class="esim-grid" aria-label="Traveller connectivity status">
         <article><span class="badge badge--confirmed">Own roaming</span><strong>Badiuz</strong></article>
         <article><span class="badge badge--tbc">Not required</span><strong>Nayla</strong><small>1 year old · no phone</small></article>
@@ -146,37 +172,40 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       <article class="panel info-disclosure info-disclosure--static esim-guide"><div class="info-disclosure__header"><div><span class="eyebrow">SETUP GUIDE</span><strong>Before eSIM installation</strong></div></div><div class="info-disclosure__content"><ol><li>Use a stable internet connection.</li><li>Install on the phone that will use it—the eSIM cannot be transferred after installation.</li><li>Activate after arriving at the destination.</li><li>Turn on the eSIM line and data roaming.</li></ol></div></article>
     </section>
 
+      <article class="panel section-documents" id="documents-esim" hidden><div class="profile-documents__head"><div><p class="eyebrow">OFFICIAL DOCUMENTS</p><h3>eSIM installation</h3></div><span data-document-count></span></div><div class="profile-document-list" data-document-list="eSIM"></div></article>
     <section class="section-block" id="insurance" data-section-view="insurance">
       <div class="section-heading"><p class="eyebrow">COVERAGE</p><h2>Insurance</h2></div>
-      <article class="panel insurance-summary">
+      <article class="panel insurance-summary" data-policy="zurich">
         <div class="card-top"><span class="badge badge--confirmed">6 travellers covered</span><span>28–30 Aug 2026</span></div>
         <h3>Zurich Travel Takaful</h3><p>International · Basic Plan · Southeast Asia · Group return cover</p>
         <div class="insurance-actions"><a href="/trip-files/zt-2026-6p-a8f31c7d92e64b0f.pdf" target="_blank" rel="noopener">Open protected policy PDF</a><a class="insurance-action--secondary" href="tel:1300888622">Call Zurich customer care</a></div>
-        <details class="insurance-details"><summary>Policy details, covered names & benefits <span>View</span></summary><div class="insurance-details__content"><dl><div><dt>Certificate</dt><dd>PZTIMYGT038514</dd></div><div><dt>Travel Assist</dt><dd>Included</dd></div><div><dt>Total contribution</dt><dd>RM140.29</dd></div></dl><div class="covered-people"><span>People covered</span><ul><li>Muhammad Amrun Aniq bin Mohamed Saidi</li><li>Azilah binti Abd Aziz</li><li>Dedi bin Jalinas</li><li>Khairrin Naim bin Redzuan</li><li>Intan Nurshahira binti Razaly</li><li>Muhammad Faisal bin Hasan</li></ul></div><div class="benefit-grid" aria-label="Key insurance benefits"><article><span>Overseas medical</span><strong>Up to RM100,000</strong></article><article><span>Medical evacuation</span><strong>Unlimited</strong></article><article><span>Personal accident</span><strong>RM150,000</strong></article><article><span>Personal liability</span><strong>RM750,000</strong></article><article><span>Travel cancellation</span><strong>Up to RM20,000</strong></article><article><span>Baggage & effects</span><strong>Up to RM3,000</strong></article></div><p class="policy-note">The attached policy remains password-protected; its password is not displayed or stored on this page. Coverage remains subject to the certificate terms, conditions and exclusions. Zurich’s listed number is customer care, not a confirmed overseas emergency hotline.</p></div></details>
+        <details class="insurance-details"><summary>Policy details, covered names & benefits <span aria-hidden="true">+</span></summary><div class="insurance-details__content"><dl><div><dt>Certificate</dt><dd>PZTIMYGT038514</dd></div><div><dt>Travel Assist</dt><dd>Included</dd></div><div><dt>Total contribution</dt><dd>RM140.29</dd></div></dl><div class="covered-people"><span>People covered</span><ul><li>Muhammad Amrun Aniq bin Mohamed Saidi</li><li>Azilah binti Abd Aziz</li><li>Dedi bin Jalinas</li><li>Khairrin Naim bin Redzuan</li><li>Intan Nurshahira binti Razaly</li><li>Muhammad Faisal bin Hasan</li></ul></div><div class="benefit-grid" aria-label="Key insurance benefits"><article><span>Overseas medical</span><strong>Up to RM100,000</strong></article><article><span>Medical evacuation</span><strong>Unlimited</strong></article><article><span>Personal accident</span><strong>RM150,000</strong></article><article><span>Personal liability</span><strong>RM750,000</strong></article><article><span>Travel cancellation</span><strong>Up to RM20,000</strong></article><article><span>Baggage & effects</span><strong>Up to RM3,000</strong></article></div><p class="policy-note">The attached policy remains password-protected; its password is not displayed or stored on this page. Coverage remains subject to the certificate terms, conditions and exclusions. Zurich’s listed number is customer care, not a confirmed overseas emergency hotline.</p></div></details>
       </article>
-      <article class="panel insurance-summary takaful-summary">
+      <article class="panel insurance-summary takaful-summary" data-policy="takaful">
         <div class="card-top"><span class="badge badge--confirmed">3 travellers covered</span><span>28–30 Aug 2026</span></div>
         <h3>Takaful Malaysia myTRAVEL PA</h3><p>Family plan · Bronze · Region 1 · Overseas coverage</p>
         <div class="insurance-actions"><a href="tel:+60376283905">Call 24-hour assistance</a><a class="insurance-action--secondary" href="tel:130088252385">Call customer care</a></div>
-        <details class="insurance-details"><summary>Policy details, covered names & benefits <span>View</span></summary><div class="insurance-details__content"><dl><div><dt>Certificate</dt><dd>TPAF00026645</dd></div><div><dt>Total contribution</dt><dd>RM55.00</dd></div><div><dt>Travel assistance</dt><dd>Included</dd></div></dl><div class="covered-people"><span>People covered</span><ul><li>Badiuz Zaman bin Badrul Idza</li><li>Nur Nasuha binti Mazalan</li><li>Nur Nayla Bahiyyah binti Badiuz Zaman</li></ul></div><div class="benefit-grid" aria-label="Key Takaful Malaysia benefits"><article><span>Personal accident · family</span><strong>Up to RM300,000</strong></article><article><span>Medical expenses · family</span><strong>Up to RM300,000</strong></article><article><span>Medical evacuation</span><strong>Unlimited</strong></article><article><span>Baggage & effects · family</span><strong>Up to RM7,500</strong></article><article><span>Personal liability · family</span><strong>Up to RM750,000</strong></article><article><span>Travel cancellation · family</span><strong>Up to RM15,000</strong></article></div><p class="policy-note">The original certificate is not linked here because it contains identity numbers, birth dates and a home address. Coverage remains subject to the certificate wording, terms and exclusions.</p></div></details>
+        <details class="insurance-details"><summary>Policy details, covered names & benefits <span aria-hidden="true">+</span></summary><div class="insurance-details__content"><dl><div><dt>Certificate</dt><dd>TPAF00026645</dd></div><div><dt>Total contribution</dt><dd>RM55.00</dd></div><div><dt>Travel assistance</dt><dd>Included</dd></div></dl><div class="covered-people"><span>People covered</span><ul><li>Badiuz Zaman bin Badrul Idza</li><li>Nur Nasuha binti Mazalan</li><li>Nur Nayla Bahiyyah binti Badiuz Zaman</li></ul></div><div class="benefit-grid" aria-label="Key Takaful Malaysia benefits"><article><span>Personal accident · family</span><strong>Up to RM300,000</strong></article><article><span>Medical expenses · family</span><strong>Up to RM300,000</strong></article><article><span>Medical evacuation</span><strong>Unlimited</strong></article><article><span>Baggage & effects · family</span><strong>Up to RM7,500</strong></article><article><span>Personal liability · family</span><strong>Up to RM750,000</strong></article><article><span>Travel cancellation · family</span><strong>Up to RM15,000</strong></article></div><p class="policy-note">The original certificate is not linked here because it contains identity numbers, birth dates and a home address. Coverage remains subject to the certificate wording, terms and exclusions.</p></div></details>
       </article>
     </section>
 
+      <article class="panel section-documents" id="documents-insurance" hidden><div class="profile-documents__head"><div><p class="eyebrow">OFFICIAL DOCUMENTS</p><h3>Insurance policy</h3></div><span data-document-count></span></div><div class="profile-document-list" data-document-list="Insurance"></div></article>
     <section class="section-block" id="photos" data-section-view="photos">
       <div class="section-heading"><p class="eyebrow">SHARED MEMORIES</p><h2>Trip photos</h2></div>
-      <article class="panel album-card"><div class="album-card__visual" aria-hidden="true"><span>BATAM</span><strong>2026</strong><div><i></i><i></i><i></i></div></div><div class="album-card__copy"><span class="badge badge--confirmed">Public album live</span><h3>Batam 2026 Shared Album</h3><p>View the group’s latest photos and videos in any browser—useful for Android users and anyone without the Apple Photos invitation.</p><a href={sharedAlbumUrl} target="_blank" rel="noopener noreferrer">View shared album ↗</a><small>Invited Apple users can contribute through Shared Albums. The public web link is primarily for viewing.</small></div></article>
+      <article class="panel album-card"><div class="album-card__visual" aria-hidden="true"><span>BATAM</span><strong>2026</strong><div><i></i><i></i><i></i></div></div><div class="album-card__copy"><span class="badge badge--confirmed">Public album available</span><h3>Batam 2026 shared album</h3><p>View the group’s latest photos and videos in any browser—useful for Android users and anyone without the Apple Photos invitation.</p><a href={sharedAlbumUrl} target="_blank" rel="noopener noreferrer">View shared album ↗</a><small>Invited Apple users can contribute through Shared Albums. The public web link is primarily for viewing.</small></div></article>
     </section>
 
     <section class="section-block" id="payments" data-section-view="payments">
-      <div class="section-heading"><p class="eyebrow">MONEY NOTES</p><h2>Payments</h2></div>
+      <div class="section-heading"><p class="eyebrow">MONEY NOTES</p><h2>Trip cost</h2></div>
       <section class="panel fx-converter" id="currency" aria-labelledby="fx-title" data-rate="4369.71">
-        <div class="fx-heading"><div><p class="eyebrow">WISE RATE SNAPSHOT</p><h2 id="fx-title">Quick currency check</h2></div><span>Checked 25 Aug 2026</span></div>
+        <div class="fx-heading"><div><p class="eyebrow">LIVE MID-MARKET ESTIMATE</p><h2 id="fx-title">Quick currency check</h2></div><span id="fx-rate-status" aria-live="polite">Loading latest rate…</span></div>
         <div class="fx-fields">
           <label><span>You have</span><div><b id="fx-from-symbol">RM</b><input id="fx-amount" type="number" min="0" step="any" inputmode="decimal" value="100" aria-describedby="fx-rate-note" /><strong id="fx-from-code">MYR</strong></div></label>
           <button class="fx-swap" id="fx-swap" type="button" aria-label="Swap MYR and IDR">⇄</button>
-          <div class="fx-result" aria-live="polite"><span>You get approximately</span><div><b id="fx-to-symbol">Rp</b><output id="fx-output" for="fx-amount">436,971</output><strong id="fx-to-code">IDR</strong></div></div>
+          <div class="fx-result" aria-live="polite"><span>Mid-market estimate</span><div><b id="fx-to-symbol">Rp</b><output id="fx-output" for="fx-amount">436,971</output><strong id="fx-to-code">IDR</strong></div></div>
         </div>
-        <div class="fx-footer"><details><summary>Rate details</summary><p id="fx-rate-note">Wise mid-market reference on 25 Aug 2026: RM1 = Rp4,369.71. Rates change; fees and the final card or transfer amount may differ.</p></details><a href="https://wise.com/my/currency-converter/myr-to-idr-rate" target="_blank" rel="noopener noreferrer">Live Wise rate ↗</a></div>
+        <p class="fx-fee-estimate">After a 0.66% Wise fee assumption: <strong><span id="fx-net-symbol">Rp</span> <output id="fx-net-output" for="fx-amount">434,087</output> <span id="fx-net-code">IDR</span></strong></p>
+        <div class="fx-footer"><details><summary>Rate details</summary><p id="fx-rate-note">Latest public reference rate supplied by Frankfurter from institutional providers. The 0.66% fee is a planning assumption only; Wise’s actual fee and final amount may vary.</p></details><a href="https://wise.com/my/currency-converter/myr-to-idr-rate" target="_blank" rel="noopener noreferrer">Compare on Wise ↗</a></div>
       </section>
       <article class="panel info-disclosure info-disclosure--static currency-card"><div class="info-disclosure__header"><div><span class="eyebrow">PAYMENT NOTES</span><strong>Cash, Wise & QRIS</strong></div></div><div class="info-disclosure__content"><div class="currency"><div><span>Malaysia</span><strong>MYR</strong><p>Terminal fees and Malaysia-side expenses</p></div><div><span>Batam</span><strong>IDR</strong><p>Terminal fees, local and cash-only expenses</p></div></div><small>Wise / QRIS may work where supported. Carry physical cash as backup.</small></div></article>
       <article class="panel bank-card"><div class="card-top"><div><p class="eyebrow">SUPIR PAYMENT ACCOUNT</p><h3>BRI · Christina Rahmawati</h3></div><span class="badge badge--confirmed">Confirmed</span></div><code>0621 0108 8401 509</code><button type="button" data-copy-account="062101088401509">Copy account number</button></article>
@@ -205,27 +234,314 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     </div>
   </main>
 
-  <dialog class="entry-reminder" id="entry-reminder" data-hide-after="2026-08-27T00:00:00+08:00" aria-labelledby="entry-reminder-title">
-    <button class="entry-reminder__close" type="button" aria-label="Close immigration reminder">×</button>
-    <span class="priority-deadline">Action required · Complete 26 August</span>
-    <h2 id="entry-reminder-title">Indonesia entry forms are due</h2>
-    <p class="entry-reminder__countdown"><span>Time remaining</span><strong id="entry-countdown">Calculating…</strong></p>
-    <p>Complete the arrival declaration, then use “Apply for Visa Exemption” on its completed screen so eligible travellers can use the Batam immigration autogate.</p>
-    <div class="entry-reminder__actions"><a href="https://allindonesia.imigrasi.go.id/" target="_blank" rel="noopener noreferrer"><span>Single official entry point</span>Open All Indonesia ↗</a></div>
-  </dialog>
+  <script>
+    const login = document.getElementById('trip-login');
+    const loginForm = document.getElementById('trip-login-form');
+    const loginMessage = document.getElementById('trip-login-message');
+    const app = document.getElementById('trip-app');
+    const cacheKey = 'batam.profile.v1';
+    const tokenKey = 'batam.session.v1';
+    let currentProfile;
+    const documentCacheName = (profile) => `batam-documents-${profile.username}-v2`;
+    const offlineDocumentUrl = (profile, documentData) => `/batam/offline/${profile.username}/${documentData.id}.pdf`;
+    const updateNetworkStatus = () => document.documentElement.classList.toggle('is-offline', !navigator.onLine);
+    const cacheDocuments = async (profile, token) => {
+      const status = document.getElementById('offline-pack-status');
+      if (!('caches' in window)) { if (status) status.textContent = 'Offline files unsupported'; return; }
+      const activeCache = documentCacheName(profile);
+      const oldCaches = (await caches.keys()).filter((name) => name.startsWith(`batam-documents-${profile.username}-`) && name !== activeCache);
+      await Promise.all(oldCaches.map((name) => caches.delete(name)));
+      const cache = await caches.open(activeCache);
+      let saved = 0;
+      for (const documentData of profile.documents) {
+        const key = offlineDocumentUrl(profile, documentData);
+        if (await cache.match(key)) { saved += 1; continue; }
+        if (!navigator.onLine || !token) continue;
+        try {
+          if (status) status.textContent = `Saving files ${saved + 1}/${profile.documents.length}…`;
+          const response = await fetch(`/api/batam/document?id=${encodeURIComponent(documentData.id)}`, { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' });
+          if (response.ok) { await cache.put(key, response); saved += 1; }
+        } catch { /* keep the rest of the portal usable */ }
+      }
+      if (status) status.textContent = saved === profile.documents.length ? `✓ ${saved} files ready offline` : `${saved}/${profile.documents.length} files offline`;
+      document.querySelectorAll('[data-document-status]').forEach(async (node) => {
+        node.textContent = await cache.match(node.getAttribute('data-document-status') || '') ? 'Ready offline' : 'Online required';
+      });
+    };
+    const openDocument = async (documentData, card, button) => {
+      if (!currentProfile || !('caches' in window)) return;
+      const existing = card.querySelector('.document-viewer');
+      if (existing) { existing.remove(); button.textContent = 'Preview'; return; }
+      const cache = await caches.open(documentCacheName(currentProfile));
+      const key = offlineDocumentUrl(currentProfile, documentData);
+      let response = await cache.match(key);
+      if (!response && navigator.onLine) { await cacheDocuments(currentProfile, localStorage.getItem(tokenKey)); response = await cache.match(key); }
+      if (!response) return window.alert('This file is not saved yet. Connect to the internet once and try again.');
+      const bytes = await response.arrayBuffer();
+      const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+      const viewer = document.createElement('div'); viewer.className = 'document-viewer';
+      const toolbar = document.createElement('div'); toolbar.className = 'document-viewer__toolbar';
+      const toolbarLabel = document.createElement('strong'); toolbarLabel.textContent = documentData.title;
+      const fullscreen = document.createElement('button'); fullscreen.type = 'button'; fullscreen.textContent = 'Full screen';
+      const frame = document.createElement('iframe'); frame.src = `${url}#view=Fit&zoom=page-fit`; frame.title = documentData.title; frame.loading = 'lazy';
+      fullscreen.addEventListener('click', async () => {
+        if (document.fullscreenElement === viewer) {
+          await document.exitFullscreen();
+          return;
+        }
+        try { await viewer.requestFullscreen(); }
+        catch { window.open(url, '_blank', 'noopener'); }
+      });
+      document.addEventListener('fullscreenchange', () => { fullscreen.textContent = document.fullscreenElement === viewer ? 'Exit full screen' : 'Full screen'; });
+      toolbar.append(toolbarLabel, fullscreen); viewer.append(toolbar, frame); card.append(viewer); button.textContent = 'Close preview';
+      card.addEventListener('toggle', () => { if (!card.open) { viewer.remove(); button.textContent = 'Preview'; URL.revokeObjectURL(url); } }, { once: true });
+    };
+
+    const setLoginMessage = (message, error = false) => {
+      if (!loginMessage) return;
+      loginMessage.textContent = message;
+      loginMessage.classList.toggle('is-error', error);
+    };
+    const showLogin = (message = 'Enter your details to continue.') => {
+      if (login) login.hidden = false;
+      if (app) app.hidden = true;
+      setLoginMessage(message);
+    };
+    const fact = (label, value) => {
+      const item = document.createElement('div');
+      const term = document.createElement('dt');
+      const detail = document.createElement('dd');
+      term.textContent = label; detail.textContent = value;
+      item.append(term, detail);
+      return item;
+    };
+    const makeDisclosure = (container, trigger, content, open = false, exclusive = false) => {
+      if (!container || !trigger || !content || container.dataset.disclosureReady === 'true') return;
+      container.dataset.disclosureReady = 'true'; container.classList.add('ui-disclosure');
+      trigger.classList.add('ui-disclosure__trigger'); trigger.setAttribute('role', 'button'); trigger.setAttribute('tabindex', '0');
+      const setOpen = (next) => {
+        if (next && exclusive) {
+          container.parentElement?.querySelectorAll(':scope > .ui-disclosure.is-open').forEach((other) => {
+            if (other === container) return;
+            other.classList.remove('is-open');
+            const otherTrigger = other.querySelector(':scope > .ui-disclosure__trigger');
+            const otherContent = other.querySelector(':scope > .timeline');
+            if (otherTrigger) otherTrigger.setAttribute('aria-expanded', 'false');
+            if (otherContent instanceof HTMLElement) otherContent.hidden = true;
+          });
+        }
+        container.classList.toggle('is-open', next); content.hidden = !next; trigger.setAttribute('aria-expanded', String(next));
+      };
+      const toggle = () => {
+        const next = !container.classList.contains('is-open');
+        setOpen(next);
+        if (next && exclusive) {
+          window.requestAnimationFrame(() => {
+            const scroller = document.getElementById('trip-content');
+            if (!scroller) return;
+            const scrollerTop = scroller.getBoundingClientRect().top;
+            const cardTop = container.getBoundingClientRect().top;
+            scroller.scrollTo({ top: Math.max(0, scroller.scrollTop + cardTop - scrollerTop - 4), behavior: 'smooth' });
+          });
+        }
+      };
+      trigger.addEventListener('click', toggle);
+      trigger.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggle(); } });
+      setOpen(open);
+    };
+    const renderProfile = (profile) => {
+      currentProfile = profile;
+      const greeting = document.getElementById('profile-greeting');
+      if (greeting) greeting.textContent = profile.greeting;
+      const note = document.getElementById('profile-welcome-note');
+      if (note) note.textContent = profile.members.length > 1 ? `${profile.members.length} family profiles · shared access` : 'Your trip overview and personal travel details';
+      const adminLink = document.getElementById('profile-admin-link');
+      if (adminLink) adminLink.hidden = profile.role !== 'admin';
+      const usesTakaful = profile.members.some((member) => member.insurance.startsWith('Takaful Malaysia'));
+      document.querySelectorAll('[data-policy]').forEach((card) => { card.hidden = card.getAttribute('data-policy') !== (usesTakaful ? 'takaful' : 'zurich'); });
+      const carByMember = { aniq: 'Car 2', faisal: 'Car 2', khairrin: 'Car 1', intan: 'Car 1', dedi: 'Car 1', azilah: 'Car 1', badiuz: 'Car 3', nasuha: 'Car 3', nayla: 'Car 3' };
+      const hotelBookingByMember = { aniq: '5440.336.138', faisal: '5440.336.138', khairrin: '6085.884.190', intan: '6085.884.190', dedi: '6085.884.190', azilah: '6085.884.190', badiuz: '6085.884.190', nasuha: '6085.884.190', nayla: '6085.884.190' };
+      const roomText = (room) => room.replace(/^Room \d+ · /, '');
+      const primaryMember = profile.members.find((member) => member.id === profile.username) || profile.members[0];
+      document.querySelectorAll('.car-card').forEach((card) => card.classList.toggle('is-assigned', [...new Set(profile.members.map((member) => carByMember[member.id]))].some((car) => card.querySelector('h3')?.textContent?.startsWith(car))));
+      document.querySelectorAll('#ferry .booking-card').forEach((card, index) => {
+        card.querySelector('.ticket-references')?.remove();
+        const references = document.createElement('div'); references.className = 'ticket-references';
+        const label = document.createElement('span'); label.textContent = index === 0 ? 'Your outbound ticket ID' : 'Your return ticket ID';
+        const value = document.createElement('strong'); value.textContent = profile.members.map((member) => `${profile.members.length > 1 ? `${member.displayName} · ` : ''}${index === 0 ? member.ferryOutbound : member.ferryReturn}`).join('  ·  ');
+        references.append(label, value); card.querySelector('.equivalent')?.after(references);
+      });
+      const hotelCard = document.querySelector('#hotel .hotel-card');
+      if (hotelCard) {
+        const bookingDetails = hotelCard.querySelector('.booking-confirmation-details');
+        const bookingFacts = hotelCard.querySelector('.hotel-booking-facts');
+        bookingFacts?.querySelectorAll('.hotel-user-fact').forEach((item) => item.remove());
+        const roomFact = fact('Room', roomText(primaryMember.room)); roomFact.className = 'hotel-user-fact';
+        const bookedUnder = fact('Booked under', 'Shahira Razaly'); bookedUnder.className = 'hotel-user-fact';
+        bookingFacts?.append(roomFact, bookedUnder);
+        const confirmation = [...hotelCard.querySelectorAll('.hotel-booking-facts div')].find((item) => item.querySelector('dt')?.textContent === 'Booking confirmation')?.querySelector('dd');
+        if (confirmation) confirmation.textContent = hotelBookingByMember[primaryMember.id];
+        if (bookingDetails) hotelCard.querySelector('.hotel-card__top')?.after(bookingDetails);
+      }
+      const generalRooms = document.querySelector('#hotel > .info-disclosure'); if (generalRooms) generalRooms.hidden = true;
+      const members = document.getElementById('profile-members');
+      if (members) {
+        members.replaceChildren(...profile.members.map((member) => {
+          const card = document.createElement('article'); card.className = 'panel profile-card';
+          const top = document.createElement('div'); top.className = 'profile-card__top';
+          const avatar = document.createElement('span'); avatar.textContent = member.displayName.slice(0, 1); avatar.setAttribute('aria-hidden', 'true');
+          const identity = document.createElement('div');
+          const badge = document.createElement('small'); badge.textContent = member.esim === 'Not required' ? 'Infant traveller' : 'Traveller ready';
+          const heading = document.createElement('h3'); heading.textContent = member.name;
+          const sub = document.createElement('p'); sub.textContent = `${member.nationality} · ${member.gender} · Born ${member.dateOfBirth}`;
+          identity.append(badge, heading, sub); top.append(avatar, identity);
+          const details = document.createElement('dl'); details.className = 'profile-facts';
+          details.append(fact('Phone number', member.phone), fact('Date of birth', member.dateOfBirth), fact('Gender', member.gender), fact('Nationality', member.nationality), fact('Passport No.', member.passport), fact('Passport expiry date', member.passportExpiry), fact('Arrival Card No.', member.arrivalCard), fact('Visa Exemption No.', member.evisa), fact('Outbound ferry ticket ID', member.ferryOutbound), fact('Return ferry ticket ID', member.ferryReturn), fact('Hotel room', roomText(member.room)), fact('Hotel confirmation No.', hotelBookingByMember[member.id]), fact('Insurance policy', member.insurance), fact('eSIM status', member.esim));
+          card.append(top, details);
+          if (profile.members.length > 1) {
+            makeDisclosure(card, top, details, member.id === primaryMember.id);
+          }
+          return card;
+        }));
+      }
+      document.querySelectorAll('[data-document-list]').forEach((documents) => {
+        const kindName = documents.getAttribute('data-document-list');
+        const relevantDocuments = profile.documents.filter((documentData) => documentData.kind === kindName);
+        documents.replaceChildren(...relevantDocuments.map((documentData) => {
+          const card = document.createElement('details'); card.className = 'profile-document';
+          const summary = document.createElement('summary');
+          const copy = document.createElement('span');
+          const kind = document.createElement('small'); kind.textContent = documentData.shared ? `${documentData.kind} · Group file` : documentData.kind;
+          const title = document.createElement('strong'); title.textContent = documentData.title;
+          const arrow = document.createElement('b'); arrow.textContent = '+'; arrow.setAttribute('aria-hidden', 'true');
+          const action = document.createElement('div'); action.className = 'profile-document__action';
+          const state = document.createElement('span'); state.textContent = 'Checking…'; state.setAttribute('data-document-status', offlineDocumentUrl(profile, documentData));
+          const button = document.createElement('button'); button.type = 'button'; button.textContent = 'Preview'; button.addEventListener('click', () => openDocument(documentData, card, button));
+          copy.append(kind, title); summary.append(copy, arrow); action.append(state, button); card.append(summary, action); return card;
+        }));
+        const container = documents.closest('.section-documents');
+        if (container) {
+          container.hidden = relevantDocuments.length === 0;
+          const count = container.querySelector('[data-document-count]');
+          if (count) count.textContent = `${relevantDocuments.length} ${relevantDocuments.length === 1 ? 'file' : 'files'}`;
+        }
+      });
+      const documentHomes = { Ferry: 'ferry', Hotel: 'hotel', eSIM: 'esim', Insurance: 'insurance' };
+      Object.entries(documentHomes).forEach(([kind, sectionId]) => {
+        const container = document.querySelector(`[data-document-list="${kind}"]`)?.closest('.section-documents');
+        const heading = document.getElementById(sectionId)?.querySelector(':scope > .section-heading');
+        if (container && heading) heading.after(container);
+      });
+      const esimDocuments = document.getElementById('documents-esim');
+      const esimGuide = document.querySelector('#esim .esim-guide');
+      if (esimDocuments && esimGuide) esimDocuments.after(esimGuide);
+      const hotelDocuments = document.getElementById('documents-hotel');
+      const hotelBookingDetails = document.querySelector('#hotel .booking-confirmation-details');
+      const nearbyDetails = document.querySelector('#hotel .hotel-details:not(.booking-confirmation-details)');
+      if (hotelDocuments && hotelBookingDetails) hotelBookingDetails.after(hotelDocuments);
+      if (nearbyDetails && hotelDocuments) hotelDocuments.after(nearbyDetails);
+      const hotelAddress = document.querySelector('#hotel .hotel-card > address');
+      if (hotelAddress && hotelBookingDetails) hotelBookingDetails.querySelector('.hotel-details__content')?.prepend(hotelAddress);
+      document.querySelectorAll('#supir .transport-rate,#supir .price,#supir .conversion-note,#supir .feature-card .actions').forEach((element) => element.remove());
+      const welcome = document.getElementById('profile-welcome');
+      const current = document.querySelector('.up-next[data-home-view]');
+      if (welcome && current) welcome.after(current);
+      const ferryNote = document.querySelector('.ferry-guide .info-disclosure__content > p');
+      if (ferryNote) ferryNote.textContent = 'Your authenticated ferry document is prioritised above and remains available offline after the first successful download.';
+      const easybookCard = document.querySelector('#ferry .ferry-order-card');
+      const boardingGuide = document.querySelector('#ferry .ferry-guide');
+      if (easybookCard && boardingGuide) easybookCard.before(boardingGuide);
+      const conversionNote = document.querySelector('.conversion-note');
+      if (conversionNote) conversionNote.textContent = 'MYR equivalents are planning estimates. Use the live mid-market checker in Payments before settling the balance.';
+      if (login) login.hidden = true;
+      if (app) app.hidden = false;
+      updateNetworkStatus();
+      cacheDocuments(profile, localStorage.getItem(tokenKey));
+      window.dispatchEvent(new CustomEvent('batam-profile-ready', { detail: profile }));
+    };
+    const cachedProfile = () => {
+      try { return JSON.parse(localStorage.getItem(cacheKey) || 'null'); } catch { return null; }
+    };
+    const responseJson = async (response) => {
+      if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('The trip login service is not running. Refresh the page and try again.');
+      return response.json();
+    };
+    const loadRemoteProfile = async (token) => {
+      const response = await fetch('/api/batam/profile', { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' });
+      const data = await responseJson(response);
+      if (!response.ok || !data.profile) throw Object.assign(new Error(data.message || 'Profile unavailable.'), { status: response.status });
+      localStorage.setItem(cacheKey, JSON.stringify(data.profile));
+      renderProfile(data.profile);
+    };
+    const initializeAccess = async () => {
+      const token = localStorage.getItem(tokenKey);
+      const cached = cachedProfile();
+      if (token && cached) renderProfile(cached);
+      if (!token) return showLogin();
+      try { await loadRemoteProfile(token); }
+      catch (error) {
+        if (error && typeof error === 'object' && 'status' in error && [401, 403].includes(Number(error.status))) {
+          localStorage.removeItem(cacheKey); localStorage.removeItem(tokenKey);
+          return showLogin(error instanceof Error ? error.message : 'Your session has expired.');
+        }
+        if (!cached) showLogin(error instanceof Error ? error.message : 'Profile unavailable.');
+      }
+    };
+    loginForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const submit = loginForm.querySelector('button[type="submit"]');
+      const username = String(new FormData(loginForm).get('trip-user') || '').trim().toLowerCase();
+      const pin = String(new FormData(loginForm).get('pin') || '').trim();
+      if (submit) submit.disabled = true;
+      setLoginMessage('Opening your trip portal…');
+      try {
+        const response = await fetch('/api/batam/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, pin }) });
+        const data = await responseJson(response);
+        if (!response.ok || !data.token) throw new Error(data.message || 'Unable to sign in.');
+        localStorage.setItem(tokenKey, data.token);
+        await loadRemoteProfile(data.token);
+        history.replaceState({ view: 'home' }, '', `${location.pathname}${location.search}`);
+        window.dispatchEvent(new Event('batam-open-home'));
+        loginForm.reset();
+      } catch (error) { setLoginMessage(error instanceof Error ? error.message : 'Unable to sign in.', true); }
+      finally { if (submit) submit.disabled = false; }
+    });
+    document.getElementById('profile-lock')?.addEventListener('click', async () => {
+      if (currentProfile && 'caches' in window) await caches.delete(documentCacheName(currentProfile));
+      localStorage.removeItem(cacheKey); localStorage.removeItem(tokenKey); currentProfile = null;
+      showLogin('Signed out. Offline files for this account were removed.');
+    });
+    updateNetworkStatus();
+    window.addEventListener('online', () => { updateNetworkStatus(); if (currentProfile) cacheDocuments(currentProfile, localStorage.getItem(tokenKey)); });
+    window.addEventListener('offline', updateNetworkStatus);
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/batam-sw.js').catch(() => {});
+    document.querySelectorAll('.day-card').forEach((card, index) => makeDisclosure(card, card.querySelector('.day-card__header'), card.querySelector('.timeline'), index === 0, true));
+    const nearbyHotel = document.querySelector('#hotel .hotel-details:not(.booking-confirmation-details)');
+    makeDisclosure(nearbyHotel, nearbyHotel?.querySelector('.hotel-details__header'), nearbyHotel?.querySelector('.hotel-details__content'));
+    const esimSetup = document.querySelector('#esim .esim-guide');
+    makeDisclosure(esimSetup, esimSetup?.querySelector('.info-disclosure__header'), esimSetup?.querySelector('.info-disclosure__content'));
+    const paymentNotes = document.querySelector('#payments .currency-card');
+    makeDisclosure(paymentNotes, paymentNotes?.querySelector('.info-disclosure__header'), paymentNotes?.querySelector('.info-disclosure__content'));
+    const boardingGuide = document.querySelector('#ferry .ferry-guide');
+    makeDisclosure(boardingGuide, boardingGuide?.querySelector('.info-disclosure__header'), boardingGuide?.querySelector('.info-disclosure__content'));
+    initializeAccess();
+  </script>
 
   <script define:vars={{ allEvents }}>
     const fxCard = document.querySelector('.fx-converter');
     const fxInput = document.getElementById('fx-amount');
     const fxOutput = document.getElementById('fx-output');
     const fxSwap = document.getElementById('fx-swap');
-    const fxRate = Number(fxCard?.getAttribute('data-rate')) || 4369.71;
+    let fxRate = Number(fxCard?.getAttribute('data-rate')) || 4369.71;
+    const fxFeeRate = .0066;
     let fxDirection = 'MYR_IDR';
     const formatFx = (value, currency) => new Intl.NumberFormat('en-MY', { maximumFractionDigits: currency === 'MYR' ? 2 : 0 }).format(value);
     const updateFx = () => {
       const amount = Math.max(0, Number(fxInput?.value) || 0);
       const converted = fxDirection === 'MYR_IDR' ? amount * fxRate : amount / fxRate;
       if (fxOutput) fxOutput.textContent = formatFx(converted, fxDirection === 'MYR_IDR' ? 'IDR' : 'MYR');
+      const netOutput = document.getElementById('fx-net-output');
+      if (netOutput) netOutput.textContent = formatFx(converted * (1 - fxFeeRate), fxDirection === 'MYR_IDR' ? 'IDR' : 'MYR');
     };
     fxInput?.addEventListener('input', updateFx);
     fxSwap?.addEventListener('click', () => {
@@ -236,9 +552,30 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       document.getElementById('fx-from-code').textContent = fxDirection === 'MYR_IDR' ? 'MYR' : 'IDR';
       document.getElementById('fx-to-symbol').textContent = fxDirection === 'MYR_IDR' ? 'Rp' : 'RM';
       document.getElementById('fx-to-code').textContent = fxDirection === 'MYR_IDR' ? 'IDR' : 'MYR';
+      document.getElementById('fx-net-symbol').textContent = fxDirection === 'MYR_IDR' ? 'Rp' : 'RM';
+      document.getElementById('fx-net-code').textContent = fxDirection === 'MYR_IDR' ? 'IDR' : 'MYR';
       fxSwap.setAttribute('aria-label', fxDirection === 'MYR_IDR' ? 'Swap MYR and IDR' : 'Swap IDR and MYR');
       updateFx();
     });
+    const loadLiveFxRate = async () => {
+      const status = document.getElementById('fx-rate-status');
+      try {
+        const response = await fetch('https://api.frankfurter.dev/v2/rate/MYR/IDR', { cache: 'no-store' });
+        if (!response.ok) throw new Error('Rate unavailable');
+        const data = await response.json();
+        const liveRate = Number(data.rate);
+        if (!Number.isFinite(liveRate) || liveRate <= 0) throw new Error('Invalid rate');
+        fxRate = liveRate;
+        fxCard?.setAttribute('data-rate', String(liveRate));
+        if (status) status.textContent = `Reference date · ${data.date}`;
+        updateFx();
+      } catch {
+        if (status) status.textContent = 'Offline fallback · 25 Aug 2026';
+      }
+    };
+    updateFx();
+    loadLiveFxRate();
+    window.setInterval(loadLiveFxRate, 30 * 60 * 1000);
 
     const formatDateTime = (date, zone) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: zone }).format(date).replace(',', ' ·');
     const now = new Date();
@@ -249,25 +586,6 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
         element.hidden = true;
       }
     });
-    const entryReminder = document.getElementById('entry-reminder');
-    const entryCountdown = document.getElementById('entry-countdown');
-    const entryDeadline = new Date(entryReminder?.getAttribute('data-hide-after') || '2026-08-27T00:00:00+08:00');
-    const updateEntryCountdown = () => {
-      const remaining = Math.max(0, entryDeadline.getTime() - Date.now());
-      const totalMinutes = Math.floor(remaining / 60000);
-      const days = Math.floor(totalMinutes / 1440);
-      const hours = Math.floor((totalMinutes % 1440) / 60);
-      const minutes = totalMinutes % 60;
-      if (entryCountdown) entryCountdown.textContent = days > 0 ? `${days}d ${hours}h ${minutes}m` : `${hours}h ${minutes}m`;
-      if (remaining === 0 && entryReminder?.open) entryReminder.close();
-    };
-    if (entryReminder && now < entryDeadline) {
-      updateEntryCountdown();
-      window.setInterval(updateEntryCountdown, 60000);
-      window.requestAnimationFrame(() => entryReminder.showModal());
-    }
-    entryReminder?.querySelector('.entry-reminder__close')?.addEventListener('click', () => entryReminder.close());
-    entryReminder?.addEventListener('click', (event) => { if (event.target === entryReminder) entryReminder.close(); });
     const updateLiveTimeline = () => {
       const currentTime = Date.now();
       const upcomingIndex = allEvents.findIndex((event) => new Date(event.datetime).getTime() > currentTime);
@@ -323,19 +641,51 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       history.replaceState(history.state, '', `${location.pathname}${location.search}`);
     }));
 
+    const relatedDocumentViews = { 'documents-ferry': 'transport', 'documents-hotel': 'hotel', 'documents-esim': 'esim', 'documents-insurance': 'insurance' };
+    Object.entries(relatedDocumentViews).forEach(([id, view]) => { const element = document.getElementById(id); if (element) element.dataset.sectionView = view; });
     const viewButtons = [...document.querySelectorAll('[data-view]')];
     const viewPanels = [...new Set([...document.querySelectorAll('[data-home-view], [data-section-view]')])];
+    const viewScroller = document.querySelector('.section-switcher__scroll');
     const validViews = new Set(viewButtons.map((button) => button.dataset.view));
+    const revealViewButton = (button, behavior = 'smooth') => {
+      if (!viewScroller || !button) return;
+      const scrollerRect = viewScroller.getBoundingClientRect();
+      const buttonRect = button.getBoundingClientRect();
+      const visibleWidth = Math.max(0, viewScroller.clientWidth - 56);
+      const targetLeft = viewScroller.scrollLeft + buttonRect.left - scrollerRect.left - (visibleWidth - buttonRect.width) / 2;
+      viewScroller.scrollTo({ left: Math.max(0, targetLeft), behavior });
+    };
     const sectionForHash = (hash) => {
       const id = hash.replace(/^#/, '');
       if (validViews.has(id)) return id;
       return document.getElementById(id)?.closest('[data-section-view]')?.dataset.sectionView || 'home';
+    };
+    const openItineraryDay = (selectedDay) => {
+      if (!selectedDay) return;
+      document.querySelectorAll('.day-card.ui-disclosure').forEach((day) => {
+        const active = day === selectedDay;
+        day.classList.toggle('is-open', active);
+        day.querySelector(':scope > .ui-disclosure__trigger')?.setAttribute('aria-expanded', String(active));
+        const timeline = day.querySelector(':scope > .timeline');
+        if (timeline instanceof HTMLElement) timeline.hidden = !active;
+      });
+    };
+    const openCurrentItineraryDay = () => {
+      const days = [...document.querySelectorAll('.day-card[data-date]')];
+      if (!days.length) return;
+      const parts = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
+      const value = (type) => parts.find((part) => part.type === type)?.value || '';
+      const today = `${value('year')}-${value('month')}-${value('day')}`;
+      const exact = days.find((day) => day.getAttribute('data-date') === today);
+      const nearest = today < (days[0].getAttribute('data-date') || '') ? days[0] : [...days].reverse().find((day) => (day.getAttribute('data-date') || '') <= today) || days.at(-1);
+      openItineraryDay(exact || nearest);
     };
     let activeView = 'home';
     const setView = (requestedView, { updateHistory = true, toggle = false } = {}) => {
       const requested = validViews.has(requestedView) ? requestedView : 'home';
       const view = toggle && requested === activeView && requested !== 'home' ? 'home' : requested;
       activeView = view;
+      if (view === 'itinerary') openCurrentItineraryDay();
       viewPanels.forEach((panel) => {
         const visible = view === 'home' ? panel.hasAttribute('data-home-view') : panel.dataset.sectionView === view;
         panel.hidden = !visible || panel.dataset.expired === 'true';
@@ -345,6 +695,8 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
         button.classList.toggle('active', active);
         button.setAttribute('aria-pressed', String(active));
       });
+      const activeButton = viewButtons.find((button) => button.dataset.view === view);
+      window.requestAnimationFrame(() => revealViewButton(activeButton, updateHistory ? 'smooth' : 'auto'));
       if (updateHistory) {
         const url = view === 'home' ? `${location.pathname}${location.search}` : `#${view}`;
         history.pushState({ view }, '', url);
@@ -354,8 +706,14 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       setView(button.dataset.view || 'home', { toggle: true });
       if (tripContent) tripContent.scrollTop = 0;
     }));
-    const initialView = sectionForHash(location.hash);
+    document.querySelector('[data-open-profile]')?.addEventListener('click', () => {
+      setView('profile');
+      if (tripContent) tripContent.scrollTop = 0;
+    });
+    const initialView = localStorage.getItem('batam.session.v1') ? 'home' : sectionForHash(location.hash);
     setView(initialView, { updateHistory: false });
+    window.addEventListener('batam-profile-ready', () => setView(activeView, { updateHistory: false }));
+    window.addEventListener('batam-open-home', () => { setView('home', { updateHistory: false }); if (tripContent) tripContent.scrollTop = 0; });
     window.addEventListener('popstate', () => setView(sectionForHash(location.hash), { updateHistory: false }));
     document.querySelectorAll('.hotel-itinerary-link').forEach((link) => link.addEventListener('click', (event) => {
       const targetId = link.getAttribute('href')?.slice(1);
@@ -364,6 +722,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       if (!target || !day) return;
       event.preventDefault();
       setView('itinerary', { updateHistory: false });
+      openItineraryDay(day);
       history.pushState({ view: 'itinerary' }, '', `#${targetId}`);
       requestAnimationFrame(() => target.scrollIntoView({ behavior: 'smooth', block: 'center' }));
     }));

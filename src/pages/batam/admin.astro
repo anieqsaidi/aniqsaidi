@@ -1,0 +1,51 @@
+---
+import TripLayout from '../../layouts/TripLayout.astro';
+import '../../styles/batam-admin.css';
+---
+
+<TripLayout title="Batam 2026 · Admin" description="Private administration for the Batam 2026 trip portal.">
+  <main class="batam-admin" id="batam-admin">
+    <section class="batam-admin-auth" id="batam-admin-auth" hidden aria-labelledby="batam-admin-auth-title">
+      <div class="admin-mark" aria-hidden="true">B26</div>
+      <p class="admin-eyebrow">PRIVATE TRIP ADMIN</p>
+      <h1 id="batam-admin-auth-title">Administrator sign-in</h1>
+      <p>Use the same authorized Google account as the main website admin.</p>
+      <button class="admin-primary" id="batam-admin-sign-in" type="button">Continue with Google</button>
+      <p class="admin-auth-message" id="batam-admin-auth-message" role="status" aria-live="polite">Checking access…</p>
+    </section>
+
+    <div class="batam-admin-app" id="batam-admin-app" hidden>
+      <header class="batam-admin-header">
+        <div><p class="admin-eyebrow">BATAM 2026</p><h1>Trip control</h1><p id="batam-admin-subtitle">Loading portal data…</p></div>
+        <a href="/batam" target="_blank" rel="noopener noreferrer">Open portal ↗</a>
+      </header>
+
+      <nav class="batam-admin-nav" aria-label="Admin sections">
+        <button class="active" type="button" data-admin-view="overview" aria-pressed="true">Overview</button>
+        <button type="button" data-admin-view="travellers" aria-pressed="false">Travellers</button>
+        <button type="button" data-admin-view="access" aria-pressed="false">Access</button>
+        <button type="button" data-admin-view="documents" aria-pressed="false">Documents</button>
+        <button type="button" data-admin-view="sessions" aria-pressed="false">Sessions</button>
+      </nav>
+
+      <div class="batam-admin-content">
+        <section data-admin-panel="overview"><div class="admin-section-heading"><p class="admin-eyebrow">AT A GLANCE</p><h2>Portal readiness</h2></div><div class="admin-metrics" id="batam-admin-metrics"></div><article class="admin-card admin-note"><h3>Configuration status</h3><p>The participant portal currently uses deployment-backed trip data. This dashboard reflects the exact accounts, travellers and document permissions shipped with the portal.</p></article></section>
+        <section data-admin-panel="travellers" hidden><div class="admin-section-heading"><p class="admin-eyebrow">MASTER LIST</p><h2>Traveller profiles</h2></div><div class="admin-list" id="batam-admin-travellers"></div></section>
+        <section data-admin-panel="access" hidden><div class="admin-section-heading"><p class="admin-eyebrow">PARTICIPANT ACCESS</p><h2>Accounts & linked families</h2></div><div class="admin-list" id="batam-admin-accounts"></div></section>
+        <section data-admin-panel="documents" hidden><div class="admin-section-heading"><p class="admin-eyebrow">TRAVEL WALLET</p><h2>Document permissions</h2></div><div class="admin-list" id="batam-admin-documents"></div></section>
+        <section data-admin-panel="sessions" hidden><div class="admin-section-heading"><p class="admin-eyebrow">SECURITY</p><h2>Participant sessions</h2></div><article class="admin-card admin-session-actions"><div><h3>Revoke portal sessions</h3><p>Signing out sessions requires participants to enter their username and PIN again.</p></div><button class="admin-danger" id="batam-admin-revoke-all" type="button">Revoke all</button></article><div class="admin-list" id="batam-admin-sessions"></div></section>
+      </div>
+
+      <footer class="batam-admin-footer"><span id="batam-admin-message" role="status" aria-live="polite">Admin ready.</span><button id="batam-admin-refresh" type="button">Refresh</button><button id="batam-admin-sign-out" type="button" hidden>Sign out</button></footer>
+    </div>
+  </main>
+</TripLayout>
+
+<script>
+  import { initializeBatamAdmin } from '../../scripts/batamAdmin';
+  initializeBatamAdmin().catch((error) => {
+    console.error(error);
+    const message = document.getElementById('batam-admin-auth-message');
+    if (message) message.textContent = 'Admin initialization failed. Reload and try again.';
+  });
+</script>

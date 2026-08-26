@@ -49,6 +49,34 @@
           "functionId": "downloadCv",
           "region": "asia-southeast1"
         }
+      },
+      {
+        "source": "/api/batam/login",
+        "function": {
+          "functionId": "batamLogin",
+          "region": "asia-southeast1"
+        }
+      },
+      {
+        "source": "/api/batam/profile",
+        "function": {
+          "functionId": "batamProfile",
+          "region": "asia-southeast1"
+        }
+      },
+      {
+        "source": "/api/batam/document",
+        "function": {
+          "functionId": "batamDocument",
+          "region": "asia-southeast1"
+        }
+      },
+      {
+        "source": "/api/batam/admin",
+        "function": {
+          "functionId": "batamAdmin",
+          "region": "asia-southeast1"
+        }
       }
     ],
     "headers": [
@@ -118,6 +146,23 @@
           {
             "key": "Cache-Control",
             "value": "private, no-store"
+          }
+        ]
+      },
+      {
+        "source": "/batam{,/**}",
+        "headers": [
+          {
+            "key": "X-Robots-Tag",
+            "value": "noindex, nofollow, noarchive"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "private, no-cache"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "no-referrer"
           }
         ]
       }
