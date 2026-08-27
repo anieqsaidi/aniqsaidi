@@ -114,8 +114,31 @@ export const batamDocument = onRequest({ region: REGION, timeoutSeconds: 30, mem
     if (!upstream.ok) throw new Error(`Drive returned ${upstream.status}`);
     const bytes = Buffer.from(await upstream.arrayBuffer());
     if (!bytes.length || bytes.length > 15 * 1024 * 1024) throw new Error('Invalid document size');
-    const contentType = document.mimeType || 'application/pdf';
-    const extension = contentType === 'image/jpeg' ? 'jpg' : contentType === 'image/png' ? 'png' : 'pdf';
+    let contentType;
+    let extension;
+    if (bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF) {
+      contentType = 'image/jpeg';
+      extension = 'jpg';
+    } else if (
+      bytes[0] === 0x89 &&
+      bytes[1] === 0x50 &&
+      bytes[2] === 0x4E &&
+      bytes[3] === 0x47
+    ) {
+      contentType = 'image/png';
+      extension = 'png';
+    } else if (bytes.subarray(0, 4).toString() === '%PDF') {
+      contentType = 'application/pdf';
+      extension = 'pdf';
+    } else if (
+      bytes.subarray(0, 4).toString() === 'RIFF' &&
+      bytes.subarray(8, 12).toString() === 'WEBP'
+    ) {
+      contentType = 'image/webp';
+      extension = 'webp';
+    } else {
+      throw new Error('Unsupported document format');
+    }
     response.set('Content-Type', contentType);
     response.set('Content-Disposition', `inline; filename="${document.id}.${extension}"`);
     return response.status(200).send(bytes);
