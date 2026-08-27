@@ -21,4 +21,9 @@ jobs:
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ANIQSAIDI }}
       - run: npm ci
+      
+      - name: Install Firebase Functions dependencies
+        run: npm ci
+        working-directory: functions
+      
       - run: npm run deploy:prod
