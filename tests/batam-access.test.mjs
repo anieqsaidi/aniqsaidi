@@ -102,4 +102,5 @@ test('document previews use the offline custom viewer for PDFs and supported ima
   assert.doesNotMatch(source, /createElement\('iframe'\)/);
   assert.match(source, /cache\.put\(pdfWorkerUrl, workerResponse\)/);
   assert.match(source, /document\.body\.append\(viewer\)/);
+  assert.match(source, /card\.append\(viewer\); button\.textContent = 'Close preview';\s*setExpanded\(true\)/);
 });

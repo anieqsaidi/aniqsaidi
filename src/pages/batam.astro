@@ -404,6 +404,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       };
       controls.append(zoomOut, zoomLabel, zoomIn, fit, fullscreen);
       toolbar.append(toolbarLabel, controls); viewer.append(toolbar, stage); card.append(viewer); button.textContent = 'Close preview';
+      setExpanded(true);
       card.addEventListener('toggle', () => { if (!card.open) dispose(); }, { once: true });
     };
 
