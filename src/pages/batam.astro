@@ -278,12 +278,24 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       if (!response && navigator.onLine) { await cacheDocuments(currentProfile, localStorage.getItem(tokenKey)); response = await cache.match(key); }
       if (!response) return window.alert('This file is not saved yet. Connect to the internet once and try again.');
       const bytes = await response.arrayBuffer();
-      const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+      const contentType = response.headers.get('Content-Type') || 'application/pdf';
+      const url = URL.createObjectURL(new Blob([bytes], { type: contentType }));
       const viewer = document.createElement('div'); viewer.className = 'document-viewer';
       const toolbar = document.createElement('div'); toolbar.className = 'document-viewer__toolbar';
       const toolbarLabel = document.createElement('strong'); toolbarLabel.textContent = documentData.title;
       const fullscreen = document.createElement('button'); fullscreen.type = 'button'; fullscreen.textContent = 'Full screen';
-      const frame = document.createElement('iframe'); frame.src = `${url}#view=Fit&zoom=page-fit`; frame.title = documentData.title; frame.loading = 'lazy';
+      let preview;
+      if (contentType.startsWith('image/')) {
+        preview = document.createElement('img');
+        preview.src = url;
+        preview.alt = documentData.title;
+        preview.className = 'document-viewer__image';
+      } else {
+        preview = document.createElement('iframe');
+        preview.src = `${url}#view=Fit&zoom=page-fit`;
+        preview.title = documentData.title;
+        preview.loading = 'lazy';
+      }
       fullscreen.addEventListener('click', async () => {
         if (document.fullscreenElement === viewer) {
           await document.exitFullscreen();
@@ -293,7 +305,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
         catch { window.open(url, '_blank', 'noopener'); }
       });
       document.addEventListener('fullscreenchange', () => { fullscreen.textContent = document.fullscreenElement === viewer ? 'Exit full screen' : 'Full screen'; });
-      toolbar.append(toolbarLabel, fullscreen); viewer.append(toolbar, frame); card.append(viewer); button.textContent = 'Close preview';
+      toolbar.append(toolbarLabel, fullscreen); viewer.append(toolbar, preview); card.append(viewer); button.textContent = 'Close preview';
       card.addEventListener('toggle', () => { if (!card.open) { viewer.remove(); button.textContent = 'Preview'; URL.revokeObjectURL(url); } }, { once: true });
     };
 
