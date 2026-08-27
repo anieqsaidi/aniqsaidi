@@ -1,4 +1,4 @@
-const SHELL = 'batam-shell-v2';
+const SHELL = 'batam-shell-v3';
 const HOME = '/batam/';
 
 self.addEventListener('install', (event) => {
