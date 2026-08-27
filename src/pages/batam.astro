@@ -265,7 +265,10 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       }
       if (status) status.textContent = saved === profile.documents.length ? `✓ ${saved} files ready offline` : `${saved}/${profile.documents.length} files offline`;
       document.querySelectorAll('[data-document-status]').forEach(async (node) => {
-        node.textContent = await cache.match(node.getAttribute('data-document-status') || '') ? 'Ready offline' : 'Online required';
+        const isReady = !!(await cache.match(node.getAttribute('data-document-status') || ''));
+        node.textContent = isReady ? 'Ready offline' : 'Online required';
+        const button = node.parentElement?.querySelector('button');
+        if (button) button.hidden = !isReady;
       });
     };
     const openDocument = async (documentData, card, button) => {
@@ -431,7 +434,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
           const arrow = document.createElement('b'); arrow.textContent = '+'; arrow.setAttribute('aria-hidden', 'true');
           const action = document.createElement('div'); action.className = 'profile-document__action';
           const state = document.createElement('span'); state.textContent = 'Checking…'; state.setAttribute('data-document-status', offlineDocumentUrl(profile, documentData));
-          const button = document.createElement('button'); button.type = 'button'; button.textContent = 'Preview'; button.addEventListener('click', () => openDocument(documentData, card, button));
+          const button = document.createElement('button'); button.type = 'button'; button.textContent = 'Preview'; button.hidden = true; button.addEventListener('click', () => openDocument(documentData, card, button));
           copy.append(kind, title); summary.append(copy, arrow); action.append(state, button); card.append(summary, action); return card;
         }));
         const container = documents.closest('.section-documents');
