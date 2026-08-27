@@ -235,8 +235,8 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
   </main>
 
   <script>
-    import * as pdfjs from 'pdfjs-dist';
-    import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+    import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
+    import pdfWorkerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
 
     pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
@@ -309,8 +309,17 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       let pdfDocument;
       let resizeTimer;
       let renderVersion = 0;
+      let viewerAnchor;
 
       const setExpanded = (expanded) => {
+        if (expanded && !viewer.classList.contains('is-expanded')) {
+          viewerAnchor = document.createComment('document-viewer-position');
+          viewer.before(viewerAnchor);
+          document.body.append(viewer);
+        } else if (!expanded && viewer.classList.contains('is-expanded') && viewerAnchor?.parentNode) {
+          viewerAnchor.replaceWith(viewer);
+          viewerAnchor = undefined;
+        }
         viewer.classList.toggle('is-expanded', expanded);
         document.documentElement.classList.toggle('has-document-viewer', expanded);
         fullscreen.textContent = expanded ? 'Exit' : 'Full screen';
@@ -324,6 +333,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
         preview.src = imageUrl;
         preview.alt = documentData.title;
         preview.className = 'document-viewer__image';
+        preview.addEventListener('error', () => { stage.innerHTML = '<p class="document-viewer__error">This image could not be displayed. Reconnect once to refresh its offline copy.</p>'; }, { once: true });
         stage.append(preview);
         const renderImage = () => { preview.style.width = `${zoom * 100}%`; updateZoomLabel(); };
         zoomOut.addEventListener('click', () => { zoom = Math.max(.5, zoom - .25); renderImage(); });
@@ -342,29 +352,34 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
           const version = ++renderVersion;
           const availableWidth = Math.max(240, stage.clientWidth - 20);
           const pages = document.createElement('div'); pages.className = 'document-viewer__pages';
-          for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber += 1) {
-            if (disposed || version !== renderVersion) return;
-            const page = await pdfDocument.getPage(pageNumber);
-            const natural = page.getViewport({ scale: 1 });
-            const viewport = page.getViewport({ scale: (availableWidth / natural.width) * zoom });
-            const ratio = Math.min(window.devicePixelRatio || 1, 2);
-            const pageShell = document.createElement('div'); pageShell.className = 'document-viewer__page';
-            pageShell.style.width = `${Math.floor(viewport.width)}px`;
-            pageShell.style.height = `${Math.floor(viewport.height)}px`;
-            const canvas = document.createElement('canvas');
-            canvas.width = Math.floor(viewport.width * ratio);
-            canvas.height = Math.floor(viewport.height * ratio);
-            canvas.style.width = `${Math.floor(viewport.width)}px`;
-            canvas.style.height = `${Math.floor(viewport.height)}px`;
-            const context = canvas.getContext('2d', { alpha: false });
-            if (!context) continue;
-            const textLayerElement = document.createElement('div'); textLayerElement.className = 'document-viewer__text-layer';
-            pageShell.append(canvas, textLayerElement); pages.append(pageShell);
-            await page.render({ canvasContext: context, viewport, transform: ratio === 1 ? undefined : [ratio, 0, 0, ratio, 0, 0] }).promise;
-            const textLayer = new pdfjs.TextLayer({ textContentSource: await page.getTextContent(), container: textLayerElement, viewport });
-            await textLayer.render();
+          stage.replaceChildren(pages);
+          try {
+            for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber += 1) {
+              if (disposed || version !== renderVersion) return;
+              const page = await pdfDocument.getPage(pageNumber);
+              const natural = page.getViewport({ scale: 1 });
+              const viewport = page.getViewport({ scale: (availableWidth / natural.width) * zoom });
+              const ratio = Math.min(window.devicePixelRatio || 1, 2);
+              const pageShell = document.createElement('div'); pageShell.className = 'document-viewer__page';
+              pageShell.style.width = `${Math.floor(viewport.width)}px`;
+              pageShell.style.height = `${Math.floor(viewport.height)}px`;
+              const canvas = document.createElement('canvas');
+              canvas.width = Math.floor(viewport.width * ratio);
+              canvas.height = Math.floor(viewport.height * ratio);
+              canvas.style.width = `${Math.floor(viewport.width)}px`;
+              canvas.style.height = `${Math.floor(viewport.height)}px`;
+              const context = canvas.getContext('2d', { alpha: false });
+              if (!context) continue;
+              const textLayerElement = document.createElement('div'); textLayerElement.className = 'document-viewer__text-layer';
+              pageShell.append(canvas, textLayerElement); pages.append(pageShell);
+              await page.render({ canvasContext: context, viewport, transform: ratio === 1 ? undefined : [ratio, 0, 0, ratio, 0, 0] }).promise;
+              page.getTextContent().then((textContent) => new pdfjs.TextLayer({ textContentSource: textContent, container: textLayerElement, viewport }).render()).catch(() => { /* Canvas preview remains usable when a PDF has no extractable text. */ });
+            }
+          } catch {
+            if (!disposed && version === renderVersion && pages.childElementCount === 0) {
+              stage.innerHTML = '<p class="document-viewer__error">This PDF could not be rendered on this device. Reconnect once to refresh its offline copy.</p>';
+            }
           }
-          if (!disposed && version === renderVersion) stage.replaceChildren(pages);
           updateZoomLabel();
         };
         const rerender = () => { clearTimeout(resizeTimer); resizeTimer = window.setTimeout(renderPdf, 100); };
