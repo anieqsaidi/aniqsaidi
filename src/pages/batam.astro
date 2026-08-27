@@ -532,7 +532,12 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     updateNetworkStatus();
     window.addEventListener('online', () => { updateNetworkStatus(); if (currentProfile) cacheDocuments(currentProfile, localStorage.getItem(tokenKey)); });
     window.addEventListener('offline', updateNetworkStatus);
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/batam-sw.js').catch(() => {});
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/batam-sw.js', { updateViaCache: 'none' })
+        .then((registration) => registration.update())
+        .catch(() => {});
+    }
     document.querySelectorAll('.day-card').forEach((card, index) => makeDisclosure(card, card.querySelector('.day-card__header'), card.querySelector('.timeline'), index === 0, true));
     const nearbyHotel = document.querySelector('#hotel .hotel-details:not(.booking-confirmation-details)');
     makeDisclosure(nearbyHotel, nearbyHotel?.querySelector('.hotel-details__header'), nearbyHotel?.querySelector('.hotel-details__content'));
