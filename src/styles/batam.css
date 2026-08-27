@@ -254,13 +254,26 @@ body { background-image:linear-gradient(135deg,rgba(21,107,74,.018) 25%,transpar
 .profile-document__action button::before { content:'◉'; font-size:.7rem; }
 .profile-document__action button:active { transform:scale(.97); box-shadow:0 3px 9px rgba(21,107,74,.18); }
 .document-viewer { margin:0 10px 11px; overflow:hidden; border:1px solid rgba(23,33,27,.12); border-radius:12px; background:#dfe3df; }
-.document-viewer__toolbar { display:flex; min-height:44px; align-items:center; justify-content:space-between; gap:10px; padding:7px 8px 7px 12px; color:#fff; background:#25342c; }
-.document-viewer__toolbar strong { overflow:hidden; font-size:.62rem; text-overflow:ellipsis; white-space:nowrap; }
+.document-viewer__toolbar { display:flex; min-height:44px; align-items:center; justify-content:space-between; gap:8px; padding:7px 8px 7px 12px; color:#fff; background:#25342c; }
+.document-viewer__toolbar strong { min-width:0; flex:1 1 auto; overflow:hidden; font-size:.62rem; text-overflow:ellipsis; white-space:nowrap; }
 .document-viewer__toolbar button { flex:0 0 auto; min-height:30px; padding:0 10px; border:1px solid rgba(255,255,255,.22); border-radius:8px; color:#fff; background:rgba(255,255,255,.1); font-size:.59rem; font-weight:800; cursor:pointer; }
-.document-viewer iframe { display:block; width:100%; height:min(62vh,560px); border:0; background:#fff; }
-.document-viewer__image { display:block; width:100%; max-height:min(62vh,560px); object-fit:contain; background:#fff; }
-.document-viewer:fullscreen { display:flex; flex-direction:column; width:100vw; height:100vh; margin:0; border:0; border-radius:0; }
-.document-viewer:fullscreen iframe { flex:1; height:auto; }
+.document-viewer__controls { display:flex; flex:0 0 auto; align-items:center; gap:4px; }
+.document-viewer__controls button[aria-label="Zoom out"], .document-viewer__controls button[aria-label="Zoom in"] { width:30px; padding:0; font-size:.9rem; }
+.document-viewer__zoom { min-width:30px; color:rgba(255,255,255,.8); font-size:.54rem; font-weight:800; text-align:center; }
+.document-viewer__stage { position:relative; width:100%; height:min(62vh,560px); overflow:auto; overscroll-behavior:auto; -webkit-overflow-scrolling:touch; background:#cfd5d1; }
+.document-viewer__pages { display:flex; min-width:100%; flex-direction:column; align-items:center; gap:10px; padding:10px; }
+.document-viewer__page { position:relative; flex:0 0 auto; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,.16); background:#fff; }
+.document-viewer__page canvas { display:block; }
+.document-viewer__text-layer { --min-font-size:1; --text-scale-factor:calc(var(--total-scale-factor) * var(--min-font-size)); --min-font-size-inv:calc(1 / var(--min-font-size)); position:absolute; z-index:1; inset:0; overflow:clip; line-height:1; text-align:initial; transform-origin:0 0; -webkit-text-size-adjust:none; text-size-adjust:none; }
+.document-viewer__text-layer :is(span,br) { position:absolute; color:transparent; white-space:pre; cursor:text; transform-origin:0 0; }
+.document-viewer__text-layer > :not(.markedContent), .document-viewer__text-layer .markedContent span:not(.markedContent) { --font-height:0; --scale-x:1; --rotate:0deg; z-index:1; font-size:calc(var(--text-scale-factor) * var(--font-height)); transform:rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv)); }
+.document-viewer__text-layer .markedContent { display:contents; }
+.document-viewer__text-layer ::selection { color:transparent; background:rgba(41,139,98,.3); }
+.document-viewer__image { display:block; max-width:none; height:auto; min-height:100%; margin-inline:auto; object-fit:contain; background:#fff; }
+html.has-document-viewer { overflow:hidden; }
+.document-viewer.is-expanded { position:fixed; z-index:1000; inset:0; display:flex; width:100%; height:100dvh; margin:0; border:0; border-radius:0; background:#cfd5d1; flex-direction:column; }
+.document-viewer.is-expanded .document-viewer__toolbar { padding-top:max(7px,env(safe-area-inset-top)); }
+.document-viewer.is-expanded .document-viewer__stage { flex:1; height:auto; padding-bottom:env(safe-area-inset-bottom); overscroll-behavior:contain; }
 .profile-document-list small { color:var(--green); font-size:.56rem; font-weight:800; text-transform:uppercase; }
 .profile-document-list strong { overflow:hidden; margin-top:2px; font-size:.7rem; text-overflow:ellipsis; white-space:nowrap; }
 .profile-document-list b { color:var(--green); font-size:1rem; }

@@ -27,10 +27,10 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
 <TripLayout title="Batam 2026 · Trip Portal" description="Private travel companion for the Batam 2026 group trip.">
   <section class="trip-login" id="trip-login" aria-labelledby="trip-login-title">
     <form class="trip-login__card" id="trip-login-form" autocomplete="off">
-      <span class="trip-login__mark" aria-hidden="true">B26</span>
-      <p class="eyebrow">PRIVATE TRIP PORTAL</p>
-      <h1 id="trip-login-title">Welcome aboard</h1>
-      <p>Use your first name and the last four digits of your phone number.</p>
+      <span class="trip-login__mark" aria-hidden="true">B '26</span>
+      <p class="eyebrow">PRIVATE TRIP PORTAL ⛴️</p>
+      <h1 id="trip-login-title">Welcome aboard!</h1>
+      <p>Ready when you are. Batam awaits.</p>
       <label><span>Username</span><input id="trip-username" name="trip-user" type="text" inputmode="text" autocomplete="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore required /></label>
       <label><span>4-digit PIN</span><input id="trip-pin" name="pin" type="password" inputmode="numeric" autocomplete="current-password" pattern="[0-9]{4}" maxlength="4" required /></label>
       <button type="submit">Open trip portal</button>
@@ -235,6 +235,11 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
   </main>
 
   <script>
+    import * as pdfjs from 'pdfjs-dist';
+    import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+
+    pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
+
     const login = document.getElementById('trip-login');
     const loginForm = document.getElementById('trip-login-form');
     const loginMessage = document.getElementById('trip-login-message');
@@ -252,6 +257,12 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       const oldCaches = (await caches.keys()).filter((name) => name.startsWith(`batam-documents-${profile.username}-`) && name !== activeCache);
       await Promise.all(oldCaches.map((name) => caches.delete(name)));
       const cache = await caches.open(activeCache);
+      if (!(await cache.match(pdfWorkerUrl)) && navigator.onLine) {
+        try {
+          const workerResponse = await fetch(pdfWorkerUrl, { cache: 'reload' });
+          if (workerResponse.ok) await cache.put(pdfWorkerUrl, workerResponse);
+        } catch { /* PDF previews remain available after the next successful sync */ }
+      }
       let saved = 0;
       for (const documentData of profile.documents) {
         const key = offlineDocumentUrl(profile, documentData);
@@ -282,34 +293,103 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       if (!response) return window.alert('This file is not saved yet. Connect to the internet once and try again.');
       const bytes = await response.arrayBuffer();
       const contentType = response.headers.get('Content-Type') || 'application/pdf';
-      const url = URL.createObjectURL(new Blob([bytes], { type: contentType }));
       const viewer = document.createElement('div'); viewer.className = 'document-viewer';
       const toolbar = document.createElement('div'); toolbar.className = 'document-viewer__toolbar';
       const toolbarLabel = document.createElement('strong'); toolbarLabel.textContent = documentData.title;
+      const controls = document.createElement('div'); controls.className = 'document-viewer__controls';
+      const zoomOut = document.createElement('button'); zoomOut.type = 'button'; zoomOut.textContent = '−'; zoomOut.setAttribute('aria-label', 'Zoom out');
+      const zoomLabel = document.createElement('span'); zoomLabel.className = 'document-viewer__zoom'; zoomLabel.textContent = 'Fit';
+      const zoomIn = document.createElement('button'); zoomIn.type = 'button'; zoomIn.textContent = '+'; zoomIn.setAttribute('aria-label', 'Zoom in');
+      const fit = document.createElement('button'); fit.type = 'button'; fit.textContent = 'Fit'; fit.setAttribute('aria-label', 'Fit document to width');
       const fullscreen = document.createElement('button'); fullscreen.type = 'button'; fullscreen.textContent = 'Full screen';
-      let preview;
+      const stage = document.createElement('div'); stage.className = 'document-viewer__stage';
+      let zoom = 1;
+      let disposed = false;
+      let imageUrl;
+      let pdfDocument;
+      let resizeTimer;
+      let renderVersion = 0;
+
+      const setExpanded = (expanded) => {
+        viewer.classList.toggle('is-expanded', expanded);
+        document.documentElement.classList.toggle('has-document-viewer', expanded);
+        fullscreen.textContent = expanded ? 'Exit' : 'Full screen';
+        fullscreen.setAttribute('aria-label', expanded ? 'Exit full screen preview' : 'Open full screen preview');
+      };
+      const updateZoomLabel = () => { zoomLabel.textContent = zoom === 1 ? 'Fit' : `${Math.round(zoom * 100)}%`; };
+
       if (contentType.startsWith('image/')) {
-        preview = document.createElement('img');
-        preview.src = url;
+        imageUrl = URL.createObjectURL(new Blob([bytes], { type: contentType }));
+        const preview = document.createElement('img');
+        preview.src = imageUrl;
         preview.alt = documentData.title;
         preview.className = 'document-viewer__image';
+        stage.append(preview);
+        const renderImage = () => { preview.style.width = `${zoom * 100}%`; updateZoomLabel(); };
+        zoomOut.addEventListener('click', () => { zoom = Math.max(.5, zoom - .25); renderImage(); });
+        zoomIn.addEventListener('click', () => { zoom = Math.min(4, zoom + .25); renderImage(); });
+        fit.addEventListener('click', () => { zoom = 1; renderImage(); stage.scrollTo(0, 0); });
       } else {
-        preview = document.createElement('iframe');
-        preview.src = `${url}#view=Fit&zoom=page-fit`;
-        preview.title = documentData.title;
-        preview.loading = 'lazy';
-      }
-      fullscreen.addEventListener('click', async () => {
-        if (document.fullscreenElement === viewer) {
-          await document.exitFullscreen();
-          return;
+        stage.setAttribute('aria-label', `${documentData.title} PDF preview`);
+        try {
+          pdfDocument = await pdfjs.getDocument({ data: new Uint8Array(bytes) }).promise;
+        } catch {
+          viewer.remove();
+          button.textContent = 'Preview';
+          return window.alert('This PDF could not be previewed. Please try downloading it again while online.');
         }
-        try { await viewer.requestFullscreen(); }
-        catch { window.open(url, '_blank', 'noopener'); }
-      });
-      document.addEventListener('fullscreenchange', () => { fullscreen.textContent = document.fullscreenElement === viewer ? 'Exit full screen' : 'Full screen'; });
-      toolbar.append(toolbarLabel, fullscreen); viewer.append(toolbar, preview); card.append(viewer); button.textContent = 'Close preview';
-      card.addEventListener('toggle', () => { if (!card.open) { viewer.remove(); button.textContent = 'Preview'; URL.revokeObjectURL(url); } }, { once: true });
+        const renderPdf = async () => {
+          const version = ++renderVersion;
+          const availableWidth = Math.max(240, stage.clientWidth - 20);
+          const pages = document.createElement('div'); pages.className = 'document-viewer__pages';
+          for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber += 1) {
+            if (disposed || version !== renderVersion) return;
+            const page = await pdfDocument.getPage(pageNumber);
+            const natural = page.getViewport({ scale: 1 });
+            const viewport = page.getViewport({ scale: (availableWidth / natural.width) * zoom });
+            const ratio = Math.min(window.devicePixelRatio || 1, 2);
+            const pageShell = document.createElement('div'); pageShell.className = 'document-viewer__page';
+            pageShell.style.width = `${Math.floor(viewport.width)}px`;
+            pageShell.style.height = `${Math.floor(viewport.height)}px`;
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.floor(viewport.width * ratio);
+            canvas.height = Math.floor(viewport.height * ratio);
+            canvas.style.width = `${Math.floor(viewport.width)}px`;
+            canvas.style.height = `${Math.floor(viewport.height)}px`;
+            const context = canvas.getContext('2d', { alpha: false });
+            if (!context) continue;
+            const textLayerElement = document.createElement('div'); textLayerElement.className = 'document-viewer__text-layer';
+            pageShell.append(canvas, textLayerElement); pages.append(pageShell);
+            await page.render({ canvasContext: context, viewport, transform: ratio === 1 ? undefined : [ratio, 0, 0, ratio, 0, 0] }).promise;
+            const textLayer = new pdfjs.TextLayer({ textContentSource: await page.getTextContent(), container: textLayerElement, viewport });
+            await textLayer.render();
+          }
+          if (!disposed && version === renderVersion) stage.replaceChildren(pages);
+          updateZoomLabel();
+        };
+        const rerender = () => { clearTimeout(resizeTimer); resizeTimer = window.setTimeout(renderPdf, 100); };
+        zoomOut.addEventListener('click', () => { zoom = Math.max(.5, zoom - .25); rerender(); });
+        zoomIn.addEventListener('click', () => { zoom = Math.min(3, zoom + .25); rerender(); });
+        fit.addEventListener('click', () => { zoom = 1; stage.scrollTo(0, 0); rerender(); });
+        const resizeObserver = new ResizeObserver(rerender);
+        resizeObserver.observe(stage);
+        viewer.addEventListener('documentviewerdispose', () => resizeObserver.disconnect(), { once: true });
+        requestAnimationFrame(renderPdf);
+      }
+      fullscreen.addEventListener('click', () => setExpanded(!viewer.classList.contains('is-expanded')));
+      const onKeydown = (event) => { if (event.key === 'Escape' && viewer.classList.contains('is-expanded')) setExpanded(false); };
+      document.addEventListener('keydown', onKeydown);
+      const dispose = () => {
+        disposed = true; renderVersion += 1; clearTimeout(resizeTimer);
+        setExpanded(false); document.removeEventListener('keydown', onKeydown);
+        viewer.dispatchEvent(new Event('documentviewerdispose'));
+        pdfDocument?.destroy();
+        if (imageUrl) URL.revokeObjectURL(imageUrl);
+        viewer.remove(); button.textContent = 'Preview';
+      };
+      controls.append(zoomOut, zoomLabel, zoomIn, fit, fullscreen);
+      toolbar.append(toolbarLabel, controls); viewer.append(toolbar, stage); card.append(viewer); button.textContent = 'Close preview';
+      card.addEventListener('toggle', () => { if (!card.open) dispose(); }, { once: true });
     };
 
     const setLoginMessage = (message, error = false) => {

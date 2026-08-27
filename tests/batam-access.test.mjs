@@ -93,3 +93,12 @@ test('family profile accordion closes the previously expanded card content', () 
   assert.match(source, /other\.classList\.remove\('is-open'\)/);
   assert.match(source, /otherContent instanceof HTMLElement\) otherContent\.hidden = true/);
 });
+
+test('document previews use the offline custom viewer for PDFs and supported images', () => {
+  const source = readFileSync(new URL('../src/pages/batam.astro', import.meta.url), 'utf8');
+  assert.match(source, /import \* as pdfjs from 'pdfjs-dist'/);
+  assert.match(source, /pdfjs\.getDocument\(\{ data: new Uint8Array\(bytes\) \}\)/);
+  assert.match(source, /contentType\.startsWith\('image\/'\)/);
+  assert.doesNotMatch(source, /createElement\('iframe'\)/);
+  assert.match(source, /cache\.put\(pdfWorkerUrl, workerResponse\)/);
+});
