@@ -257,6 +257,7 @@ body { background-image:linear-gradient(135deg,rgba(21,107,74,.018) 25%,transpar
 .document-viewer__toolbar strong { overflow:hidden; font-size:.62rem; text-overflow:ellipsis; white-space:nowrap; }
 .document-viewer__toolbar button { flex:0 0 auto; min-height:30px; padding:0 10px; border:1px solid rgba(255,255,255,.22); border-radius:8px; color:#fff; background:rgba(255,255,255,.1); font-size:.59rem; font-weight:800; cursor:pointer; }
 .document-viewer iframe { display:block; width:100%; height:min(62vh,560px); border:0; background:#fff; }
+.document-viewer__image { display:block; width:100%; max-height:min(62vh,560px); object-fit:contain; background:#fff; }
 .document-viewer:fullscreen { display:flex; flex-direction:column; width:100vw; height:100vh; margin:0; border:0; border-radius:0; }
 .document-viewer:fullscreen iframe { flex:1; height:auto; }
 .profile-document-list small { color:var(--green); font-size:.56rem; font-weight:800; text-transform:uppercase; }
