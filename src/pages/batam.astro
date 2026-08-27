@@ -391,9 +391,6 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
         viewer.addEventListener('documentviewerdispose', () => resizeObserver.disconnect(), { once: true });
         requestAnimationFrame(renderPdf);
       }
-      fullscreen.addEventListener('click', () => setExpanded(!viewer.classList.contains('is-expanded')));
-      const onKeydown = (event) => { if (event.key === 'Escape' && viewer.classList.contains('is-expanded')) setExpanded(false); };
-      document.addEventListener('keydown', onKeydown);
       const dispose = () => {
         disposed = true; renderVersion += 1; clearTimeout(resizeTimer);
         setExpanded(false); document.removeEventListener('keydown', onKeydown);
@@ -402,6 +399,9 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
         if (imageUrl) URL.revokeObjectURL(imageUrl);
         viewer.remove(); button.textContent = 'Preview';
       };
+      fullscreen.addEventListener('click', dispose);
+      const onKeydown = (event) => { if (event.key === 'Escape' && viewer.classList.contains('is-expanded')) dispose(); };
+      document.addEventListener('keydown', onKeydown);
       controls.append(zoomOut, zoomLabel, zoomIn, fit, fullscreen);
       toolbar.append(toolbarLabel, controls); viewer.append(toolbar, stage); card.append(viewer); button.textContent = 'Close preview';
       setExpanded(true);
