@@ -6,8 +6,9 @@ button,a,input,summary { -webkit-tap-highlight-color:transparent; }
 button { font:inherit; }
 input,
 select,
-textarea {
-  font-size: 16px;
+textarea,
+.fx-converter input {
+  font-size: 16px !important;
 }
 .trip-shell { width:min(100%,1080px); margin:auto; padding:16px 16px calc(126px + env(safe-area-inset-bottom)); }
 .trip-hero { padding:12px 4px 22px; }
