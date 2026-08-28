@@ -4,6 +4,11 @@ html { scroll-behavior:smooth; scroll-padding-top:calc(var(--safe-top) + 16px); 
 body { height:100dvh; margin:0; overflow:hidden; color:var(--ink); background:var(--paper); font-family:'DM Sans',system-ui,sans-serif; font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased; }
 button,a,input,summary { -webkit-tap-highlight-color:transparent; }
 button { font:inherit; }
+input,
+select,
+textarea {
+  font-size: 16px;
+}
 .trip-shell { width:min(100%,1080px); margin:auto; padding:16px 16px calc(126px + env(safe-area-inset-bottom)); }
 .trip-hero { padding:12px 4px 22px; }
 .hero-topline,.card-top { display:flex; align-items:center; justify-content:space-between; gap:12px; }
