@@ -653,7 +653,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     const fxSwap = document.getElementById('fx-swap');
     let fxRate = Number(fxCard?.getAttribute('data-rate')) || 4369.71;
     const fxFeeRate = .0066;
-    let fxDirection = 'IDR_MYR';
+    let fxDirection = 'MYR_IDR';
     const formatFx = (value, currency) => new Intl.NumberFormat('en-MY', { maximumFractionDigits: currency === 'MYR' ? 2 : 0 }).format(value);
     const updateFx = () => {
       const amount = Math.max(0, Number(fxInput?.value) || 0);
