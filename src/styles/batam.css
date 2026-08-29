@@ -50,6 +50,14 @@ h1 span { color:var(--green); }
   color:#fff;
   background:var(--green);
 }
+.fx-calculator button[data-home-fx-key="divide"],
+.fx-calculator button[data-home-fx-key="multiply"],
+.fx-calculator button[data-home-fx-key="subtract"],
+.fx-calculator button[data-home-fx-key="add"],
+.fx-calculator button[data-home-fx-key="equals"] {
+  color:#fff;
+  background:var(--green);
+}
 .fx-calculator button:active {
   transform:scale(.96);
 }
