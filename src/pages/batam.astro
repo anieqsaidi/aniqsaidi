@@ -877,6 +877,10 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
         homeFxStoredValue = null;
         homeFxOperator = null;
         homeFxWaitingForOperand = false;
+        homeFxExpressionValue = '0';
+        if (homeFxExpression) {
+          homeFxExpression.textContent = '0';
+        }
         updateFx();
         return;
       }
