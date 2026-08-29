@@ -758,76 +758,81 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
      fxWaitingForOperand = false;
       updateFx();
     });
-
     fxCalculator?.addEventListener('click', (event) => {
       const button = event.target.closest('[data-fx-key]');
       if (!button || !fxInput) return;
-
       const key = button.dataset.fxKey;
       let currentValue = fxInput.value || '0';
-
       if (/^\d+$/.test(key)) {
         if (fxWaitingForOperand || currentValue === '0') {
-        fxInput.value = key;
-        fxWaitingForOperand = false;
-      } else {
-        fxInput.value = currentValue + key;
-      }
-      updateFx();
-      return;
-    }
-
-    if (key === 'decimal') {
-      if (fxWaitingForOperand) {
-        fxInput.value = '0.';
-        fxWaitingForOperand = false;
-      } else if (!currentValue.includes('.')) {
-        fxInput.value = currentValue + '.';
-      }
-      return;
-    }
-
-    if (key === 'clear') {
-      fxInput.value = '0';
-      fxStoredValue = null;
-      fxOperator = null;
-      fxWaitingForOperand = false;
-      updateFx();
-      return;
-    }
-
-    if (key === 'backspace') {
-      fxInput.value = currentValue.length > 1 ? currentValue.slice(0, -1) : '0';
-      updateFx();
-      return;
-    }
-
-    if (['add', 'subtract', 'multiply', 'divide'].includes(key)) {
-      const inputValue = Number(currentValue) || 0;
-
-      if (fxStoredValue !== null && fxOperator && !fxWaitingForOperand) {
-        fxStoredValue = calculateFx(fxStoredValue, inputValue, fxOperator);
-        fxInput.value = String(fxStoredValue);
+          fxInput.value = key;
+          fxWaitingForOperand = false;
+        } else {
+          fxInput.value = currentValue + key;
+        }
         updateFx();
-      } else {
-        fxStoredValue = inputValue;
+        return;
       }
-
-      fxOperator = key;
-      fxWaitingForOperand = true;
-      return;
-    }
-
-    if (key === 'equals' && fxStoredValue !== null && fxOperator) {
-      const result = calculateFx(fxStoredValue, Number(currentValue) || 0, fxOperator);
-      fxInput.value = String(result);
-      fxStoredValue = null;
-      fxOperator = null;
-      fxWaitingForOperand = true;
-      updateFx();
-    }
-  });
-
+      if (key === 'decimal') {
+        if (fxWaitingForOperand) {
+          fxInput.value = '0.';
+          fxWaitingForOperand = false;
+        } else if (!currentValue.includes('.')) {
+          fxInput.value = currentValue + '.';
+        }
+        return;
+      }
+      if (key === 'clear') {
+        fxInput.value = '0';
+        fxStoredValue = null;
+        fxOperator = null;
+        fxWaitingForOperand = false;
+        updateFx();
+        return;
+      }
+      if (key === 'backspace') {
+        fxInput.value = currentValue.length > 1 ? currentValue.slice(0, -1) : '0';
+        updateFx();
+        return;
+      }
+      if (['add', 'subtract', 'multiply', 'divide'].includes(key)) {
+        const inputValue = Number(currentValue) || 0;
+        if (fxStoredValue !== null && fxOperator && !fxWaitingForOperand) {
+          fxStoredValue = calculateFx(fxStoredValue, inputValue, fxOperator);
+          fxInput.value = String(fxStoredValue);
+          updateFx();
+        } else {
+          fxStoredValue = inputValue;
+        }
+        fxOperator = key;
+        fxWaitingForOperand = true;
+        return;
+      }
+      if (key === 'equals' && fxStoredValue !== null && fxOperator) {
+        const result = calculateFx(fxStoredValue, Number(currentValue) || 0, fxOperator);
+        fxInput.value = String(result);
+        fxStoredValue = null;
+        fxOperator = null;
+        fxWaitingForOperand = true;
+        updateFx();
+      }
+    });
+    homeFxCalculator?.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-home-fx-key]');
+      if (!button || !homeFxIdr) return;
+      const key = button.dataset.homeFxKey;
+      let currentValue = homeFxIdr.value || '0';
+      if (/^\d+$/.test(key)) {
+        if (homeFxWaitingForOperand || currentValue === '0') {
+          homeFxIdr.value = key;
+          homeFxWaitingForOperand = false;
+        } else {
+          homeFxIdr.value = currentValue + key;
+        }
+        updateFx();
+        return;
+      }
+    });
     fxSwap?.addEventListener('click', () => {
       const converted = Number((fxOutput?.textContent || '0').replaceAll(',', '')) || 0;
       fxDirection = fxDirection === 'MYR_IDR' ? 'IDR_MYR' : 'MYR_IDR';
