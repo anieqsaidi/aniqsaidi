@@ -727,6 +727,9 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     let fxStoredValue = null;
     let fxOperator = null;
     let fxWaitingForOperand = false;
+    let homeFxStoredValue = null;
+    let homeFxOperator = null;
+    let homeFxWaitingForOperand = false;
     const formatFx = (value, currency) => new Intl.NumberFormat('en-MY', { maximumFractionDigits: currency === 'MYR' ? 2 : 0 }).format(value);
     const updateFx = () => {
       const amount = Math.max(0, Number(fxInput?.value) || 0);
