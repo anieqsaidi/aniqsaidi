@@ -717,6 +717,9 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     const homeFxMyr = document.getElementById('home-fx-myr');
     const homeFxCalculator = document.getElementById('home-fx-calculator');
     homeFxIdr?.addEventListener('input', () => {
+      homeFxStoredValue = null;
+      homeFxOperator = null;
+      homeFxWaitingForOperand = false;
       const amount = Math.max(0, Number(homeFxIdr.value) || 0);
       if (homeFxMyr) {
         homeFxMyr.textContent = `RM ${formatFx(amount / fxRate, 'MYR')}`;
