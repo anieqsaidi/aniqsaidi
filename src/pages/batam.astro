@@ -68,12 +68,6 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       <div><p class="eyebrow">YOUR TRIP</p><h2 id="profile-greeting">Welcome to Batam!</h2><p id="profile-welcome-note">Your travel details are ready on this device.</p></div>
       <button type="button" data-open-profile>View profile</button>
     </section>
-    <section class="panel section-documents" id="documents-immigration" data-home-view hidden><div class="profile-documents__head"><div><p class="eyebrow">OFFICIAL DOCUMENTS</p><h3>Your immigration files</h3></div><span data-document-count></span></div><div class="profile-document-list" data-document-list="Immigration"></div></section>
-    <section class="top-essentials" id="essentials" data-home-view aria-labelledby="essentials-title">
-      <div class="section-heading"><h2 id="essentials-title">Trip checklist</h2></div>
-      <div class="panel info-disclosure info-disclosure--static"><div class="info-disclosure__header"><div><span class="eyebrow">BEFORE WE GO</span><strong>{essentials.length} essentials to prepare</strong></div></div><div class="info-disclosure__content checklist">{essentials.map((item) => <label><input type="checkbox" /><span>{item}</span></label>)}</div></div>
-    </section>
-
     <section class="panel home-fx" data-home-view>
       <div class="home-fx__top">
         <div>
@@ -112,6 +106,13 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
         <button type="button" data-home-fx-key="000">000</button>
         <button type="button" data-home-fx-key="decimal">.</button>
       </div>
+    </section>
+
+    <section class="panel section-documents" id="documents-immigration" data-home-view hidden><div class="profile-documents__head"><div><p class="eyebrow">OFFICIAL DOCUMENTS</p><h3>Your immigration files</h3></div><span data-document-count></span></div><div class="profile-document-list" data-document-list="Immigration"></div></section>
+   
+    <section class="top-essentials" id="essentials" data-home-view aria-labelledby="essentials-title">
+      <div class="section-heading"><h2 id="essentials-title">Trip checklist</h2></div>
+      <div class="panel info-disclosure info-disclosure--static"><div class="info-disclosure__header"><div><span class="eyebrow">BEFORE WE GO</span><strong>{essentials.length} essentials to prepare</strong></div></div><div class="info-disclosure__content checklist">{essentials.map((item) => <label><input type="checkbox" /><span>{item}</span></label>)}</div></div>
     </section>
 
     <section class="up-next" data-home-view aria-labelledby="current-title">
