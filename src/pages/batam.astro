@@ -856,6 +856,26 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
         updateFx();
         return;
       }
+      if (['add', 'subtract', 'multiply', 'divide'].includes(key)) {
+        const inputValue = Number(currentValue) || 0;
+        if (
+          homeFxStoredValue !== null &&
+          homeFxOperator && !homeFxWaitingForOperand
+        ) {
+          homeFxStoredValue = calculateFx(
+          homeFxStoredValue,
+          inputValue,
+          homeFxOperator
+      );
+      homeFxIdr.value = String(homeFxStoredValue);
+      updateFx();
+      } else {
+        homeFxStoredValue = inputValue;
+      }
+        homeFxOperator = key;
+        homeFxWaitingForOperand = true;
+        return;
+      }
     });
     fxSwap?.addEventListener('click', () => {
       const converted = Number((fxOutput?.textContent || '0').replaceAll(',', '')) || 0;
