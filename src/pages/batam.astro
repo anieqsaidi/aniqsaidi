@@ -200,11 +200,11 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       <section class="panel fx-converter" id="currency" aria-labelledby="fx-title" data-rate="4369.71">
         <div class="fx-heading"><div><p class="eyebrow">LIVE MID-MARKET ESTIMATE</p><h2 id="fx-title">Quick currency check</h2></div><span id="fx-rate-status" aria-live="polite">Loading latest rate…</span></div>
         <div class="fx-fields">
-          <label><span>You have</span><div><b id="fx-from-symbol">RM</b><input id="fx-amount" type="number" min="0" step="any" inputmode="decimal" value="100" aria-describedby="fx-rate-note" /><strong id="fx-from-code">MYR</strong></div></label>
-          <button class="fx-swap" id="fx-swap" type="button" aria-label="Swap MYR and IDR">⇄</button>
-          <div class="fx-result" aria-live="polite"><span>Mid-market estimate</span><div><b id="fx-to-symbol">Rp</b><output id="fx-output" for="fx-amount">436,971</output><strong id="fx-to-code">IDR</strong></div></div>
+          <label><span>You have</span><div><b id="fx-from-symbol">Rp</b><input id="fx-amount" type="number" min="0" step="any" inputmode="decimal" value="100000" aria-describedby="fx-rate-note" /><strong id="fx-from-code">IDR</strong></div></label>
+          <button class="fx-swap" id="fx-swap" type="button" aria-label="Swap IDR and MYR">⇄</button>
+          <div class="fx-result" aria-live="polite"><span>Mid-market estimate</span><div><b id="fx-to-symbol">RM</b><output id="fx-output" for="fx-amount">22.88</output><strong id="fx-to-code">MYR</strong></div></div>
         </div>
-        <p class="fx-fee-estimate">After a 0.66% Wise fee assumption: <strong><span id="fx-net-symbol">Rp</span> <output id="fx-net-output" for="fx-amount">434,087</output> <span id="fx-net-code">IDR</span></strong></p>
+        <p class="fx-fee-estimate">After a 0.66% Wise fee assumption: <strong><span id="fx-net-symbol">RM</span> <output id="fx-net-output" for="fx-amount">22.73</output> <span id="fx-net-code">MYR</span></strong></p>
         <div class="fx-footer"><details><summary>Rate details</summary><p id="fx-rate-note">Latest public reference rate supplied by Frankfurter from institutional providers. The 0.66% fee is a planning assumption only; Wise’s actual fee and final amount may vary.</p></details><a href="https://wise.com/my/currency-converter/myr-to-idr-rate" target="_blank" rel="noopener noreferrer">Compare on Wise ↗</a></div>
       </section>
       <article class="panel info-disclosure info-disclosure--static currency-card"><div class="info-disclosure__header"><div><span class="eyebrow">PAYMENT NOTES</span><strong>Cash, Wise & QRIS</strong></div></div><div class="info-disclosure__content"><div class="currency"><div><span>Malaysia</span><strong>MYR</strong><p>Terminal fees and Malaysia-side expenses</p></div><div><span>Batam</span><strong>IDR</strong><p>Terminal fees, local and cash-only expenses</p></div></div><small>Wise / QRIS may work where supported. Carry physical cash as backup.</small></div></article>
@@ -653,7 +653,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     const fxSwap = document.getElementById('fx-swap');
     let fxRate = Number(fxCard?.getAttribute('data-rate')) || 4369.71;
     const fxFeeRate = .0066;
-    let fxDirection = 'MYR_IDR';
+    let fxDirection = 'IDR_MYR';
     const formatFx = (value, currency) => new Intl.NumberFormat('en-MY', { maximumFractionDigits: currency === 'MYR' ? 2 : 0 }).format(value);
     const updateFx = () => {
       const amount = Math.max(0, Number(fxInput?.value) || 0);
