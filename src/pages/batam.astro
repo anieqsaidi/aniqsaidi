@@ -672,18 +672,107 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     const fxInput = document.getElementById('fx-amount');
     const fxOutput = document.getElementById('fx-output');
     const fxSwap = document.getElementById('fx-swap');
+    const fxCalculator = document.getElementById('fx-calculator');
     let fxRate = Number(fxCard?.getAttribute('data-rate')) || 4369.71;
     let fxDirection = 'IDR_MYR';
+    let fxStoredValue = null;
+    let fxOperator = null;
+    let fxWaitingForOperand = false;
     const formatFx = (value, currency) => new Intl.NumberFormat('en-MY', { maximumFractionDigits: currency === 'MYR' ? 2 : 0 }).format(value);
     const updateFx = () => {
       const amount = Math.max(0, Number(fxInput?.value) || 0);
       const converted = fxDirection === 'MYR_IDR' ? amount * fxRate : amount / fxRate;
       if (fxOutput) fxOutput.textContent = formatFx(converted, fxDirection === 'MYR_IDR' ? 'IDR' : 'MYR');
     };
-    fxInput?.addEventListener('input', updateFx);
+    const calculateFx = (first, second, operator) => {
+      if (operator === 'add') return first + second;
+      if (operator === 'subtract') return first - second;
+      if (operator === 'multiply') return first * second;
+      if (operator === 'divide') return second === 0 ? first : first / second;
+      return second;
+    };
+    fxInput?.addEventListener('input', () => {
+      fxStoredValue = null;
+      fxOperator = null;
+     fxWaitingForOperand = false;
+      updateFx();
+    });
+
+    fxCalculator?.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-fx-key]');
+      if (!button || !fxInput) return;
+
+      const key = button.dataset.fxKey;
+      let currentValue = fxInput.value || '0';
+
+      if (/^\d+$/.test(key)) {
+        if (fxWaitingForOperand || currentValue === '0') {
+        fxInput.value = key;
+        fxWaitingForOperand = false;
+      } else {
+        fxInput.value = currentValue + key;
+      }
+      updateFx();
+      return;
+    }
+
+    if (key === 'decimal') {
+      if (fxWaitingForOperand) {
+        fxInput.value = '0.';
+        fxWaitingForOperand = false;
+      } else if (!currentValue.includes('.')) {
+        fxInput.value = currentValue + '.';
+      }
+      return;
+    }
+
+    if (key === 'clear') {
+      fxInput.value = '0';
+      fxStoredValue = null;
+      fxOperator = null;
+      fxWaitingForOperand = false;
+      updateFx();
+      return;
+    }
+
+    if (key === 'backspace') {
+      fxInput.value = currentValue.length > 1 ? currentValue.slice(0, -1) : '0';
+      updateFx();
+      return;
+    }
+
+    if (['add', 'subtract', 'multiply', 'divide'].includes(key)) {
+      const inputValue = Number(currentValue) || 0;
+
+      if (fxStoredValue !== null && fxOperator && !fxWaitingForOperand) {
+        fxStoredValue = calculateFx(fxStoredValue, inputValue, fxOperator);
+        fxInput.value = String(fxStoredValue);
+        updateFx();
+      } else {
+        fxStoredValue = inputValue;
+      }
+
+      fxOperator = key;
+      fxWaitingForOperand = true;
+      return;
+    }
+
+    if (key === 'equals' && fxStoredValue !== null && fxOperator) {
+      const result = calculateFx(fxStoredValue, Number(currentValue) || 0, fxOperator);
+      fxInput.value = String(result);
+      fxStoredValue = null;
+      fxOperator = null;
+      fxWaitingForOperand = true;
+      updateFx();
+    }
+  });
+
     fxSwap?.addEventListener('click', () => {
       const converted = Number((fxOutput?.textContent || '0').replaceAll(',', '')) || 0;
       fxDirection = fxDirection === 'MYR_IDR' ? 'IDR_MYR' : 'MYR_IDR';
+      fxStoredValue = null;
+      fxOperator = null;
+      fxWaitingForOperand = false;
       if (fxInput) fxInput.value = String(converted);
       document.getElementById('fx-from-symbol').textContent = fxDirection === 'MYR_IDR' ? 'RM' : 'Rp';
       document.getElementById('fx-from-code').textContent = fxDirection === 'MYR_IDR' ? 'MYR' : 'IDR';
