@@ -26,7 +26,34 @@ h1 span { color:var(--green); }
 .route { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:24px 0 0; padding:14px 16px; border-radius:16px; color:#fff; background:var(--ink); font-weight:700; font-size:.78rem; }
 .route b { color:#7fd5ad; }
 .departure-note { width:100%; margin:10px auto 0; color:var(--muted); font-size:.8rem; text-align:center; }.departure-note b { color:var(--ink); font-weight:700; }
-.fx-converter { margin:0 0 18px; padding:18px; box-shadow:0 10px 28px rgba(23,33,27,.07); }.fx-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }.fx-heading h2 { margin:0; font-size:1.25rem; letter-spacing:-.03em; }.fx-heading>span { flex:0 0 auto; color:var(--muted); font-size:.62rem; }.fx-fields { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:end; margin-top:16px; }.fx-fields label,.fx-result { min-width:0; }.fx-fields label>span,.fx-result>span { display:block; margin:0 0 5px 3px; color:var(--muted); font-size:.65rem; font-weight:700; }.fx-fields label>div,.fx-result>div { display:grid; min-height:52px; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:7px; padding:0 12px; border:1px solid var(--line); border-radius:12px; background:#fafbf8; }.fx-fields b { color:var(--green); font-size:.78rem; }.fx-fields strong { color:var(--muted); font-size:.68rem; }.fx-fields input { min-width:0; width:100%; padding:0; border:0; outline:0; color:var(--ink); background:transparent; font:800 1.15rem 'Manrope',sans-serif; }.fx-fields input::-webkit-inner-spin-button { appearance:none; }.fx-result { grid-column:1/-1; }.fx-result output { min-width:0; overflow:hidden; font:800 1.15rem 'Manrope',sans-serif; text-overflow:ellipsis; white-space:nowrap; }.fx-swap { display:grid; width:42px; height:42px; margin-bottom:5px; place-items:center; border:0; border-radius:50%; color:#fff; background:var(--green); font-size:1.15rem; cursor:pointer; }.fx-footer { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-top:11px; }.fx-footer p { max-width:620px; margin:0; color:var(--muted); font-size:.62rem; }.fx-footer a { flex:0 0 auto; color:var(--green); font-size:.66rem; font-weight:800; text-decoration:none; }
+.fx-converter { margin:0 0 18px; padding:18px; box-shadow:0 10px 28px rgba(23,33,27,.07); }.fx-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }.fx-heading h2 { margin:0; font-size:1.25rem; letter-spacing:-.03em; }.fx-heading>span { flex:0 0 auto; color:var(--muted); font-size:.62rem; }.fx-fields { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:end; margin-top:16px; }.fx-fields label,.fx-result { min-width:0; }.fx-fields label>span,.fx-result>span { display:block; margin:0 0 5px 3px; color:var(--muted); font-size:.65rem; font-weight:700; }.fx-fields label>div,.fx-result>div { display:grid; min-height:52px; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:7px; padding:0 12px; border:1px solid var(--line); border-radius:12px; background:#fafbf8; }.fx-fields b { color:var(--green); font-size:.78rem; }.fx-fields strong { color:var(--muted); font-size:.68rem; }.fx-fields input { min-width:0; width:100%; padding:0; border:0; outline:0; color:var(--ink); background:transparent; font:800 1.15rem 'Manrope',sans-serif; }.fx-fields input::-webkit-inner-spin-button { appearance:none; }.fx-result { grid-column:1/-1; }.fx-result output { min-width:0; overflow:hidden; font:800 1.15rem 'Manrope',sans-serif; text-overflow:ellipsis; white-space:nowrap; }.fx-swap { display:grid; width:42px; height:42px; margin-bottom:5px; place-items:center; border:0; border-radius:50%; color:#fff; background:var(--green); font-size:1.15rem; cursor:pointer; }
+.fx-calculator {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:14px;
+}
+.fx-calculator button {
+  min-height:48px;
+  border:0;
+  border-radius:12px;
+  color:var(--ink);
+  background:#f1f2ee;
+  font:700 1rem 'Manrope',sans-serif;
+  cursor:pointer;
+}
+.fx-calculator button[data-fx-key="divide"],
+.fx-calculator button[data-fx-key="multiply"],
+.fx-calculator button[data-fx-key="subtract"],
+.fx-calculator button[data-fx-key="add"],
+.fx-calculator button[data-fx-key="equals"] {
+  color:#fff;
+  background:var(--green);
+}
+.fx-calculator button:active {
+  transform:scale(.96);
+}
+.fx-footer { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-top:11px; }.fx-footer p { max-width:620px; margin:0; color:var(--muted); font-size:.62rem; }.fx-footer a { flex:0 0 auto; color:var(--green); font-size:.66rem; font-weight:800; text-decoration:none; }
 .up-next { position:relative; display:grid; grid-template-columns:1fr auto; margin:0 0 26px; padding:20px; overflow:hidden; border-radius:22px; color:#fff; background:linear-gradient(135deg,#176c4b,#0b4531); box-shadow:0 12px 30px rgba(17,92,64,.18); }
 .up-next::after { content:''; position:absolute; width:150px; height:150px; right:-60px; bottom:-85px; border:30px solid rgba(255,255,255,.08); border-radius:50%; }
 .up-next .eyebrow { color:#9ce0c2; }
