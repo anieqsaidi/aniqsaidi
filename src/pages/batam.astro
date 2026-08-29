@@ -943,10 +943,14 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
         homeFxOperator
       );
       homeFxIdr.value = String(result);
-      homeFxStoredValue = null;
-      homeFxOperator = null;
-      homeFxWaitingForOperand = true;
-      updateFx();
+      homeFxExpressionValue = String(result);
+      if (homeFxExpression) {
+        homeFxExpression.textContent = homeFxExpressionValue;
+      }
+        homeFxStoredValue = null;
+        homeFxOperator = null;
+        homeFxWaitingForOperand = true;
+        updateFx();
       }
     });
     fxSwap?.addEventListener('click', () => {
