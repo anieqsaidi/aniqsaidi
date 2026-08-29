@@ -693,6 +693,12 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     const fxCalculator = document.getElementById('fx-calculator');
     const homeFxIdr = document.getElementById('home-fx-idr');
     const homeFxMyr = document.getElementById('home-fx-myr');
+    homeFxIdr?.addEventListener('input', () => {
+      const amount = Math.max(0, Number(homeFxIdr.value) || 0);
+      if (homeFxMyr) {
+        homeFxMyr.textContent = `RM ${formatFx(amount / fxRate, 'MYR')}`;
+      }
+    });
     let fxRate = Number(fxCard?.getAttribute('data-rate')) || 4369.71;
     let fxDirection = 'IDR_MYR';
     let fxStoredValue = null;
@@ -709,8 +715,8 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
         );
       }
       if (homeFxIdr && homeFxMyr) {
-        homeFxIdr.textContent = formatFx(100000, 'IDR');
-        homeFxMyr.textContent = `RM ${formatFx(100000 / fxRate, 'MYR')}`;
+        const homeAmount = Math.max(0, Number(homeFxIdr.value) || 0);
+        homeFxMyr.textContent = `RM ${formatFx(homeAmount / fxRate, 'MYR')}`;
       }
     };
     const calculateFx = (first, second, operator) => {
