@@ -89,7 +89,14 @@ h1 span { color:var(--green); }
   font-size:.9rem;
   font-weight:800;
 }
-.home-fx__amount strong {
+.home-fx__amount input {
+  min-width:0;
+  width:100%;
+  padding:0;
+  border:0;
+  outline:0;
+  color:var(--ink);
+  background:transparent;
   font:800 2rem 'Manrope',sans-serif;
   letter-spacing:-.04em;
 }
