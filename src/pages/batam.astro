@@ -842,6 +842,14 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
         updateFx();
         return;
       }
+      if (key === 'clear') {
+        homeFxIdr.value = '0';
+        homeFxStoredValue = null;
+        homeFxOperator = null;
+        homeFxWaitingForOperand = false;
+        updateFx();
+        return;
+      }
     });
     fxSwap?.addEventListener('click', () => {
       const converted = Number((fxOutput?.textContent || '0').replaceAll(',', '')) || 0;
