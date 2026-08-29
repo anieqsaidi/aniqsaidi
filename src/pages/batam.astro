@@ -720,9 +720,13 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     const homeFxCalculator = document.getElementById('home-fx-calculator');
     const homeFxExpression = document.getElementById('home-fx-expression');
     homeFxIdr?.addEventListener('input', () => {
-      homeFxStoredValue = null;
-      homeFxOperator = null;
-      homeFxWaitingForOperand = false;
+    homeFxStoredValue = null;
+    homeFxOperator = null;
+    homeFxWaitingForOperand = false;
+    homeFxExpressionValue = homeFxIdr.value || '0';
+    if (homeFxExpression) {
+      homeFxExpression.textContent = homeFxExpressionValue;
+    }
       const amount = Math.max(0, Number(homeFxIdr.value) || 0);
       if (homeFxMyr) {
         homeFxMyr.textContent = `RM ${formatFx(amount / fxRate, 'MYR')}`;
