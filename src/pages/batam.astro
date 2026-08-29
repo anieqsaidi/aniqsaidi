@@ -84,7 +84,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       </div>
       <div class="home-fx__amount">
         <span>Rp</span>
-        <strong id="home-fx-idr">100,000</strong>
+        <input id="home-fx-idr" type="text" inputmode="decimal" value="100000" aria-label="IDR amount"/>
         <small>IDR</small>
       </div>
       <div class="home-fx__result">
@@ -691,6 +691,8 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     const fxOutput = document.getElementById('fx-output');
     const fxSwap = document.getElementById('fx-swap');
     const fxCalculator = document.getElementById('fx-calculator');
+    const homeFxIdr = document.getElementById('home-fx-idr');
+    const homeFxMyr = document.getElementById('home-fx-myr');
     let fxRate = Number(fxCard?.getAttribute('data-rate')) || 4369.71;
     let fxDirection = 'IDR_MYR';
     let fxStoredValue = null;
@@ -700,7 +702,16 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     const updateFx = () => {
       const amount = Math.max(0, Number(fxInput?.value) || 0);
       const converted = fxDirection === 'MYR_IDR' ? amount * fxRate : amount / fxRate;
-      if (fxOutput) fxOutput.textContent = formatFx(converted, fxDirection === 'MYR_IDR' ? 'IDR' : 'MYR');
+      if (fxOutput) {
+        fxOutput.textContent = formatFx(
+        converted,
+        fxDirection === 'MYR_IDR' ? 'IDR' : 'MYR'
+        );
+      }
+      if (homeFxIdr && homeFxMyr) {
+        homeFxIdr.textContent = formatFx(100000, 'IDR');
+        homeFxMyr.textContent = `RM ${formatFx(100000 / fxRate, 'MYR')}`;
+      }
     };
     const calculateFx = (first, second, operator) => {
       if (operator === 'add') return first + second;
