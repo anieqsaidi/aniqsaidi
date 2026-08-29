@@ -876,6 +876,22 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
         homeFxWaitingForOperand = true;
         return;
       }
+      if (
+        key === 'equals' &&
+        homeFxStoredValue !== null &&
+        homeFxOperator
+      ) {
+        const result = calculateFx(
+        homeFxStoredValue,
+        Number(currentValue) || 0,
+        homeFxOperator
+      );
+      homeFxIdr.value = String(result);
+      homeFxStoredValue = null;
+      homeFxOperator = null;
+      homeFxWaitingForOperand = true;
+      updateFx();
+      }
     });
     fxSwap?.addEventListener('click', () => {
       const converted = Number((fxOutput?.textContent || '0').replaceAll(',', '')) || 0;
