@@ -834,24 +834,14 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       }
       if (key === 'decimal') {
         if (homeFxWaitingForOperand) {
-        homeFxIdr.value = '0.';
-        homeFxWaitingForOperand = false;
-      } else if (!currentValue.includes('.')) {
-        homeFxIdr.value = currentValue + '.';
+          homeFxIdr.value = '0.';
+          homeFxWaitingForOperand = false;
+        } else if (!currentValue.includes('.')) {
+          homeFxIdr.value = currentValue + '.';
+        }
+        updateFx();
+        return;
       }
-      updateFx();
-      return;
-    }
-    if (key === 'decimal') {
-      if (homeFxWaitingForOperand) {
-        homeFxIdr.value = '0.';
-        homeFxWaitingForOperand = false;
-      } else if (!currentValue.includes('.')) {
-        homeFxIdr.value = currentValue + '.';
-      }
-      updateFx();
-      return;
-    }
     });
     fxSwap?.addEventListener('click', () => {
       const converted = Number((fxOutput?.textContent || '0').replaceAll(',', '')) || 0;
