@@ -715,6 +715,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     const fxCalculator = document.getElementById('fx-calculator');
     const homeFxIdr = document.getElementById('home-fx-idr');
     const homeFxMyr = document.getElementById('home-fx-myr');
+    const homeFxCalculator = document.getElementById('home-fx-calculator');
     homeFxIdr?.addEventListener('input', () => {
       const amount = Math.max(0, Number(homeFxIdr.value) || 0);
       if (homeFxMyr) {
