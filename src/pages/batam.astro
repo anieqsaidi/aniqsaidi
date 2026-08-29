@@ -869,6 +869,13 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
         } else if (!currentValue.includes('.')) {
           homeFxIdr.value = currentValue + '.';
         }
+        homeFxExpressionValue =
+        homeFxOperator && homeFxStoredValue !== null
+        ? `${homeFxStoredValue} ${homeFxOperator === 'add' ? '+' : homeFxOperator === 'subtract' ? '−' : homeFxOperator === 'multiply' ? '×' : '÷'} ${homeFxIdr.value}`
+        : homeFxIdr.value;
+        if (homeFxExpression) {
+          homeFxExpression.textContent = homeFxExpressionValue;
+        }
         updateFx();
         return;
       }
