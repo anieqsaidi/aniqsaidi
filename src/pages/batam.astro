@@ -720,6 +720,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     const homeFxMyr = document.getElementById('home-fx-myr');
     const homeFxCalculator = document.getElementById('home-fx-calculator');
     const homeFxExpression = document.getElementById('home-fx-expression');
+    const homeFxIdrDisplay = document.getElementById('home-fx-idr-display');
     homeFxIdr?.addEventListener('input', () => {
     homeFxStoredValue = null;
     homeFxOperator = null;
@@ -743,6 +744,15 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     let homeFxWaitingForOperand = false;
     let homeFxExpressionValue = homeFxIdr?.value || '0';
     const formatFx = (value, currency) => new Intl.NumberFormat('en-MY', { maximumFractionDigits: currency === 'MYR' ? 2 : 0 }).format(value);
+    const renderHomeFxResult = (idrValue) => {
+      const safeValue = Math.max(0, Number(idrValue) || 0);
+      if (homeFxIdrDisplay) {
+        homeFxIdrDisplay.textContent = formatFx(safeValue, 'IDR');
+      }
+      if (homeFxMyr) {
+        homeFxMyr.textContent = `RM ${formatFx(safeValue / fxRate, 'MYR')}`;
+      }
+    };
     const updateFx = () => {
       const amount = Math.max(0, Number(fxInput?.value) || 0);
       const converted = fxDirection === 'MYR_IDR' ? amount * fxRate : amount / fxRate;
@@ -752,9 +762,8 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
         fxDirection === 'MYR_IDR' ? 'IDR' : 'MYR'
         );
       }
-      if (homeFxIdr && homeFxMyr) {
-        const homeAmount = Math.max(0, Number(homeFxIdr.value) || 0);
-        homeFxMyr.textContent = `RM ${formatFx(homeAmount / fxRate, 'MYR')}`;
+      if (homeFxIdr) {
+        renderHomeFxResult(homeFxIdr.value);
       }
     };
     const calculateFx = (first, second, operator) => {
@@ -858,10 +867,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
           Number(homeFxIdr.value) || 0,
           homeFxOperator
         );
-        homeFxMyr.textContent = `RM ${formatFx(
-        Math.max(0, liveResult) / fxRate,
-        'MYR'
-        )}`;
+          renderHomeFxResult(liveResult);
         } else {
           updateFx();
         }
@@ -891,12 +897,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
           Number(homeFxIdr.value) || 0,
           homeFxOperator
         );
-          if (homeFxMyr) {
-            homeFxMyr.textContent = `RM ${formatFx(
-              Math.max(0, liveResult) / fxRate,
-              'MYR'
-            )}`;
-          }
+          renderHomeFxResult(liveResult);
         } else {
           updateFx();
         }
@@ -934,12 +935,7 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
             Number(homeFxIdr.value) || 0,
             homeFxOperator
           );
-            if (homeFxMyr) {
-              homeFxMyr.textContent = `RM ${formatFx(
-              Math.max(0, liveResult) / fxRate,
-              'MYR'
-            )}`;
-          }
+            renderHomeFxResult(liveResult);
         } else {
           updateFx();
         }
