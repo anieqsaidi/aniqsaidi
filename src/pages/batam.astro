@@ -74,6 +74,24 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       <div class="panel info-disclosure info-disclosure--static"><div class="info-disclosure__header"><div><span class="eyebrow">BEFORE WE GO</span><strong>{essentials.length} essentials to prepare</strong></div></div><div class="info-disclosure__content checklist">{essentials.map((item) => <label><input type="checkbox" /><span>{item}</span></label>)}</div></div>
     </section>
 
+    <section class="panel home-fx" data-home-view>
+      <div class="home-fx__top">
+        <div>
+          <p class="eyebrow">QUICK CURRENCY</p>
+          <h2>IDR → MYR</h2>
+        </div>
+        <button type="button" data-view="payments">Open full calculator →</button>
+      </div>
+      <div class="home-fx__amount">
+        <span>Rp</span>
+        <strong id="home-fx-idr">100,000</strong>
+        <small>IDR</small>
+      </div>
+      <div class="home-fx__result">
+        ≈ <strong id="home-fx-myr">RM 22.88</strong>
+      </div>
+    </section>
+
     <section class="up-next" data-home-view aria-labelledby="current-title">
       <div><p class="eyebrow">CURRENT</p><h2 id="current-title">Preparing for departure</h2><p id="current-time">Departure · 27 Aug at 10:00 PM MYT</p></div>
       <div class="next-icon" aria-hidden="true">→</div>
