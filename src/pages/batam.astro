@@ -904,6 +904,14 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
       }
         homeFxOperator = key;
         homeFxWaitingForOperand = true;
+        const operatorSymbol =
+        key === 'add' ? '+' :
+        key === 'subtract' ? '−' :
+        key === 'multiply' ? '×' : '÷';
+        homeFxExpressionValue = `${homeFxStoredValue} ${operatorSymbol}`;
+        if (homeFxExpression) {
+          homeFxExpression.textContent = homeFxExpressionValue;
+        }
         return;
       }
       if (
