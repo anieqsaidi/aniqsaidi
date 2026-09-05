@@ -1,4 +1,4 @@
-const SHELL = 'batam-shell-v3';
+const SHELL = 'batam-shell-v4';
 const HOME = '/batam/';
 
 self.addEventListener('install', (event) => {
@@ -37,7 +37,10 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (event.request.method !== 'GET' || url.origin !== location.origin || url.pathname.startsWith('/api/')) return;
-  if (event.request.mode === 'navigate' && url.pathname.startsWith('/batam')) {
+  if (event.request.mode === 'navigate') {
+    // This worker exists only for the private trip portal. Never cache or
+    // respond to navigations elsewhere on aniqsaidi.my.
+    if (!url.pathname.startsWith('/batam')) return;
     event.respondWith(fetch(event.request).then((response) => {
       caches.open(SHELL).then((cache) => cache.put(HOME, response.clone()));
       return response;

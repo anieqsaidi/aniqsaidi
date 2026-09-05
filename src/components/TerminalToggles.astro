@@ -10,7 +10,7 @@ const { class: cls } = Astro.props;
 <div class:list={['toggles', cls]}>
   <!-- data-sfx="hover": the buttons make their own sound on click. -->
   <button class="nav-theme" data-action="theme" data-sfx="hover" type="button">
-    ⦿ THEME
+    ⦿ THEME: <span data-theme-label>DARK</span>
   </button>
   <button
     class="nav-sound"

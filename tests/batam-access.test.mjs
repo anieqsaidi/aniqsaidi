@@ -105,3 +105,12 @@ test('document previews use the offline custom viewer for PDFs and supported ima
   assert.match(source, /card\.append\(viewer\); button\.textContent = 'Close preview';\s*setExpanded\(true\)/);
   assert.match(source, /fullscreen\.addEventListener\('click', dispose\)/);
 });
+
+test('the Batam service worker cannot cache or serve public-site navigations', () => {
+  const page = readFileSync(new URL('../src/pages/batam.astro', import.meta.url), 'utf8');
+  const worker = readFileSync(new URL('../public/batam-sw.js', import.meta.url), 'utf8');
+  assert.match(page, /scope: '\/batam\/'/);
+  assert.match(page, /scriptPath === '\/batam-sw\.js' && scopePath === '\/'/);
+  assert.match(worker, /if \(!url\.pathname\.startsWith\('\/batam'\)\) return/);
+  assert.match(worker, /const SHELL = 'batam-shell-v4'/);
+});

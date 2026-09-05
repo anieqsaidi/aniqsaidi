@@ -693,8 +693,24 @@ const sharedAlbumUrl = 'https://www.icloud.com/sharedalbum/#B1q5oqs3qrGCIdO';
     window.addEventListener('online', () => { updateNetworkStatus(); if (currentProfile) cacheDocuments(currentProfile, localStorage.getItem(tokenKey)); });
     window.addEventListener('offline', updateNetworkStatus);
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/batam-sw.js', { updateViaCache: 'none' })
+      navigator.serviceWorker.getRegistrations()
+        .then(async (registrations) => {
+          // Earlier versions were accidentally root-scoped and could serve
+          // stale copies of public pages. Remove only that legacy worker.
+          await Promise.all(registrations.map((registration) => {
+            const scriptPath = registration.active
+              ? new URL(registration.active.scriptURL).pathname
+              : '';
+            const scopePath = new URL(registration.scope).pathname;
+            return scriptPath === '/batam-sw.js' && scopePath === '/'
+              ? registration.unregister()
+              : Promise.resolve(false);
+          }));
+          return navigator.serviceWorker.register('/batam-sw.js', {
+            scope: '/batam/',
+            updateViaCache: 'none',
+          });
+        })
         .then((registration) => registration.update())
         .catch(() => {});
     }

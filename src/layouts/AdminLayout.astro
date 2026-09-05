@@ -14,7 +14,7 @@ const {
 ---
 
 <!doctype html>
-<html lang="en" data-theme="blue">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta
@@ -34,8 +34,13 @@ const {
     />
     <title>{title} // {SITE_TITLE}</title>
     <script is:inline>
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'green' || savedTheme === 'amber' || savedTheme === 'blue' || savedTheme === 'black') {
+      const savedPreference = localStorage.getItem('aniqsaidi.theme');
+      const legacyTheme = localStorage.getItem('theme');
+      const savedTheme = savedPreference === 'dark' || savedPreference === 'light'
+        ? savedPreference
+        : legacyTheme === 'amber' ? 'light'
+          : 'dark';
+      if (savedTheme === 'dark' || savedTheme === 'light') {
         document.documentElement.dataset.theme = savedTheme;
       }
     </script>

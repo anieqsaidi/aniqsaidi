@@ -27,7 +27,7 @@ const socialImageUrl = new URL('/social/aniq-terminal-social.png', Astro.site);
 ---
 
 <!doctype html>
-<html lang="en" data-theme="blue">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <GoogleAnalytics />
@@ -67,10 +67,17 @@ const socialImageUrl = new URL('/social/aniq-terminal-social.png', Astro.site);
     <!-- Apply the saved theme before first paint so it does not flash. -->
     <script is:inline>
       document.documentElement.dataset.js = 'true';
+      const preferenceKey = 'aniqsaidi.theme';
+      const savedPreference = localStorage.getItem(preferenceKey);
       const saved = localStorage.getItem('theme');
-      if (saved === 'green' || saved === 'amber' || saved === 'blue' || saved === 'black') {
-        document.documentElement.dataset.theme = saved;
-      }
+      const theme = savedPreference === 'dark' || savedPreference === 'light'
+        ? savedPreference
+        : saved === 'dark' || saved === 'light'
+          ? saved
+          : saved === 'amber' ? 'light'
+            : 'dark';
+      document.documentElement.dataset.theme = theme;
+      localStorage.setItem(preferenceKey, theme);
 
     </script>
   </head>
@@ -262,30 +269,30 @@ const socialImageUrl = new URL('/social/aniq-terminal-social.png', Astro.site);
 
       function toggleTheme() {
         const el = document.documentElement;
-        const themes = ['amber', 'green', 'blue', 'black'];
-        const currentTheme = el.dataset.theme ?? 'blue';
+        const themes = ['dark', 'light'];
+        const currentTheme = el.dataset.theme ?? 'dark';
         const next = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
         el.dataset.theme = next;
-        localStorage.setItem('theme', next);
+        localStorage.setItem('aniqsaidi.theme', next);
+        // Keep older cached pages from rejecting the new appearance values.
+        localStorage.setItem('theme', next === 'light' ? 'amber' : 'black');
         drawTheme();
         sfx.power(); // The screen "relights", so the phosphor hums.
       }
 
       function drawTheme() {
-        const theme = document.documentElement.dataset.theme ?? 'blue';
+        const theme = document.documentElement.dataset.theme ?? 'dark';
         const names: Record<string, string> = {
-          amber: 'amber',
-          green: 'green',
-          blue: 'sky blue',
-          black: 'black and white',
+          dark: 'dark',
+          light: 'light',
         };
         const nextNames: Record<string, string> = {
-          amber: 'green',
-          green: 'sky blue',
-          blue: 'black and white',
-          black: 'amber',
+          dark: 'light',
+          light: 'dark',
         };
         document.querySelectorAll<HTMLButtonElement>('[data-action="theme"]').forEach((btn) => {
+          const label = btn.querySelector<HTMLElement>('[data-theme-label]');
+          if (label) label.textContent = names[theme].toUpperCase();
           btn.setAttribute(
             'aria-label',
             `Theme: ${names[theme]}. Activate for ${nextNames[theme]}.`,
