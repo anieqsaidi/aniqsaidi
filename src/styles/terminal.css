@@ -2295,38 +2295,46 @@ html[data-js='true'] .home-system.is-content-loading::before {
 }
 
 /* ============================================================
-   MOBILE — lightweight CRT terminal.
-   Keeps static display texture while avoiding perpetual animation and
-   blurry small text, and sizes every target for a finger.
+   MOBILE — calm, lightweight terminal.
+   Removes full-screen CRT texture, softens the palette, and sizes every
+   target for a finger.
    ============================================================ */
 
 @media (max-width: 640px) {
+  :root {
+    --bg: #0b0c0e;
+    --bg-deep: #070809;
+    --fg: #c2c7cc;
+    --fg-bright: #e6e9ec;
+    --fg-dim: #858d96;
+    --ansi-blue: #4d9de8;
+    --ansi-bright-blue: #72b2ec;
+    --ansi-green: #46b969;
+    --ansi-bright-green: #68c982;
+    --accent-orange: #bb8128;
+    --glow: transparent;
+  }
+
+  :root[data-theme='light'] {
+    --bg: #e8f0f8;
+    --bg-deep: #dce7f2;
+    --fg: #343a40;
+    --fg-bright: #20252a;
+    --fg-dim: #707984;
+    --ansi-blue: #376fba;
+    --ansi-bright-blue: #2d639f;
+    --ansi-green: #3b8454;
+    --ansi-bright-green: #327347;
+    --accent-orange: #916b2b;
+    --glow: transparent;
+  }
+
   /* The flicker loops forever: battery cost with nothing gained here. */
   .crt { animation: none; }
 
-  /* Wider spacing avoids dense-display moire while retaining CRT texture. */
-  body::before {
-    display: block;
-    opacity: 0.48;
-    background: repeating-linear-gradient(
-      0deg,
-      var(--scanline) 0,
-      var(--scanline) 1px,
-      transparent 1px,
-      transparent 5px
-    );
-  }
-
-  /* Push the vignette to the outer edge so it does not crowd the content. */
-  body::after {
-    display: block;
-    opacity: 0.55;
-    background: radial-gradient(
-      ellipse 115% 105% at 50% 48%,
-      transparent 76%,
-      var(--vignette) 100%
-    );
-  }
+  /* Dense mobile screens stay clear of scanlines and edge shading. */
+  body::before,
+  body::after { display: none; }
 
   /* Glow on small text reads as blur. */
   body { font-size: 13px; text-shadow: none; letter-spacing: 0; }
