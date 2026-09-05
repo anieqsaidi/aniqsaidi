@@ -7,30 +7,30 @@
 
 :root {
   color-scheme: dark;
-  /* Standard GitHub Dark colors on an OLED-efficient canvas. */
-  --bg: #000000;
-  --bg-deep: #0d1117;
-  --fg: #d1d5da;
-  --fg-bright: #fafbfc;
-  --fg-dim: #959da5;
+  /* Calm GitHub Dark colors on an OLED-efficient near-black canvas. */
+  --bg: #0b0c0e;
+  --bg-deep: #070809;
+  --fg: #c2c7cc;
+  --fg-bright: #e6e9ec;
+  --fg-dim: #858d96;
   --ansi-black: #586069;
   --ansi-red: #ea4a5a;
-  --ansi-green: #34d058;
+  --ansi-green: #46b969;
   --ansi-yellow: #ffea7f;
-  --ansi-blue: #2188ff;
+  --ansi-blue: #4d9de8;
   --ansi-magenta: #b392f0;
   --ansi-cyan: #39c5cf;
   --ansi-white: #d1d5da;
   --ansi-bright-black: #959da5;
   --ansi-bright-red: #f97583;
-  --ansi-bright-green: #85e89d;
+  --ansi-bright-green: #68c982;
   --ansi-bright-yellow: #ffea7f;
-  --ansi-bright-blue: #79b8ff;
+  --ansi-bright-blue: #72b2ec;
   --ansi-bright-magenta: #b392f0;
   --ansi-bright-cyan: #56d4dd;
   --ansi-bright-white: #fafbfc;
-  --accent-orange: #d18616;
-  --glow: rgba(33, 136, 255, 0.14);
+  --accent-orange: #bb8128;
+  --glow: rgba(77, 157, 232, 0.09);
   --scanline: rgba(0, 0, 0, 0.1);
   --vignette: rgba(0, 0, 0, 0.2);
   --ambient-bg: none;
@@ -46,26 +46,26 @@
   /* Low-glare GitHub Light palette on a muted blue-grey canvas. */
   --bg: #e8f0f8;
   --bg-deep: #dce7f2;
-  --fg: #24292f;
-  --fg-bright: #24292f;
-  --fg-dim: #6a737d;
+  --fg: #343a40;
+  --fg-bright: #20252a;
+  --fg-dim: #707984;
   --ansi-black: #24292e;
   --ansi-red: #d73a49;
-  --ansi-green: #28a745;
+  --ansi-green: #3b8454;
   --ansi-yellow: #dbab09;
-  --ansi-blue: #0366d6;
+  --ansi-blue: #376fba;
   --ansi-magenta: #5a32a3;
   --ansi-cyan: #0598bc;
   --ansi-white: #6a737d;
   --ansi-bright-black: #959da5;
   --ansi-bright-red: #cb2431;
-  --ansi-bright-green: #22863a;
+  --ansi-bright-green: #327347;
   --ansi-bright-yellow: #b08800;
-  --ansi-bright-blue: #005cc5;
+  --ansi-bright-blue: #2d639f;
   --ansi-bright-magenta: #5a32a3;
   --ansi-bright-cyan: #3192aa;
   --ansi-bright-white: #d1d5da;
-  --accent-orange: #9a6700;
+  --accent-orange: #916b2b;
   --glow: rgba(3, 102, 214, 0.045);
   --scanline: rgba(36, 41, 47, 0.018);
   --vignette: rgba(36, 41, 47, 0.035);
@@ -1968,7 +1968,8 @@ html[data-js='true'] .home-system.is-content-loading::before {
   position: fixed;
   inset: 0;
   z-index: 900;
-  background: var(--bg-deep);
+  background: var(--bg);
+  background-image: var(--ambient-bg);
   color: var(--fg);
   text-shadow: 0 0 6px var(--glow);
   overflow: hidden;
@@ -2035,7 +2036,7 @@ html[data-js='true'] .home-system.is-content-loading::before {
 .crt-boot__skip {
   margin-top: 24px;
   text-align: right;
-  color: var(--fg-dim);
+  color: var(--accent-orange);
   font-size: 0.8em;
   opacity: 0;
   animation: boot-in 0.01s steps(1) .75s forwards;
@@ -2053,7 +2054,7 @@ html[data-js='true'] .home-system.is-content-loading::before {
 }
 
 .crt-boot__matrix span {
-  color: var(--fg-bright);
+  color: var(--ansi-blue);
   font-size: clamp(.58rem, 1.5vw, .88rem);
   line-height: 1.5;
   text-align: center;
@@ -2077,7 +2078,7 @@ html[data-js='true'] .home-system.is-content-loading::before {
 .crt-boot__count {
   display: inline-block;
   min-width: 1ch;
-  color: var(--fg-bright);
+  color: var(--ansi-green);
   text-align: center;
 }
 
@@ -2301,34 +2302,6 @@ html[data-js='true'] .home-system.is-content-loading::before {
    ============================================================ */
 
 @media (max-width: 640px) {
-  :root {
-    --bg: #0b0c0e;
-    --bg-deep: #070809;
-    --fg: #c2c7cc;
-    --fg-bright: #e6e9ec;
-    --fg-dim: #858d96;
-    --ansi-blue: #4d9de8;
-    --ansi-bright-blue: #72b2ec;
-    --ansi-green: #46b969;
-    --ansi-bright-green: #68c982;
-    --accent-orange: #bb8128;
-    --glow: transparent;
-  }
-
-  :root[data-theme='light'] {
-    --bg: #e8f0f8;
-    --bg-deep: #dce7f2;
-    --fg: #343a40;
-    --fg-bright: #20252a;
-    --fg-dim: #707984;
-    --ansi-blue: #376fba;
-    --ansi-bright-blue: #2d639f;
-    --ansi-green: #3b8454;
-    --ansi-bright-green: #327347;
-    --accent-orange: #916b2b;
-    --glow: transparent;
-  }
-
   /* The flicker loops forever: battery cost with nothing gained here. */
   .crt { animation: none; }
 
@@ -2338,6 +2311,7 @@ html[data-js='true'] .home-system.is-content-loading::before {
 
   /* Glow on small text reads as blur. */
   body { font-size: 13px; text-shadow: none; letter-spacing: 0; }
+  .crt-boot { text-shadow: none; }
 
   .mobile-nav-dock {
     position: relative;
