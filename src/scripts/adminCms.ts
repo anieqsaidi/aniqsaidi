@@ -39,89 +39,89 @@ type PageConfig = { single?: FieldConfig[]; collections: CollectionConfig[] };
 const configs: Record<CmsPageId, PageConfig> = {
   home: {
     single: [
-      { key: 'profile.greeting', label: 'GREETING' }, { key: 'profile.role', label: 'ROLE' },
-      { key: 'profile.location', label: 'LOCATION' }, { key: 'profile.email', label: 'EMAIL', type: 'email' },
-      { key: 'profile.node', label: 'NODE' }, { key: 'profile.status', label: 'STATUS' },
-      { key: 'profile.startCopy', label: 'START COPY', type: 'textarea' },
-      { key: 'profile.progress', label: 'CURRENT PROGRESS', type: 'textarea' },
-      { key: 'profile.linkedin', label: 'LINKEDIN', type: 'url' },
+      { key: 'profile.greeting', label: 'Greeting' }, { key: 'profile.role', label: 'Role' },
+      { key: 'profile.location', label: 'Location' }, { key: 'profile.email', label: 'Email', type: 'email' },
+      { key: 'profile.node', label: 'Node' }, { key: 'profile.status', label: 'Status' },
+      { key: 'profile.startCopy', label: 'Start copy', type: 'textarea' },
+      { key: 'profile.progress', label: 'Current progress', type: 'textarea' },
+      { key: 'profile.linkedin', label: 'Linkedin', type: 'url' },
     ],
     collections: [
-      { key: 'queue', title: 'ACTIVE QUEUE', labelKey: 'label', fields: [{ key: 'label', label: 'LABEL' }, { key: 'description', label: 'DESCRIPTION', type: 'textarea' }] },
-      { key: 'callsToAction', title: 'CALLS TO ACTION', labelKey: 'label', fields: [{ key: 'label', label: 'LABEL' }, { key: 'url', label: 'URL', type: 'url' }, { key: 'external', label: 'EXTERNAL LINK', type: 'checkbox' }] },
+      { key: 'queue', title: 'Active queue', labelKey: 'label', fields: [{ key: 'label', label: 'Label' }, { key: 'description', label: 'Description', type: 'textarea' }] },
+      { key: 'callsToAction', title: 'Calls to action', labelKey: 'label', fields: [{ key: 'label', label: 'Label' }, { key: 'url', label: 'Url', type: 'url' }, { key: 'external', label: 'External link', type: 'checkbox' }] },
     ],
   },
   about: {
     single: [
-      { key: 'name', label: 'NAME' }, { key: 'role', label: 'ROLE' }, { key: 'location', label: 'LOCATION' },
-      { key: 'email', label: 'EMAIL', type: 'email' }, { key: 'linkedin', label: 'LINKEDIN', type: 'url' },
+      { key: 'name', label: 'Name' }, { key: 'role', label: 'Role' }, { key: 'location', label: 'Location' },
+      { key: 'email', label: 'Email', type: 'email' }, { key: 'linkedin', label: 'Linkedin', type: 'url' },
     ],
     collections: [
-      { key: 'education', title: 'EDUCATION RECORDS', labelKey: 'qualification', fields: [
-        { key: 'qualification', label: 'QUALIFICATION' }, { key: 'institution', label: 'INSTITUTION' },
-        { key: 'period', label: 'PERIOD' }, { key: 'earlierRecord', label: 'EARLIER RECORD', type: 'checkbox' },
+      { key: 'education', title: 'Education records', labelKey: 'qualification', fields: [
+        { key: 'qualification', label: 'Qualification' }, { key: 'institution', label: 'Institution' },
+        { key: 'period', label: 'Period' }, { key: 'earlierRecord', label: 'Earlier record', type: 'checkbox' },
       ] },
     ],
   },
   projects: {
     collections: [
-      { key: 'projects', title: 'PROJECTS & CASE STUDIES', labelKey: 'title', ordering: 'indexed', fields: [
-        { key: 'title', label: 'PROJECT TITLE' }, { key: 'slug', label: 'SLUG' },
-        { key: 'shortDescription', label: 'SHORT DESCRIPTION', type: 'textarea' }, { key: 'category', label: 'CATEGORY' },
-        { key: 'role', label: 'MY ROLE' }, { key: 'organisation', label: 'ORGANISATION' },
-        { key: 'period', label: 'PERIOD' }, { key: 'projectStatus', label: 'PROJECT STATUS' },
-        { key: 'featured', label: 'FEATURED', type: 'checkbox' }, { key: 'thumbnail', label: 'THUMBNAIL PATH' },
-        { key: 'platforms', label: 'PLATFORMS', nested: 'tagRecords' },
-        { key: 'technologies', label: 'TECHNOLOGIES', nested: 'tagRecords' },
-        { key: 'referenceLabel', label: 'REFERENCE LABEL' }, { key: 'referenceUrl', label: 'REFERENCE URL', type: 'url' },
-        { key: 'confidentialityNote', label: 'CONFIDENTIALITY NOTE', type: 'textarea' },
-        { key: 'sections', label: 'CASE-STUDY SECTIONS', nested: 'sections' },
+      { key: 'projects', title: 'Projects & case studies', labelKey: 'title', ordering: 'indexed', fields: [
+        { key: 'title', label: 'Project title' }, { key: 'slug', label: 'Slug' },
+        { key: 'shortDescription', label: 'Short description', type: 'textarea' }, { key: 'category', label: 'Category' },
+        { key: 'role', label: 'My role' }, { key: 'organisation', label: 'Organisation' },
+        { key: 'period', label: 'Period' }, { key: 'projectStatus', label: 'Project status' },
+        { key: 'featured', label: 'Featured', type: 'checkbox' }, { key: 'thumbnail', label: 'Thumbnail path' },
+        { key: 'platforms', label: 'Platforms', nested: 'tagRecords' },
+        { key: 'technologies', label: 'Technologies', nested: 'tagRecords' },
+        { key: 'referenceLabel', label: 'Reference label' }, { key: 'referenceUrl', label: 'Reference URL', type: 'url' },
+        { key: 'confidentialityNote', label: 'Confidentiality note', type: 'textarea' },
+        { key: 'sections', label: 'Case-study sections', nested: 'sections' },
       ] },
     ],
   },
   experience: {
     collections: [
-      { key: 'jobs', title: 'EXPERIENCE RECORDS', labelKey: 'role', ordering: 'indexed', fields: [
-        { key: 'role', label: 'ROLE' }, { key: 'company', label: 'COMPANY' }, { key: 'location', label: 'LOCATION' },
-        { key: 'period', label: 'DISPLAY PERIOD' }, { key: 'startDate', label: 'START', type: 'month' },
-        { key: 'endDate', label: 'END', type: 'month' }, { key: 'current', label: 'CURRENT ROLE', type: 'checkbox' },
-        { key: 'featured', label: 'FEATURED', type: 'checkbox' }, { key: 'highlights', label: 'OUTCOME POINTS', nested: 'textRecords' },
-        { key: 'technologies', label: 'TECHNOLOGIES', nested: 'tagRecords' },
+      { key: 'jobs', title: 'Experience records', labelKey: 'role', ordering: 'indexed', fields: [
+        { key: 'role', label: 'Role' }, { key: 'company', label: 'Company' }, { key: 'location', label: 'Location' },
+        { key: 'period', label: 'Display period' }, { key: 'startDate', label: 'Start', type: 'month' },
+        { key: 'endDate', label: 'End', type: 'month' }, { key: 'current', label: 'Current role', type: 'checkbox' },
+        { key: 'featured', label: 'Featured', type: 'checkbox' }, { key: 'highlights', label: 'Outcome points', nested: 'textRecords' },
+        { key: 'technologies', label: 'Technologies', nested: 'tagRecords' },
       ] },
-      { key: 'toolkit', title: 'TOOLKIT GROUPS', labelKey: 'group', fields: [
-        { key: 'group', label: 'GROUP' }, { key: 'technologies', label: 'SKILLS & TECHNOLOGIES', nested: 'tagRecords' },
+      { key: 'toolkit', title: 'Toolkit groups', labelKey: 'group', fields: [
+        { key: 'group', label: 'Group' }, { key: 'technologies', label: 'Skills & technologies', nested: 'tagRecords' },
       ] },
     ],
   },
-  certifications: { collections: [{ key: 'certifications', title: 'CERTIFICATION RECORDS', labelKey: 'title', ordering: 'indexed', fields: [
-    { key: 'title', label: 'TITLE' }, { key: 'issuer', label: 'ISSUER' }, { key: 'issuedAt', label: 'ISSUED' },
-    { key: 'category', label: 'CATEGORY', type: 'select', options: ['professional', 'cloud', 'learning'] },
-    { key: 'credentialUrl', label: 'CREDENTIAL URL', type: 'url' }, { key: 'featured', label: 'FEATURED', type: 'checkbox' },
+  certifications: { collections: [{ key: 'certifications', title: 'Certification records', labelKey: 'title', ordering: 'indexed', fields: [
+    { key: 'title', label: 'Title' }, { key: 'issuer', label: 'Issuer' }, { key: 'issuedAt', label: 'Issued' },
+    { key: 'category', label: 'Category', type: 'select', options: ['professional', 'cloud', 'learning'] },
+    { key: 'credentialUrl', label: 'Credential URL', type: 'url' }, { key: 'featured', label: 'Featured', type: 'checkbox' },
   ] }] },
-  awards: { collections: [{ key: 'awards', title: 'AWARD RECORDS', labelKey: 'title', ordering: 'indexed', fields: [
-    { key: 'title', label: 'TITLE' }, { key: 'issuer', label: 'ISSUER' }, { key: 'date', label: 'DATE' },
-    { key: 'description', label: 'DESCRIPTION', type: 'textarea' }, { key: 'category', label: 'CATEGORY' },
-    { key: 'featured', label: 'FEATURED', type: 'checkbox' },
+  awards: { collections: [{ key: 'awards', title: 'Award records', labelKey: 'title', ordering: 'indexed', fields: [
+    { key: 'title', label: 'Title' }, { key: 'issuer', label: 'Issuer' }, { key: 'date', label: 'Date' },
+    { key: 'description', label: 'Description', type: 'textarea' }, { key: 'category', label: 'Category' },
+    { key: 'featured', label: 'Featured', type: 'checkbox' },
   ] }] },
-  leadership: { collections: [{ key: 'leadership', title: 'LEADERSHIP RECORDS', labelKey: 'role', ordering: 'indexed', fields: [
-    { key: 'role', label: 'ROLE' }, { key: 'organisation', label: 'ORGANISATION' }, { key: 'period', label: 'PERIOD' },
-    { key: 'description', label: 'DESCRIPTION', type: 'textarea' }, { key: 'scope', label: 'SCOPE' },
-    { key: 'earlierRecord', label: 'EARLIER RECORD', type: 'checkbox' }, { key: 'featured', label: 'FEATURED', type: 'checkbox' },
+  leadership: { collections: [{ key: 'leadership', title: 'Leadership records', labelKey: 'role', ordering: 'indexed', fields: [
+    { key: 'role', label: 'Role' }, { key: 'organisation', label: 'Organisation' }, { key: 'period', label: 'Period' },
+    { key: 'description', label: 'Description', type: 'textarea' }, { key: 'scope', label: 'Scope' },
+    { key: 'earlierRecord', label: 'Earlier record', type: 'checkbox' }, { key: 'featured', label: 'Featured', type: 'checkbox' },
   ] }] },
   archives: {
-    single: [{ key: 'lede', label: 'ARCHIVE INTRODUCTION', type: 'textarea' }],
-    collections: [{ key: 'articles', title: 'ARCHIVE ARTICLES', labelKey: 'title', ordering: 'indexed', fields: [
-      { key: 'title', label: 'TITLE' }, { key: 'slug', label: 'SLUG' }, { key: 'publication', label: 'PUBLICATION' },
-      { key: 'publicationDate', label: 'PUBLICATION DATE', type: 'date' }, { key: 'description', label: 'DESCRIPTION', type: 'textarea' },
-      { key: 'sourceUrl', label: 'SOURCE URL', type: 'url' }, { key: 'assetPath', label: 'ASSET PATH' },
-      { key: 'language', label: 'LANGUAGE' }, { key: 'featured', label: 'FEATURED', type: 'checkbox' },
+    single: [{ key: 'lede', label: 'Archive introduction', type: 'textarea' }],
+    collections: [{ key: 'articles', title: 'Archive articles', labelKey: 'title', ordering: 'indexed', fields: [
+      { key: 'title', label: 'Title' }, { key: 'slug', label: 'Slug' }, { key: 'publication', label: 'Publication' },
+      { key: 'publicationDate', label: 'Publication date', type: 'date' }, { key: 'description', label: 'Description', type: 'textarea' },
+      { key: 'sourceUrl', label: 'Source URL', type: 'url' }, { key: 'assetPath', label: 'Asset path' },
+      { key: 'language', label: 'Language' }, { key: 'featured', label: 'Featured', type: 'checkbox' },
     ] }],
   },
 };
 
 const templates: Record<string, () => Record<string, unknown>> = {
-  queue: () => ({ id: createRecordId('queue'), label: 'NEW ITEM', description: '', sortOrder: 0, status: 'draft' }),
-  callsToAction: () => ({ id: createRecordId('cta'), label: 'NEW ACTION', url: '/', external: false, sortOrder: 0, status: 'draft' }),
+  queue: () => ({ id: createRecordId('queue'), label: 'New item', description: '', sortOrder: 0, status: 'draft' }),
+  callsToAction: () => ({ id: createRecordId('cta'), label: 'New action', url: '/', external: false, sortOrder: 0, status: 'draft' }),
   education: () => ({ id: createRecordId('education'), qualification: '', institution: '', period: '', earlierRecord: false, sortOrder: 0, status: 'draft' }),
   jobs: () => ({ id: createRecordId('experience'), role: '', company: '', location: '', period: '', startDate: '', endDate: '', current: false, featured: false, highlights: [], technologies: [], sortOrder: 0, status: 'draft' }),
   toolkit: () => ({ id: createRecordId('toolkit'), group: '', technologies: [], sortOrder: 0, status: 'draft' }),
@@ -158,7 +158,7 @@ const fieldControl = (field: FieldConfig, path: string, value: unknown) => {
   } else if (field.type === 'select') {
     control = document.createElement('select');
     field.options?.forEach((option) => {
-      const item = document.createElement('option'); item.value = option; item.textContent = option.toUpperCase(); item.selected = value === option; control.append(item);
+      const item = document.createElement('option'); item.value = option; item.textContent = option.charAt(0).toUpperCase() + option.slice(1); item.selected = value === option; control.append(item);
     });
   } else {
     control = document.createElement('input'); control.type = field.type ?? 'text';
@@ -238,11 +238,12 @@ export async function initializeAdminCms() {
     if (publishPageButton) publishPageButton.disabled = unresolved;
     if (publishButton) publishButton.disabled = unresolved;
     if (pageState) {
-      const state = savingPages.has(selectedPage) ? 'SAVING...'
-        : dirtyPages.has(selectedPage) ? 'EDITING // AUTOSAVE PENDING'
-          : !pagesMatch(pages[selectedPage], publishedPages[selectedPage]) ? 'DRAFT SAVED // MODIFIED'
-            : migrationPending ? 'V1 MIGRATION READY' : 'LIVE // DRAFT MATCH';
+      const state = savingPages.has(selectedPage) ? 'Saving…'
+        : dirtyPages.has(selectedPage) ? 'Autosave pending'
+          : !pagesMatch(pages[selectedPage], publishedPages[selectedPage]) ? 'Draft saved'
+            : migrationPending ? 'Migration ready' : 'Up to date';
       pageState.textContent = state;
+      pageState.dataset.state = dirtyPages.has(selectedPage) ? 'dirty' : 'saved';
     }
   };
 
@@ -268,9 +269,9 @@ export async function initializeAdminCms() {
       if (type === 'sections') {
         const sectionGrid = document.createElement('div'); sectionGrid.className = 'admin-section-grid';
         sectionGrid.append(
-          fieldControl({ key: 'type', label: 'TYPE', type: 'select', options: ['problem','role','constraints','solution','architecture','challenges','outcomes','reflection'] }, `${path}.${index}.type`, record.type),
-          fieldControl({ key: 'heading', label: 'HEADING' }, `${path}.${index}.heading`, record.heading),
-          fieldControl({ key: 'body', label: 'BODY', type: 'textarea' }, `${path}.${index}.body`, record.body),
+          fieldControl({ key: 'type', label: 'Type', type: 'select', options: ['problem','role','constraints','solution','architecture','challenges','outcomes','reflection'] }, `${path}.${index}.type`, record.type),
+          fieldControl({ key: 'heading', label: 'Heading' }, `${path}.${index}.heading`, record.heading),
+          fieldControl({ key: 'body', label: 'Body', type: 'textarea' }, `${path}.${index}.body`, record.body),
         );
         const points = renderNested('textRecords', (record.points as Array<Record<string, unknown>>) ?? [], `${path}.${index}.points`);
         sectionGrid.append(points); row.append(sectionGrid);
@@ -279,7 +280,7 @@ export async function initializeAdminCms() {
       }
       wrap.append(row);
     });
-    const add = button(type === 'sections' ? '+ ADD SECTION' : type === 'tagRecords' ? '+ ADD TAG' : '+ ADD POINT', 'nested-add');
+    const add = button(type === 'sections' ? '+ Add section' : type === 'tagRecords' ? '+ Add tag' : '+ Add point', 'nested-add');
     add.dataset.path = path; add.dataset.nestedType = type; wrap.append(add); return wrap;
   };
 
@@ -287,29 +288,29 @@ export async function initializeAdminCms() {
     const section = document.createElement('section'); section.className = 'admin-collection';
     const header = document.createElement('header');
     const headingWrap = document.createElement('div'); headingWrap.className = 'admin-collection-heading';
-    const heading = document.createElement('h3'); heading.textContent = `${config.title} // ${recordsInput.length}`;
+    const heading = document.createElement('h3'); heading.textContent = `${config.title} (${recordsInput.length})`;
     headingWrap.append(heading);
     if (config.ordering === 'indexed') {
       const ordering = document.createElement('small'); ordering.className = 'admin-ordering-note';
-      ordering.textContent = 'INDEX ORDER // 1 = FIRST / LATEST';
+      ordering.textContent = 'Display order · 1 appears first';
       headingWrap.append(ordering);
     }
-    const add = button('+ ADD RECORD', 'add'); add.dataset.collection = config.key; header.append(headingWrap, add); section.append(header);
+    const add = button('+ Add record', 'add'); add.dataset.collection = config.key; header.append(headingWrap, add); section.append(header);
     const records = config.ordering === 'indexed' ? indexFirst(recordsInput) : recordsInput;
     records.forEach((record, displayedIndex) => {
       const actualIndex = recordsInput.indexOf(record);
       const details = document.createElement('details'); details.className = 'admin-record'; details.open = displayedIndex === 0;
       const summary = document.createElement('summary');
       const label = String(record[config.labelKey] || 'UNTITLED RECORD');
-      summary.textContent = `${String(displayedIndex + 1).padStart(2, '0')} // ${label}`;
-      const badge = document.createElement('span'); badge.textContent = String(record.status ?? 'draft').toUpperCase(); summary.append(badge); details.append(summary);
+      summary.textContent = `${displayedIndex + 1}. ${label}`;
+      const badge = document.createElement('span'); badge.textContent = String(record.status ?? 'draft'); summary.append(badge); details.append(summary);
       const body = document.createElement('div'); body.className = 'admin-record-body';
       const metadata = document.createElement('div'); metadata.className = 'admin-record-meta';
-      metadata.append(fieldControl({ key: 'id', label: 'STABLE ID' }, `data.${config.key}.${actualIndex}.id`, record.id));
+      metadata.append(fieldControl({ key: 'id', label: 'Stable ID' }, `data.${config.key}.${actualIndex}.id`, record.id));
       const idInput = metadata.querySelector<HTMLInputElement>('input'); if (idInput) idInput.readOnly = true;
-      metadata.append(fieldControl({ key: 'status', label: 'STATUS', type: 'select', options: ['draft','published','archived'] }, `data.${config.key}.${actualIndex}.status`, record.status));
+      metadata.append(fieldControl({ key: 'status', label: 'Status', type: 'select', options: ['draft','published','archived'] }, `data.${config.key}.${actualIndex}.status`, record.status));
       if (config.ordering === 'indexed') {
-        const orderField = fieldControl({ key: 'sortOrder', label: 'ORDER INDEX // 1 = FIRST', type: 'number' }, '', displayedIndex + 1);
+        const orderField = fieldControl({ key: 'sortOrder', label: 'Display order (1 appears first)', type: 'number' }, '', displayedIndex + 1);
         const orderInput = orderField.querySelector<HTMLInputElement>('input');
         if (orderInput) {
           orderInput.removeAttribute('data-path'); orderInput.min = '1'; orderInput.max = String(records.length);
@@ -351,7 +352,7 @@ export async function initializeAdminCms() {
     preview.replaceChildren();
     const statusLine = document.createElement('p'); statusLine.className = 'admin-preview-status';
     const issues = validateCmsPage(page);
-    statusLine.textContent = issues.length ? `VALIDATION // ${issues.length} ISSUE${issues.length === 1 ? '' : 'S'}` : 'VALIDATION // READY'; preview.append(statusLine);
+    statusLine.textContent = issues.length ? `${issues.length} validation issue${issues.length === 1 ? '' : 's'}` : 'Ready to publish'; preview.append(statusLine);
     if (issues.length) {
       const list = document.createElement('ul'); issues.slice(0, 8).forEach((issue) => { const item = document.createElement('li'); item.textContent = `${issue.path}: ${issue.message}`; list.append(item); }); preview.append(list);
     }
@@ -362,16 +363,16 @@ export async function initializeAdminCms() {
       const copy = document.createElement('p');
       const active = records.filter((record) => record.status !== 'archived').length;
       const drafts = records.filter((record) => record.status === 'draft').length;
-      copy.textContent = `${active} ACTIVE // ${drafts} DRAFT // ${records.length - active} ARCHIVED`; line.append(heading, copy); preview.append(line);
+      copy.textContent = `${active} active · ${drafts} drafts · ${records.length - active} archived`; line.append(heading, copy); preview.append(line);
     });
     const live = document.createElement('article');
-    const liveHeading = document.createElement('strong'); liveHeading.textContent = 'PUBLICATION STATE';
+    const liveHeading = document.createElement('strong'); liveHeading.textContent = 'Publication';
     const liveCopy = document.createElement('p');
-    liveCopy.textContent = pagesMatch(page, publishedPages[selectedPage]) ? 'LIVE // DRAFT MATCH' : 'DRAFT MODIFIED // UNPUBLISHED';
+    liveCopy.textContent = pagesMatch(page, publishedPages[selectedPage]) ? 'Up to date' : 'Unpublished changes';
     live.append(liveHeading, liveCopy); preview.append(live);
     const revisions = document.createElement('section'); revisions.className = 'admin-revisions'; revisions.dataset.revisionsFor = selectedPage;
-    const revisionsHeading = document.createElement('strong'); revisionsHeading.textContent = 'REVISION HISTORY';
-    const loading = document.createElement('small'); loading.textContent = 'LOADING...'; revisions.append(revisionsHeading, loading); preview.append(revisions);
+    const revisionsHeading = document.createElement('strong'); revisionsHeading.textContent = 'Version history';
+    const loading = document.createElement('small'); loading.textContent = 'Loading…'; revisions.append(revisionsHeading, loading); preview.append(revisions);
     void loadRevisionHistory(selectedPage, revisions);
   };
 
@@ -393,10 +394,10 @@ export async function initializeAdminCms() {
 
   const render = () => {
     const page = pages[selectedPage]; const config = configs[selectedPage];
-    pageTitle.textContent = `${page.title}.SYS // STRUCTURED EDITOR`; editor.replaceChildren();
+    pageTitle.textContent = page.title.charAt(0).toUpperCase() + page.title.slice(1).toLowerCase(); editor.replaceChildren();
     if (config.single?.length) {
       const section = document.createElement('section'); section.className = 'admin-single-fields';
-      const heading = document.createElement('h3'); heading.textContent = 'PAGE FIELDS'; section.append(heading);
+      const heading = document.createElement('h3'); heading.textContent = 'Page details'; section.append(heading);
       const grid = document.createElement('div'); grid.className = 'admin-record-fields';
       config.single.forEach((field) => grid.append(fieldControl(field, `data.${field.key}`, getAtPath(page, `data.${field.key}`)))); section.append(grid); editor.append(section);
     }
@@ -532,14 +533,14 @@ export async function initializeAdminCms() {
         const row = document.createElement('article'); row.className = 'admin-revision';
         const title = document.createElement('strong'); title.textContent = `${revision.state.toUpperCase()} // ${formatDate(revision.createdAt)}`;
         const copy = document.createElement('small');
-        copy.textContent = `${revision.summary} // DRAFT ${pagesMatch(revision.content, pages[pageId]) ? 'MATCH' : 'DIFF'} // LIVE ${pagesMatch(revision.content, publishedPages[pageId]) ? 'MATCH' : 'DIFF'}`;
+        copy.textContent = `${revision.summary} · Draft ${pagesMatch(revision.content, pages[pageId]) ? 'matches' : 'differs'} · Published ${pagesMatch(revision.content, publishedPages[pageId]) ? 'matches' : 'differs'}`;
         const actions = document.createElement('div');
-        [['VIEW','revision-view'],['RESTORE AS DRAFT','revision-restore'],['REPUBLISH','revision-republish']].forEach(([label, action]) => {
+        [['VIEW','revision-view'],['RESTORE AS DRAFT','revision-restore'],['Republish','revision-republish']].forEach(([label, action]) => {
           const control = button(label, action); control.dataset.revisionId = revision.revisionId; actions.append(control);
         });
         row.append(title, copy, actions); target.append(row);
       });
-    } catch (error) { console.error(error); const status = target.querySelector('small'); if (status) status.textContent = `REVISION LOAD FAILED // ${errorCode(error)}`; }
+    } catch (error) { console.error(error); const status = target.querySelector('small'); if (status) status.textContent = `Version history unavailable: ${errorCode(error)}`; }
   };
 
   const saveDraft = (pageId: CmsPageId, summary = 'Draft saved'): Promise<void> => {
@@ -549,12 +550,12 @@ export async function initializeAdminCms() {
     }
     const timer = saveTimers.get(pageId); if (timer) window.clearTimeout(timer); saveTimers.delete(pageId);
     if (!services?.auth.currentUser) {
-      setMessage('OFFLINE // DRAFT NOT SAVED. AUTHENTICATION REQUIRED.', true); syncControls(); return Promise.resolve();
+      setMessage('Offline · draft not saved. authentication required.', true); syncControls(); return Promise.resolve();
     }
     const snapshot = pageContent(pages[pageId]);
     const revisionId = createRevisionId(pageId, 'draft');
     const nextVersion = draftVersions[pageId] + 1;
-    dirtyPages.delete(pageId); savingPages.add(pageId); syncControls(); setMessage(`SAVING ${snapshot.title} DRAFT...`);
+    dirtyPages.delete(pageId); savingPages.add(pageId); syncControls(); setMessage(`Saving ${snapshot.title} draft…`);
     const operation = (async () => {
       let failed = false;
       let conflicted = false;
@@ -571,10 +572,10 @@ export async function initializeAdminCms() {
           transaction.set(doc(services.db, 'cmsAudit', audit.id), audit);
         });
         draftVersions[pageId] = nextVersion; migrationPending = false;
-        setMessage(`${snapshot.title} // DRAFT SAVED ${new Intl.DateTimeFormat('en-MY', { timeStyle: 'medium', timeZone: 'Asia/Kuala_Lumpur' }).format(new Date())} MYT`);
+        setMessage(`${snapshot.title} · Draft saved ${new Intl.DateTimeFormat('en-MY', { timeStyle: 'medium', timeZone: 'Asia/Kuala_Lumpur' }).format(new Date())} MYT`);
       } catch (error) {
         failed = true; conflicted = isConflict(error); console.error(error); dirtyPages.add(pageId);
-        setMessage(isConflict(error) ? `SAVE CONFLICT // ${pageId.toUpperCase()} CHANGED IN ANOTHER TAB OR DEVICE. RELOAD BEFORE SAVING.` : `SAVE FAILED // ${errorCode(error)} // DRAFT RETAINED IN THIS TAB.`, true);
+        setMessage(isConflict(error) ? `Save conflict: ${pageId} changed in another tab or device. Reload before saving.` : `Save failed: ${errorCode(error)}. Your draft is still in this tab.`, true);
       } finally {
         savingPages.delete(pageId); savePromises.delete(pageId); syncControls();
         const newerChanges = saveAgain.delete(pageId);
@@ -587,18 +588,18 @@ export async function initializeAdminCms() {
   };
 
   const publishPage = async (pageId: CmsPageId, source = pages[pageId], note = '') => {
-    if (!services?.auth.currentUser) return setMessage('PUBLISH BLOCKED: AUTHENTICATION REQUIRED.', true);
+    if (!services?.auth.currentUser) return setMessage('Publish blocked: authentication required.', true);
     if (source === pages[pageId] && (dirtyPages.has(pageId) || savingPages.has(pageId))) await saveDraft(pageId, 'Draft saved before publishing');
-    if (source === pages[pageId] && dirtyPages.has(pageId)) return setMessage('PUBLISH BLOCKED: DRAFT SAVE HAS NOT SUCCEEDED.', true);
+    if (source === pages[pageId] && dirtyPages.has(pageId)) return setMessage('Publish blocked: draft save has not succeeded.', true);
     const promoted = preparePublishedPage(source) as CmsPages[typeof pageId];
     const issues = validateCmsPage(promoted);
-    if (issues.length) { setMessage(`PUBLISH BLOCKED: ${issues[0].path} — ${issues[0].message}`, true); renderPreview(); return; }
+    if (issues.length) { setMessage(`Cannot publish: ${issues[0].path} — ${issues[0].message}`, true); renderPreview(); return; }
     const summary = pageChangeSummary(source, publishedPages[pageId]);
     const revisionId = createRevisionId(pageId, 'published');
     const nextVersion = publishedVersions[pageId] + 1;
     const actor = services.auth.currentUser.uid;
     if (publishPageButton) publishPageButton.disabled = true; if (publishButton) publishButton.disabled = true;
-    setMessage(`PUBLISHING ${source.title} ATOMICALLY...`);
+    setMessage(`Publishing ${source.title}…`);
     try {
       await runTransaction(services.db, async (transaction) => {
         const publishedRef = doc(services.db, 'cmsPublished', pageId);
@@ -613,8 +614,8 @@ export async function initializeAdminCms() {
         transaction.set(doc(services.db, 'cmsAudit', audit.id), audit);
       });
       publishedPages[pageId] = promoted as never; publishedVersions[pageId] = nextVersion; publishedRevisionIds[pageId] = revisionId;
-      setMessage(`${source.title} // PUBLISHED. LIVE SITE UPDATED ATOMICALLY.`); render();
-    } catch (error) { console.error(error); setMessage(isConflict(error) ? `PUBLISH CONFLICT // ${pageId.toUpperCase()} CHANGED IN ANOTHER TAB OR DEVICE. RELOAD BEFORE PUBLISHING.` : `PUBLISH FAILED // ${errorCode(error)} // LIVE CONTENT WAS NOT CHANGED.`, true); }
+      setMessage(`${source.title} published. Your live site has been updated.`); render();
+    } catch (error) { console.error(error); setMessage(isConflict(error) ? `Publish conflict: ${pageId} changed in another tab or device. Reload before publishing.` : `Publish failed: ${errorCode(error)}. Live content was not changed.`, true); }
     finally { syncControls(); }
   };
 
@@ -644,7 +645,7 @@ export async function initializeAdminCms() {
     sessionStorage.setItem('aniq-cms-public-preview', JSON.stringify({ home: legacy.home, fields: legacy.fields, projects: previewPages.projects, pages: previewPages }));
     const paths: Record<CmsPageId, string> = { home: '/', about: '/about/', projects: '/projects/', experience: '/experience/', certifications: '/certifications/', awards: '/awards/', leadership: '/leadership/', archives: '/archives/' };
     previewFrame.src = `${paths[selectedPage]}?cms-preview=${override ? 'draft' : source}&v=${Date.now()}`;
-    if (previewTitle) previewTitle.textContent = `${override ? 'REVISION' : source.toUpperCase()} PREVIEW // ${page.title}`;
+    if (previewTitle) previewTitle.textContent = `${override ? 'Version' : source.toUpperCase()} preview · ${page.title}`;
     document.querySelectorAll<HTMLButtonElement>('[data-preview-source]').forEach((control) => control.classList.toggle('is-active', !override && control.dataset.previewSource === source));
     if (!previewDialog.open) previewDialog.showModal();
   };
@@ -693,9 +694,9 @@ export async function initializeAdminCms() {
   saveButton?.addEventListener('click', () => { void saveDraft(selectedPage, 'Manual draft save'); });
 
   saveAllButton?.addEventListener('click', async () => {
-    if (!services?.auth.currentUser) return setMessage('SAVE ALL BLOCKED: AUTHENTICATION REQUIRED.', true);
+    if (!services?.auth.currentUser) return setMessage('Save all blocked: authentication required.', true);
     await Promise.all(CMS_PAGE_IDS.map((pageId) => saveDraft(pageId, 'Manual save all')));
-    setMessage('ALL 8 PAGE DRAFTS SAVED. LIVE CONTENT WAS NOT CHANGED.');
+    setMessage('All 8 page drafts saved. live content was not changed.');
   });
 
   publishPageButton?.addEventListener('click', async () => {
@@ -705,16 +706,16 @@ export async function initializeAdminCms() {
   });
 
   publishButton?.addEventListener('click', async () => {
-    if (!services?.auth.currentUser) return setMessage('PUBLISH BLOCKED: AUTHENTICATION REQUIRED.', true);
+    if (!services?.auth.currentUser) return setMessage('Publish blocked: authentication required.', true);
     const changed = changedPageIds(pages, publishedPages);
     const summary = changed.length ? changed.map((pageId) => `- ${pageChangeSummary(pages[pageId], publishedPages[pageId])}`).join('\n') : '- No detected changes; a new published revision will still be recorded.';
     if (!window.confirm(`PUBLISH ALL 8 PAGES ATOMICALLY?\n\n${summary}\n\nOnly records marked PUBLISHED will become public.`)) return;
     await Promise.all(CMS_PAGE_IDS.filter((pageId) => dirtyPages.has(pageId) || savingPages.has(pageId)).map((pageId) => saveDraft(pageId, 'Draft saved before bulk publish')));
-    if (dirtyPages.size) return setMessage('PUBLISH ALL BLOCKED: ONE OR MORE DRAFT SAVES HAVE NOT SUCCEEDED.', true);
+    if (dirtyPages.size) return setMessage('Publish all blocked: one or more draft saves have not succeeded.', true);
     const promoted = Object.fromEntries(CMS_PAGE_IDS.map((pageId) => [pageId, preparePublishedPage(pages[pageId])])) as unknown as CmsPages;
     const issues = validateCmsPages(promoted);
-    if (issues.length) return setMessage(`PUBLISH ALL BLOCKED: ${issues[0].path} — ${issues[0].message}`, true);
-    publishButton.disabled = true; if (publishPageButton) publishPageButton.disabled = true; setMessage('PUBLISHING ALL 8 PAGES IN ONE ATOMIC BATCH...');
+    if (issues.length) return setMessage(`Cannot publish all pages: ${issues[0].path} — ${issues[0].message}`, true);
+    publishButton.disabled = true; if (publishPageButton) publishPageButton.disabled = true; setMessage('Publishing all 8 pages in one atomic batch…');
     try {
       const actor = services.auth.currentUser.uid;
       const revisionIds = Object.fromEntries(CMS_PAGE_IDS.map((pageId) => [pageId, createRevisionId(pageId, 'published')])) as Record<CmsPageId, string>;
@@ -740,8 +741,8 @@ export async function initializeAdminCms() {
         transaction.set(doc(services.db, 'cmsAudit', audit.id), audit);
       });
       CMS_PAGE_IDS.forEach((pageId) => { publishedVersions[pageId] = nextVersions[pageId]; publishedRevisionIds[pageId] = revisionIds[pageId]; });
-      publishedPages = promoted; setMessage('ALL 8 PAGES PUBLISHED ATOMICALLY. REVISION HISTORY UPDATED.'); render();
-    } catch (error) { console.error(error); setMessage(isConflict(error) ? 'PUBLISH CONFLICT // LIVE CONTENT CHANGED IN ANOTHER TAB OR DEVICE. RELOAD BEFORE PUBLISHING.' : `PUBLISH FAILED // ${errorCode(error)} // LIVE CONTENT WAS NOT CHANGED.`, true); }
+      publishedPages = promoted; setMessage('All 8 pages published atomically. revision history updated.'); render();
+    } catch (error) { console.error(error); setMessage(isConflict(error) ? 'The published content changed in another tab or device. Reload before publishing.' : `Publish failed: ${errorCode(error)}. Live content was not changed.`, true); }
     finally { syncControls(); }
   });
 
@@ -769,8 +770,8 @@ export async function initializeAdminCms() {
     }
   });
 
-  window.addEventListener('offline', () => setMessage('OFFLINE // CHANGES REMAIN IN THIS TAB UNTIL A SAVE SUCCEEDS.', true));
-  window.addEventListener('online', () => { setMessage('CONNECTION RESTORED // RETRYING UNSAVED DRAFTS.'); dirtyPages.forEach((pageId) => { void saveDraft(pageId, 'Autosaved after reconnect'); }); });
+  window.addEventListener('offline', () => setMessage('Offline · changes remain in this tab until a save succeeds.', true));
+  window.addEventListener('online', () => { setMessage('Connection restored · retrying unsaved drafts.'); dirtyPages.forEach((pageId) => { void saveDraft(pageId, 'Autosaved after reconnect'); }); });
   window.addEventListener('beforeunload', (event) => { if (!dirtyPages.size && !savingPages.size) return; event.preventDefault(); event.returnValue = ''; });
   window.addEventListener('keydown', (event) => {
     const modifier = event.metaKey || event.ctrlKey;
@@ -796,27 +797,27 @@ export async function initializeAdminCms() {
 
   const unlock = async (user: { uid: string; email: string | null } | null, cloud: boolean) => {
     app.classList.add('is-authorized'); if (authPanel) authPanel.hidden = true;
-    if (mode) mode.textContent = cloud ? 'FIREBASE // AUTHORIZED' : 'LOCAL // PREVIEW';
-    if (identity) identity.textContent = user?.email ?? 'LOCAL DEVELOPER'; if (signOutButton) signOutButton.hidden = !cloud;
+    if (mode) mode.textContent = cloud ? 'Connected' : 'Local preview';
+    if (identity) identity.textContent = user?.email ?? 'Local developer'; if (signOutButton) signOutButton.hidden = !cloud;
     if (cloud) {
       try { if (services) await recordAudit(services, 'admin.session', 'admin', 'content', 'Authenticated content editor session'); } catch (error) { console.error(error); }
-      try { await loadCloudPages(); } catch (error) { console.error(error); setMessage('V2 CONTENT LOAD FAILED. STATIC MIGRATION BASELINE IS SHOWN.', true); }
+      try { await loadCloudPages(); } catch (error) { console.error(error); setMessage('V2 content load failed. static migration baseline is shown.', true); }
     }
     render();
   };
 
   if (import.meta.env.DEV && (!firebaseConfigured || !services)) await unlock(null, false);
-  else if (!services) { if (authPanel) authPanel.hidden = false; if (mode) mode.textContent = 'FIREBASE // UNAVAILABLE'; setMessage('ADMIN CONFIGURATION UNAVAILABLE.', true); }
+  else if (!services) { if (authPanel) authPanel.hidden = false; if (mode) mode.textContent = 'Connection unavailable'; setMessage('Admin configuration unavailable.', true); }
   else onAuthStateChanged(services.auth, async (user) => {
     if (user?.emailVerified && user.uid === adminUid) return unlock(user, true);
     app.classList.remove('is-authorized'); if (authPanel) authPanel.hidden = false;
-    if (mode) mode.textContent = user ? 'ACCESS // DENIED' : 'AUTH // REQUIRED';
-    if (user) { setMessage('THIS GOOGLE ACCOUNT IS NOT AUTHORIZED // USE THE APPROVED ADMIN ACCOUNT.', true); await signOut(services.auth); }
-    else setMessage('AUTHENTICATION REQUIRED.');
+    if (mode) mode.textContent = user ? 'Access denied' : 'Sign-in required';
+    if (user) { setMessage('This Google account is not authorized · use the approved admin account.', true); await signOut(services.auth); }
+    else setMessage('Sign in to continue.');
   });
 
   if (services) void getRedirectResult(services.auth).catch((error) => {
-    console.error(error); setMessage(`GOOGLE SIGN-IN FAILED // ${errorCode(error)}.`, true);
+    console.error(error); setMessage(`Google sign-in failed: ${errorCode(error)}.`, true);
   });
 
   signInButton?.addEventListener('click', async () => {
@@ -825,9 +826,9 @@ export async function initializeAdminCms() {
     catch (error) {
       const code = (error as { code?: string }).code ?? '';
       if (['auth/popup-blocked', 'auth/operation-not-supported-in-this-environment'].includes(code)) {
-        setMessage('POPUP UNAVAILABLE // CONTINUING WITH REDIRECT SIGN-IN.');
+        setMessage('The sign-in popup is unavailable. Continuing in this window…');
         await signInWithRedirect(services.auth, provider);
-      } else { console.error(error); setMessage(`GOOGLE SIGN-IN FAILED // ${errorCode(error)}.`, true); }
+      } else { console.error(error); setMessage(`Google sign-in failed: ${errorCode(error)}.`, true); }
     }
   });
   signOutButton?.addEventListener('click', () => services && signOut(services.auth));

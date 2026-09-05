@@ -48,7 +48,7 @@ test('projects retain the built-in catalogue when the published snapshot is empt
 test('structured publishing is not blocked by fixed legacy v1 collection shapes', async () => {
   const admin = await source('src/scripts/adminCms.ts');
   assert.doesNotMatch(admin, /transaction\.set\(doc\(services\.db, 'siteContent'/);
-  assert.match(admin, /PUBLISH FAILED \/\/ \$\{errorCode\(error\)\}/);
+  assert.match(admin, /Publish failed: \$\{errorCode\(error\)\}/);
 });
 
 test('public Firestore Lite readers use its supported document API', async () => {

@@ -134,6 +134,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? ''
       });
       if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
       succeeded = true;
+      window.dispatchEvent(new Event('portfolio:cv-submitted'));
       setStatus('REQUEST ACCEPTED. OPENING INBOX INSTRUCTIONS...', 'success');
       window.location.assign('/resume/requested/');
     } catch (error) {

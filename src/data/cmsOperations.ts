@@ -23,7 +23,7 @@ export const AUDIT_ACTIONS = [
   'admin.session', 'draft.save', 'page.publish', 'site.publish',
   'revision.restore', 'revision.republish', 'record.archive', 'record.restore', 'record.delete',
   'media.upload', 'media.update', 'media.delete', 'resume.select', 'resume.publish',
-  'seo.save', 'seo.publish', 'content.import', 'content.export',
+  'seo.save', 'seo.publish', 'content.import', 'content.export', 'recruiter.update',
 ] as const;
 export type AuditAction = typeof AUDIT_ACTIONS[number];
 

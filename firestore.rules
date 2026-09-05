@@ -458,7 +458,7 @@ service cloud.firestore {
           'admin.session', 'draft.save', 'page.publish', 'site.publish',
           'revision.restore', 'revision.republish', 'record.archive', 'record.restore', 'record.delete',
           'media.upload', 'media.update', 'media.delete', 'resume.select', 'resume.publish',
-          'seo.save', 'seo.publish', 'content.import', 'content.export'
+          'seo.save', 'seo.publish', 'content.import', 'content.export', 'recruiter.update'
         ]
         && data.entityType is string && data.entityType.size() > 0 && data.entityType.size() <= 80
         && data.entityId is string && data.entityId.size() <= 240
@@ -564,6 +564,33 @@ service cloud.firestore {
     match /cmsBackups/{backupId} {
       allow read: if isAdmin();
       allow create: if isAdmin() && isValidBackup(request.resource.data, backupId);
+    }
+
+    function validRecruiterLead(data, requestId) {
+      return data.keys().hasAll(['requestId', 'email', 'requestedAt', 'company', 'notes', 'stage', 'followUp', 'version', 'updatedAt', 'updatedBy'])
+        && data.keys().hasOnly(['requestId', 'email', 'requestedAt', 'company', 'notes', 'stage', 'followUp', 'version', 'updatedAt', 'updatedBy'])
+        && data.requestId == requestId
+        && data.email is string && data.email.size() <= 320
+        && data.requestedAt is timestamp
+        && data.company is string && data.company.size() <= 160
+        && data.notes is string && data.notes.size() <= 5000
+        && data.stage in ['new', 'contacted', 'interviewing', 'offer', 'closed']
+        && data.followUp is string
+        && (data.followUp == '' || data.followUp.matches('^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'))
+        && data.version is int && data.version >= 1
+        && data.updatedBy == request.auth.uid && data.updatedAt == request.time;
+    }
+
+    match /recruiterLeads/{requestId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() && validRecruiterLead(request.resource.data, requestId)
+        && request.resource.data.version == 1
+        && request.resource.data.email == get(/databases/$(database)/documents/cvRequests/$(requestId)).data.email
+        && request.resource.data.requestedAt == get(/databases/$(database)/documents/cvRequests/$(requestId)).data.requestedAt;
+      allow update: if isAdmin() && validRecruiterLead(request.resource.data, requestId)
+        && request.resource.data.version == resource.data.version + 1
+        && request.resource.data.email == resource.data.email
+        && request.resource.data.requestedAt == resource.data.requestedAt;
     }
 
     match /cvRequests/{requestId} {

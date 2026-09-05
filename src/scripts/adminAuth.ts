@@ -17,6 +17,7 @@ interface AdminGateOptions {
   signOutButton: HTMLButtonElement;
   message: HTMLElement;
   onAuthorized: (user: User | null, cloud: boolean) => Promise<void> | void;
+  onUnauthorized?: () => void;
 }
 
 export async function initializeAdminGate(options: AdminGateOptions) {
@@ -47,7 +48,7 @@ export async function initializeAdminGate(options: AdminGateOptions) {
   }
   if (!services) {
     authPanel.hidden = false;
-    setMessage('FIREBASE CONFIGURATION IS UNAVAILABLE.', true);
+    setMessage('Firebase configuration is unavailable.', true);
     return { services, setMessage };
   }
 
@@ -55,17 +56,18 @@ export async function initializeAdminGate(options: AdminGateOptions) {
     if (user?.emailVerified && user.uid === ADMIN_UID) return unlock(user, true);
     unlocked = false;
     root.classList.remove('is-authorized');
+    options.onUnauthorized?.();
     authPanel.hidden = false;
     signOutButton.hidden = true;
     if (user) {
-      setMessage('THIS GOOGLE ACCOUNT IS NOT AUTHORIZED.', true);
+      setMessage('This Google account is not authorized.', true);
       await signOut(services.auth);
-    } else setMessage('AUTHENTICATION REQUIRED.');
+    } else setMessage('Sign in to continue.');
   });
 
   void getRedirectResult(services.auth).catch((error) => {
     console.error(error);
-    setMessage(`GOOGLE SIGN-IN FAILED // ${errorCode(error)}.`, true);
+    setMessage(`Google sign-in failed: ${errorCode(error)}.`, true);
   });
 
   signInButton.addEventListener('click', async () => {
@@ -76,11 +78,11 @@ export async function initializeAdminGate(options: AdminGateOptions) {
     } catch (error) {
       const code = (error as { code?: string }).code ?? '';
       if (['auth/popup-blocked', 'auth/operation-not-supported-in-this-environment'].includes(code)) {
-        setMessage('POPUP UNAVAILABLE // CONTINUING WITH REDIRECT SIGN-IN.');
+        setMessage('The sign-in popup is unavailable. Continuing in this window…');
         await signInWithRedirect(services.auth, provider);
       } else {
         console.error(error);
-        setMessage(`GOOGLE SIGN-IN FAILED // ${errorCode(error)}.`, true);
+        setMessage(`Google sign-in failed: ${errorCode(error)}.`, true);
       }
     }
   });

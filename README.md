@@ -128,6 +128,9 @@ regenerates the board.
 
 ## Google Analytics
 
+The admin dashboard now includes a recruiter inbox, traffic reports, and live site checks.
+See [Admin operations setup](docs/admin-operations.md) for reporting access, metric definitions, validation, and the targeted release procedure.
+
 Create a GA4 web data stream for the production domain, then set its
 measurement ID in the production environment:
 

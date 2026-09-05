@@ -1,18 +1,49 @@
 ---
 const measurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID?.trim() ?? '';
 const isValidMeasurementId = /^G-[A-Z0-9]+$/i.test(measurementId);
-const isPublicPage = !Astro.url.pathname.startsWith('/admin');
+const isPublicPage = /^\/(?:$|(?:about|projects|experience|certifications|awards|leadership|resume)\/?$|archives(?:\/|$))/.test(Astro.url.pathname);
 const analyticsEnabled = import.meta.env.PROD && isPublicPage && isValidMeasurementId;
 ---
 
 {analyticsEnabled && (
   <>
-    <script async src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`}></script>
     <script is:inline define:vars={{ measurementId }}>
+      (() => {
+      const excluded = () => {
+        try { return localStorage.getItem('aniq.analytics.exclude') === 'true'; } catch { return true; }
+      };
+      if (excluded() || new URLSearchParams(location.search).has('cms-preview') || navigator.doNotTrack === '1' || navigator.globalPrivacyControl === true) return;
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      const cleanLocation = location.origin + location.pathname;
+      let referrer = '';
+      try { const url = new URL(document.referrer); referrer = url.origin + url.pathname; } catch {}
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(measurementId);
+      document.head.append(script);
       gtag('js', new Date());
-      gtag('config', measurementId);
+      gtag('config', measurementId, { page_location: cleanLocation, page_referrer: referrer, allow_google_signals: false, allow_ad_personalization_signals: false });
+      const track = (name, fields = {}) => {
+        if (!excluded()) gtag('event', name, { page_location: cleanLocation, ...fields });
+      };
+      document.addEventListener('click', (event) => {
+        if (!(event.target instanceof Element)) return;
+        const project = event.target.closest('[data-project-open]');
+        if (project?.getAttribute('aria-expanded') === 'true') {
+          const slug = project.getAttribute('data-project-open') || '';
+          if (/^[a-z0-9-]{1,120}$/.test(slug)) track('project_open', { page_location: location.origin + '/projects/?project=' + encodeURIComponent(slug) });
+        }
+        const link = event.target.closest('a[href]');
+        if (link) {
+          try {
+            const target = new URL(link.href, location.origin);
+            if (['https:', 'http:'].includes(target.protocol) && target.origin !== location.origin) track('portfolio_outbound', { link_domain: target.hostname });
+          } catch {}
+        }
+      });
+      window.addEventListener('portfolio:cv-submitted', () => track('cv_request_submitted', { transport_type: 'beacon' }));
+      })();
     </script>
   </>
 )}

@@ -58,3 +58,24 @@ test('content pages expose one standardized sort control while home and about re
     assert.doesNotMatch(html, /data-sort-control=/, `${route || 'home'} must not expose a sort control`);
   }
 });
+
+test('operations dashboard sections and filters have accessible names and private metadata', async () => {
+  const html = await htmlFor('admin/dashboard');
+  const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
+  assert.equal(new Set(ids).size, ids.length);
+  for (const id of ['recruiter-title', 'traffic-title', 'site-health-title']) assert.match(html, new RegExp(`aria-labelledby="${id}"`));
+  for (const id of ['recruiter-search', 'recruiter-stage', 'recruiter-due', 'analytics-days']) assert.match(html, new RegExp(`<label[^>]*>[\\s\\S]*?id="${id}"[\\s\\S]*?</label>`));
+  assert.match(html, /<meta name="robots" content="noindex, nofollow, noarchive">/);
+  for (const button of html.match(/<button\b[^>]*>/g) ?? []) assert.match(button, /\stype="button"/);
+});
+
+test('admin pages use the dedicated workspace shell instead of the public CRT shell', async () => {
+  for (const route of ['admin', 'admin/dashboard', 'admin/media', 'admin/editorial']) {
+    const html = await htmlFor(route);
+    assert.match(html, /class="admin-layout"/);
+    assert.match(html, /class="workspace-sidebar"/);
+    assert.match(html, /family=DM\+Sans/);
+    assert.doesNotMatch(html, /class="crt\b|admin-crt|data-theme=/);
+    assert.match(html, /<meta name="viewport" content="width=device-width, initial-scale=1">/);
+  }
+});

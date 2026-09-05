@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import AdminLayout from '../../layouts/AdminLayout.astro';
+import AdminOperations from '../../components/AdminOperations.astro';
 import { defaultHomeContent } from '../../data/homeContent';
 import { defaultSiteFields } from '../../data/siteFields';
 import { migrateV1ToV2 } from '../../data/cmsSchema';
@@ -16,73 +17,63 @@ const archiveFields = {
 const defaultPages = migrateV1ToV2(defaultHomeContent, { ...defaultSiteFields, ...archiveFields });
 ---
 
-<AdminLayout title="OPERATIONS DASHBOARD">
+<AdminLayout title="Overview">
   <div class="phase-d-admin" id="operations-admin" data-page-defaults={JSON.stringify(defaultPages)}>
     <section class="phase-d-auth" id="operations-auth" hidden>
-      <p class="phase-d-kicker">SECURITY GATE // UID REQUIRED</p>
-      <h1>AUTHORIZED GOOGLE ACCOUNT REQUIRED.</h1>
-      <button class="phase-d-button is-primary" id="operations-sign-in" type="button">&gt; SIGN IN WITH GOOGLE</button>
+      <p class="phase-d-kicker">Private workspace</p>
+      <h1>Welcome back</h1>
+      <p>Sign in with your authorized Google account to manage your website.</p>
+      <button class="phase-d-button is-primary" id="operations-sign-in" type="button">Continue with Google</button>
     </section>
 
     <div class="phase-d-shell">
-      <nav class="phase-d-nav" aria-label="Admin areas">
-        <a href="/admin/dashboard/" aria-current="page">DASHBOARD</a>
-        <a href="/admin/">CONTENT</a>
-        <a href="/admin/media/">MEDIA + RESUME</a>
-        <a href="/admin/editorial/">SEO + QUALITY</a>
-      </nav>
-      <header class="phase-d-heading">
-        <div><p class="phase-d-kicker">CMS PHASE E // OPERATIONS</p><h1>CONTROL DASHBOARD</h1></div>
-        <button class="phase-d-button" id="operations-sign-out" type="button" hidden>&gt; SIGN OUT</button>
+<header class="phase-d-heading">
+        <div><p class="phase-d-kicker">Your workspace</p><h1>Workspace overview</h1><p class="page-description">Manage your content, follow up on opportunities, and keep your website running smoothly.</p></div>
+        <button class="phase-d-button" id="operations-sign-out" type="button" hidden>Sign out</button>
       </header>
 
       <section class="ops-status-grid" id="ops-status" aria-live="polite"></section>
+      <AdminOperations />
 
       <section class="phase-d-panel" aria-labelledby="health-title">
-        <div class="phase-d-section-head"><div><p class="phase-d-kicker">01 // SYSTEM HEALTH</p><h2 id="health-title">PUBLICATION READINESS</h2></div><button class="phase-d-button" id="ops-refresh" type="button">REFRESH</button></div>
+        <div class="phase-d-section-head"><div><p class="phase-d-kicker">Publishing</p><h2 id="health-title">Content readiness</h2></div><button class="phase-d-button" id="ops-refresh" type="button">Refresh content</button></div>
         <div class="quality-summary" id="ops-health-summary"></div>
         <div class="quality-list" id="ops-health-list"></div>
       </section>
 
       <section class="phase-d-panel" aria-labelledby="transfer-title">
-        <div class="phase-d-section-head"><div><p class="phase-d-kicker">02 // PORTABILITY</p><h2 id="transfer-title">BACKUP, EXPORT + IMPORT</h2></div></div>
+        <div class="phase-d-section-head"><div><p class="phase-d-kicker">Data management</p><h2 id="transfer-title">Backups & transfers</h2></div></div>
         <div class="ops-export-grid">
-          <button class="phase-d-button is-primary" data-export-scope="complete">EXPORT COMPLETE CMS</button>
-          <button class="phase-d-button" data-export-scope="published">EXPORT PUBLISHED SNAPSHOT</button>
-          <button class="phase-d-button" data-export-scope="media">EXPORT MEDIA MANIFEST</button>
-          <label>PAGE EXPORT<select id="ops-page-export"></select></label>
-          <button class="phase-d-button" data-export-scope="page">EXPORT SELECTED PAGE</button>
+          <button type="button" class="phase-d-button is-primary" data-export-scope="complete">Export complete CMS</button>
+          <button type="button" class="phase-d-button" data-export-scope="published">Export published content</button>
+          <button type="button" class="phase-d-button" data-export-scope="media">Export media manifest</button>
+          <label>Page export<select id="ops-page-export"></select></label>
+          <button type="button" class="phase-d-button" data-export-scope="page">Export selected page</button>
         </div>
         <div class="ops-import">
-          <label>IMPORT JSON <input id="ops-import-file" type="file" accept="application/json,.json" /></label>
+          <label>Import JSON <input id="ops-import-file" type="file" accept="application/json,.json" /></label>
           <p>Imports are validated and compared first. A server-side backup and revisions are created before imported content becomes a draft. Live content is never overwritten.</p>
           <div id="ops-import-preview" aria-live="polite"></div>
-          <button class="phase-d-button is-primary" id="ops-import-commit" type="button" disabled>IMPORT AS DRAFTS</button>
+          <button class="phase-d-button is-primary" id="ops-import-commit" type="button" disabled>Import as drafts</button>
         </div>
       </section>
 
       <section class="phase-d-panel" aria-labelledby="activity-title">
-        <div class="phase-d-section-head"><div><p class="phase-d-kicker">03 // IMMUTABLE HISTORY</p><h2 id="activity-title">RECENT ACTIVITY</h2></div></div>
+        <div class="phase-d-section-head"><div><p class="phase-d-kicker">Audit trail</p><h2 id="activity-title">Recent activity</h2></div></div>
         <div class="ops-audit-list" id="ops-audit-list"></div>
       </section>
 
-      <section class="phase-d-panel" aria-labelledby="cv-requests-title">
-        <div class="phase-d-section-head"><div><p class="phase-d-kicker">04 // PRIVATE RESOURCE AUDIT</p><h2 id="cv-requests-title">CV REQUESTS</h2></div></div>
-        <p>Recruiter email addresses are visible only to the authorized administrator. Network addresses are never stored in raw form.</p>
-        <div class="ops-audit-list" id="ops-cv-request-list"></div>
-      </section>
-
       <section class="phase-d-panel" aria-labelledby="shortcuts-title">
-        <div class="phase-d-section-head"><div><p class="phase-d-kicker">05 // PRODUCTIVITY</p><h2 id="shortcuts-title">KEYBOARD MAP</h2></div></div>
+        <div class="phase-d-section-head"><div><p class="phase-d-kicker">Quick reference</p><h2 id="shortcuts-title">Keyboard shortcuts</h2></div></div>
         <div class="ops-shortcuts">
-          <kbd>⌘/CTRL + S</kbd><span>SAVE CURRENT DRAFT</span><kbd>⌘/CTRL + SHIFT + S</kbd><span>SAVE ALL DRAFTS</span>
-          <kbd>⌘/CTRL + P</kbd><span>PREVIEW CURRENT PAGE</span><kbd>ALT + 1…8</kbd><span>SWITCH CONTENT PAGE</span>
-          <kbd>ALT + E</kbd><span>EXPAND ALL RECORDS</span><kbd>ALT + C</kbd><span>COLLAPSE ALL RECORDS</span>
-          <kbd>/</kbd><span>FOCUS EDITORIAL SEARCH</span>
+          <kbd>⌘/CTRL + S</kbd><span>Save current draft</span><kbd>⌘/CTRL + SHIFT + S</kbd><span>Save all drafts</span>
+          <kbd>⌘/CTRL + P</kbd><span>Preview current page</span><kbd>ALT + 1…8</kbd><span>Switch content page</span>
+          <kbd>ALT + E</kbd><span>Expand all records</span><kbd>ALT + C</kbd><span>Collapse all records</span>
+          <kbd>/</kbd><span>Focus content search</span>
         </div>
       </section>
     </div>
-    <div class="phase-d-command"><p id="operations-message" role="status" aria-live="polite">CHECKING ACCESS...</p></div>
+    <div class="phase-d-command"><p id="operations-message" role="status" aria-live="polite">Checking access…</p></div>
   </div>
 </AdminLayout>
 
@@ -91,6 +82,6 @@ const defaultPages = migrateV1ToV2(defaultHomeContent, { ...defaultSiteFields, .
   initializeOperationsDashboard().catch((error) => {
     console.error(error);
     const message = document.querySelector('#operations-message');
-    if (message) message.textContent = 'OPERATIONS DASHBOARD FAILED TO INITIALIZE.';
+    if (message) message.textContent = 'Overview FAILED TO INITIALIZE.';
   });
 </script>

@@ -317,3 +317,30 @@ test('pre-import backups are admin-only and immutable', async () => {
   await assertFails(deleteDoc(backupRef));
   await assertFails(getDoc(doc(environment.unauthenticatedContext().firestore(), 'cmsBackups', backupId)));
 });
+
+test('recruiter leads require a real request, are private, and reject stale or excessive edits', async () => {
+  const requestedAt = new Date('2026-09-05T08:00:00Z');
+  await environment.withSecurityRulesDisabled(async (context) => {
+    await setDoc(doc(context.firestore(), 'cvRequests', 'lead-1'), { email: 'recruiter@example.test', requestedAt, status: 'pending', downloadCount: 0 });
+  });
+  const adminDb = environment.authenticatedContext(ADMIN_UID).firestore();
+  const ref = doc(adminDb, 'recruiterLeads', 'lead-1');
+  const lead = { requestId: 'lead-1', email: 'recruiter@example.test', requestedAt, company: 'Example', notes: 'Discuss role', stage: 'contacted', followUp: '2026-09-07', version: 1, updatedAt: serverTimestamp(), updatedBy: ADMIN_UID };
+  await assertFails(setDoc(doc(environment.unauthenticatedContext().firestore(), 'recruiterLeads', 'lead-1'), lead));
+  await assertFails(setDoc(doc(environment.authenticatedContext('wrong-uid').firestore(), 'recruiterLeads', 'lead-1'), lead));
+  await assertFails(setDoc(ref, { ...lead, email: 'forged@example.test' }));
+  await assertFails(setDoc(doc(adminDb, 'recruiterLeads', 'missing'), { ...lead, requestId: 'missing' }));
+  await assertSucceeds(setDoc(ref, lead));
+  await assertFails(getDoc(doc(environment.unauthenticatedContext().firestore(), 'recruiterLeads', 'lead-1')));
+  await assertFails(setDoc(ref, lead));
+  await assertFails(setDoc(ref, { ...lead, version: 2, notes: 'a'.repeat(5001) }));
+  await assertFails(setDoc(ref, { ...lead, version: 2, stage: 'invalid' }));
+  await assertFails(setDoc(ref, { ...lead, version: 2, followUp: '2026-99-99' }));
+  await assertFails(setDoc(ref, { ...lead, version: 2, updatedAt: new Date('2020-01-01') }));
+  await assertFails(setDoc(ref, { ...lead, version: 2, downloadCount: 900 }));
+  await assertFails(updateDoc(doc(adminDb, 'cvRequests', 'lead-1'), { status: 'verified' }));
+  await assertSucceeds(setDoc(ref, { ...lead, version: 2, stage: 'interviewing' }));
+  await assertFails(deleteDoc(ref));
+  await environment.withSecurityRulesDisabled(async (context) => { await deleteDoc(doc(context.firestore(), 'cvRequests', 'lead-1')); });
+  await assertSucceeds(setDoc(ref, { ...lead, version: 3, notes: 'Follow up after original request expiry' }));
+});

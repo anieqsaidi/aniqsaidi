@@ -9,6 +9,8 @@ import { Resend } from 'resend';
 import { createOpaqueToken, DOWNLOAD_TTL_MS, hashValue, isValidEmail, MAX_DOWNLOADS, normalizeEmail, parseOpaqueToken, safeFilename, VERIFICATION_TTL_MS } from './cv-security.mjs';
 import { renderCvVerificationEmail } from './cv-verification-template.mjs';
 import { adminSnapshot, BATAM_ACCOUNTS, documentForAccount, profileForAccount } from './batam-trip.mjs';
+import { GoogleAuth } from 'google-auth-library';
+import { analyticsReports, summarizeAnalytics, inspectSite } from './admin-insights.mjs';
 
 initializeApp();
 const REGION = 'asia-southeast1';
@@ -19,6 +21,43 @@ const DAY_MS = 24 * HOUR_MS;
 const GENERIC_ACCEPTED = { ok: true, message: 'If the request can be accepted, a verification email will arrive shortly.' };
 const BATAM_LOGIN_ERROR = { ok: false, message: 'Username or PIN is incorrect.' };
 const ADMIN_UID = '1Mhzu5HmjdU82yzGlph6gQHX1843';
+
+const insightCache = new Map();
+const analyticsAuth = new GoogleAuth({ scopes: ['https://www.googleapis.com/auth/analytics.readonly'] });
+
+export const adminInsights = onRequest({ region: REGION, timeoutSeconds: 60, memory: '256MiB', maxInstances: 3, cors: false }, async (request, response) => {
+  securityHeaders(response);
+  if (request.method !== 'GET') return response.set('Allow', 'GET').status(405).json({ ok: false, message: 'Method not allowed.' });
+  if (request.get('origin') && !ALLOWED_ORIGINS.has(request.get('origin'))) return response.status(403).json({ ok: false, message: 'Access denied.' });
+  try {
+    const authorization = request.get('authorization') ?? '';
+    const user = authorization.startsWith('Bearer ') ? await getAuth().verifyIdToken(authorization.slice(7), true) : null;
+    if (user?.uid !== ADMIN_UID || user.email_verified !== true) return response.status(403).json({ ok: false, message: 'Administrator access required.' });
+  } catch { return response.status(401).json({ ok: false, message: 'Sign in again to continue.' }); }
+  const action = request.query.action;
+  const days = Number(request.query.days ?? 30);
+  if (!['health', 'analytics'].includes(action) || ![7, 30, 90].includes(days)) return response.status(400).json({ ok: false, message: 'Invalid report request.' });
+  const key = `${action}:${days}`;
+  const cached = insightCache.get(key);
+  if (cached && cached.expires > Date.now()) return response.json({ ok: true, data: cached.data, cached: true });
+  try {
+    let data;
+    if (action === 'health') data = await inspectSite({ checkCv: currentCv });
+    else {
+      const propertyId = process.env.GA4_PROPERTY_ID?.trim() ?? '';
+      if (!/^\d+$/.test(propertyId)) return response.json({ ok: true, data: { state: 'setup', message: 'Add the numeric GA4 property ID and grant the reporting service account Viewer access. See the admin setup guide in the repository.' } });
+      const client = await analyticsAuth.getClient();
+      const result = await client.request({ url: `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:batchRunReports`, method: 'POST', data: { requests: analyticsReports(days) }, timeout: 15000 });
+      data = summarizeAnalytics(result.data.reports, days);
+    }
+    insightCache.set(key, { data, expires: Date.now() + (action === 'health' ? 60000 : 300000) });
+    return response.json({ ok: true, data, cached: false });
+  } catch (error) {
+    // Do not log request headers, access tokens, or upstream credential-bearing errors.
+    logger.warn('Admin insight report failed.', { action, code: String(error?.code ?? 'unavailable') });
+    return response.status(503).json({ ok: false, message: action === 'analytics' ? 'Analytics unavailable. Check the property ID, Analytics Data API, and service-account Viewer access.' : 'Site checks could not finish. Retry shortly.' });
+  }
+});
 
 function securityHeaders(response) {
   response.set('Cache-Control', 'private, no-store, max-age=0');

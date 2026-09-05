@@ -1,0 +1,45 @@
+---
+import '../styles/admin-operations.css';
+---
+<nav class="ops-jump" aria-label="Dashboard sections">
+  <a href="#recruiter-title">Recruiter inbox</a><a href="#traffic-title">Analytics</a><a href="#site-health-title">Site health</a>
+</nav>
+<section class="phase-d-panel" aria-labelledby="recruiter-title">
+  <div class="phase-d-section-head">
+    <div><p class="phase-d-kicker">Opportunities</p><h2 id="recruiter-title">Recruiter inbox</h2></div>
+    <button type="button" class="phase-d-button" id="recruiter-refresh">Refresh inbox</button>
+  </div>
+  <p class="ops-note">CV requests become leads when you save company details, notes, a status, or a follow-up date. Saved leads remain available after access records expire.</p>
+  <div class="ops-filters">
+    <label>Search loaded leads<input id="recruiter-search" type="search" placeholder="Email, company, or notes" /></label>
+    <label>Status<select id="recruiter-stage"><option value="all">All statuses</option><option value="new">New</option><option value="contacted">Contacted</option><option value="interviewing">Interviewing</option><option value="offer">Offer</option><option value="closed">Closed</option></select></label>
+    <label class="ops-check"><input id="recruiter-due" type="checkbox" /> Due today or overdue (MYT)</label>
+  </div>
+  <p class="ops-note" id="recruiter-summary" role="status">Sign in to load your inbox.</p>
+  <div class="recruiter-list" id="recruiter-list"></div>
+  <div class="ops-actions">
+    <button type="button" class="phase-d-button" id="recruiter-more-requests" hidden>Load older requests</button>
+    <button type="button" class="phase-d-button" id="recruiter-more-leads" hidden>Load older saved leads</button>
+  </div>
+</section>
+<section class="phase-d-panel" aria-labelledby="traffic-title">
+  <div class="phase-d-section-head">
+    <div><p class="phase-d-kicker">Audience</p><h2 id="traffic-title">Traffic & interest</h2></div>
+    <div class="ops-actions"><label class="ops-window">Reporting period<select id="analytics-days"><option value="7">7 complete days</option><option value="30" selected>30 complete days</option><option value="90">90 complete days</option></select></label><button type="button" class="phase-d-button" id="analytics-refresh">REFRESH Analytics</button></div>
+  </div>
+  <p class="ops-note" id="analytics-message" role="status">Sign in to load Google Analytics reports.</p>
+  <div class="ops-status-grid" id="analytics-metrics"></div>
+  <div class="ops-trend" id="analytics-trend"></div>
+  <div class="ops-report-pair"><div id="analytics-pages"></div><div id="analytics-projects"></div></div>
+  <details class="ops-definitions"><summary>How these numbers are measured</summary>
+    <p>Source: Google Analytics 4, filtered to aniqsaidi.my and aniqsaidi.web.app. Periods exclude today and use the property's timezone. Sessions are visits; users are GA4's estimated distinct users. Privacy settings and blockers can reduce coverage, and recent reports may still be processing.</p>
+    <p>CV submission rate = sessions with at least one accepted CV-form submission ÷ reported sessions. A submission is not proof of a delivered email, verified address, or download. The inbox shows actual CV access records separately.</p>
+    <p>Project opens count case-file button openings; outbound clicks count external HTTP(S) links. These custom events begin with this release. Private routes and draft previews are excluded. This browser is excluded from future tracking when you visit admin; other devices and previous visits may still be counted.</p>
+  </details>
+</section>
+<section class="phase-d-panel" aria-labelledby="site-health-title">
+  <div class="phase-d-section-head"><div><p class="phase-d-kicker">Maintenance</p><h2 id="site-health-title">Site health</h2></div><button type="button" class="phase-d-button" id="site-health-run">Run checks</button></div>
+  <p class="ops-note">On-demand checks of aniqsaidi.my, linked internal resources, the published CV file, and TLS expiry. This is a point-in-time check, not continuous uptime monitoring.</p>
+  <p class="ops-note" id="site-health-message" role="status">No checks run in this session.</p>
+  <div class="ops-health-results" id="site-health-results"></div>
+</section>

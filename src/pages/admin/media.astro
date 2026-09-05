@@ -2,76 +2,70 @@
 import AdminLayout from '../../layouts/AdminLayout.astro';
 ---
 
-<AdminLayout title="MEDIA ADMIN">
+<AdminLayout title="Media library">
   <div class="phase-d-admin" id="media-admin">
     <section class="phase-d-auth" id="media-auth" hidden>
-      <p class="phase-d-kicker">SECURITY GATE // UID REQUIRED</p>
-      <h1>AUTHORIZED GOOGLE ACCOUNT REQUIRED.</h1>
-      <button class="phase-d-button is-primary" id="media-sign-in" type="button">&gt; SIGN IN WITH GOOGLE</button>
+      <p class="phase-d-kicker">Private workspace</p>
+      <h1>Welcome back</h1>
+      <p>Sign in with your authorized Google account to manage your website.</p>
+      <button class="phase-d-button is-primary" id="media-sign-in" type="button">Continue with Google</button>
     </section>
 
     <div class="phase-d-shell">
-      <nav class="phase-d-nav" aria-label="Admin areas">
-        <a href="/admin/dashboard/">DASHBOARD</a>
-        <a href="/admin/">CONTENT</a>
-        <a href="/admin/media/" aria-current="page">MEDIA + RESUME</a>
-        <a href="/admin/editorial/">SEO + QUALITY</a>
-      </nav>
-
-      <header class="phase-d-heading">
+<header class="phase-d-heading">
         <div>
-          <p class="phase-d-kicker">ASSET PIPELINE // OPTIMIZED DELIVERY</p>
-          <h1>MEDIA LIBRARY</h1>
+          <p class="phase-d-kicker">Publishing</p>
+          <h1>Media library</h1><p class="page-description">Organize your images and documents, and keep your latest résumé ready to share.</p>
         </div>
-        <button class="phase-d-button" id="media-sign-out" type="button" hidden>&gt; SIGN OUT</button>
+        <button class="phase-d-button" id="media-sign-out" type="button" hidden>Sign out</button>
       </header>
 
       <section class="phase-d-panel upload-panel" aria-labelledby="upload-title">
         <div>
-          <p class="phase-d-kicker">01 // INGEST</p>
-          <h2 id="upload-title">UPLOAD AN ASSET</h2>
+          <p class="phase-d-kicker">Add to your library</p>
+          <h2 id="upload-title">Upload an asset</h2>
           <p>Images are converted to WebP display and thumbnail variants while the original is preserved. PDFs remain unchanged.</p>
         </div>
         <form id="media-upload-form" class="phase-d-form">
-          <label>FILE <input id="media-file" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required /></label>
-          <label>TYPE
+          <label>File <input id="media-file" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required /></label>
+          <label>Type
             <select id="media-kind">
-              <option value="project">PROJECT</option><option value="archive">ARCHIVE</option>
-              <option value="award">AWARD</option><option value="certification">CERTIFICATION</option>
-              <option value="profile">PROFILE</option><option value="social">SOCIAL</option>
-              <option value="architecture">ARCHITECTURE</option><option value="resume">RESUME</option>
-              <option value="document">DOCUMENT</option>
+              <option value="project">Project</option><option value="archive">Archive</option>
+              <option value="award">Award</option><option value="certification">Certification</option>
+              <option value="profile">Profile</option><option value="social">Social</option>
+              <option value="architecture">Architecture</option><option value="resume">Resume</option>
+              <option value="document">Document</option>
             </select>
           </label>
-          <label class="is-wide">ALT TEXT <input id="media-alt" maxlength="300" placeholder="Describe what the image communicates" /></label>
-          <label class="is-wide">CAPTION <textarea id="media-caption" rows="2" maxlength="1000"></textarea></label>
-          <label>CREDIT <input id="media-credit" maxlength="500" /></label>
-          <button class="phase-d-button is-primary" type="submit">&gt; OPTIMIZE + UPLOAD</button>
+          <label class="is-wide">Alt text <input id="media-alt" maxlength="300" placeholder="Describe what the image communicates" /></label>
+          <label class="is-wide">Caption <textarea id="media-caption" rows="2" maxlength="1000"></textarea></label>
+          <label>Credit <input id="media-credit" maxlength="500" /></label>
+          <button class="phase-d-button is-primary" type="submit">Optimize & upload</button>
         </form>
         <div class="phase-d-progress" id="media-progress" hidden><span></span></div>
       </section>
 
       <section class="phase-d-panel" aria-labelledby="resume-title">
         <div class="phase-d-section-head">
-          <div><p class="phase-d-kicker">02 // STABLE PUBLIC LINK</p><h2 id="resume-title">RÉSUMÉ RELEASE</h2></div>
-          <a class="phase-d-button" href="/resume/" target="_blank">OPEN /RESUME/ ↗</a>
+          <div><p class="phase-d-kicker">CV management</p><h2 id="resume-title">Published résumé</h2></div>
+          <a class="phase-d-button" href="/resume/" target="_blank">View résumé page ↗</a>
         </div>
         <div id="resume-manager" class="resume-manager"></div>
       </section>
 
       <section class="phase-d-panel" aria-labelledby="library-title">
         <div class="phase-d-section-head">
-          <div><p class="phase-d-kicker">03 // CATALOGUE</p><h2 id="library-title">ALL ASSETS</h2></div>
+          <div><p class="phase-d-kicker">Your files</p><h2 id="library-title">Media collection</h2></div>
           <div class="phase-d-filters">
-            <input id="media-search" type="search" placeholder="SEARCH FILE, ALT, CAPTION..." />
-            <select id="media-filter"><option value="">ALL TYPES</option></select>
+            <input id="media-search" type="search" aria-label="Search media" placeholder="Search files, alt text, or captions…" />
+            <select id="media-filter" aria-label="Filter media by type"><option value="">All types</option></select>
           </div>
         </div>
         <div class="media-grid" id="media-grid" aria-live="polite"></div>
       </section>
     </div>
 
-    <div class="phase-d-command"><p id="media-message" role="status" aria-live="polite">CHECKING ACCESS...</p></div>
+    <div class="phase-d-command"><p id="media-message" role="status" aria-live="polite">Checking access…</p></div>
   </div>
 </AdminLayout>
 
@@ -80,6 +74,6 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   initializeMediaAdmin().catch((error) => {
     console.error(error);
     const message = document.querySelector('#media-message');
-    if (message) message.textContent = 'MEDIA ADMIN FAILED TO INITIALIZE.';
+    if (message) message.textContent = 'The media library could not start. Reload and try again.';
   });
 </script>

@@ -18,7 +18,7 @@ import { initializeAdminGate } from './adminAuth';
 import { auditPayload, recordAudit } from './adminOperations';
 
 const escapeHtml = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]!);
-const labels: Record<CmsPageId, string> = { home: 'HOME', about: 'ABOUT', projects: 'PROJECTS', experience: 'EXPERIENCE', certifications: 'CERTIFICATIONS', awards: 'AWARDS', leadership: 'LEADERSHIP', archives: 'ARCHIVES' };
+const labels: Record<CmsPageId, string> = { home: 'Home', about: 'About', projects: 'Projects', experience: 'Experience', certifications: 'Certifications', awards: 'Awards', leadership: 'Leadership', archives: 'Archives' };
 
 function searchableStrings(value: unknown, path = ''): Array<{ path: string; value: string }> {
   if (typeof value === 'string') return value.trim() ? [{ path, value }] : [];
@@ -74,11 +74,11 @@ export async function initializeEditorialAdmin() {
     resume = sanitizeResumeDocument(resumePublished.exists() ? resumePublished.data() : null);
     media = mediaSnapshot.docs.map((item) => item.data() as MediaRecord);
     renderTabs(); renderForm(); renderSearch(); renderQuality();
-    setMessage('EDITORIAL DATA LOADED. DRAFT CHANGES DO NOT AFFECT THE LIVE SITE.');
+    setMessage('Editorial data loaded. draft changes do not affect the live site.');
   };
 
   const saveSeo = async (quiet = false) => {
-    if (!services?.auth.currentUser) { setMessage('SEO SAVE REQUIRES AUTHENTICATION.', true); return false; }
+    if (!services?.auth.currentUser) { setMessage('Seo save requires authentication.', true); return false; }
     const issues = validateSeoDocument(seo).filter((issue) => issue.severity === 'error');
     if (issues.length) { setMessage(`SEO SAVE BLOCKED: ${issues[0].pageId.toUpperCase()} ${issues[0].path} — ${issues[0].message}`, true); return false; }
     const nextVersion = seoVersion + 1;
@@ -91,19 +91,19 @@ export async function initializeEditorialAdmin() {
         transaction.set(doc(services!.db, 'cmsAudit', audit.id), audit);
       });
       seoVersion = nextVersion;
-      if (!quiet) setMessage('SEO DRAFT SAVED. LIVE METADATA IS UNCHANGED.');
+      if (!quiet) setMessage('Seo draft saved. live metadata is unchanged.');
       renderQuality(); return true;
     } catch (error) {
       console.error(error);
-      setMessage(error instanceof Error && error.message.startsWith('CMS_CONFLICT:') ? 'SEO SAVE CONFLICT // METADATA CHANGED IN ANOTHER TAB OR DEVICE. RELOAD BEFORE SAVING.' : 'SEO DRAFT SAVE FAILED.', true);
+      setMessage(error instanceof Error && error.message.startsWith('CMS_CONFLICT:') ? 'The SEO metadata changed in another tab or device. Reload before saving.' : 'The SEO draft could not be saved.', true);
       return false;
     }
   };
 
   const scheduleSave = () => {
     window.clearTimeout(saveTimer);
-    setMessage('SEO EDITING // AUTOSAVE PENDING...');
-    saveTimer = window.setTimeout(() => void saveSeo(true).then((saved) => { if (saved) setMessage('SEO DRAFT AUTOSAVED.'); }), 1200);
+    setMessage('Seo editing · autosave pending…');
+    saveTimer = window.setTimeout(() => void saveSeo(true).then((saved) => { if (saved) setMessage('Seo draft autosaved.'); }), 1200);
   };
 
   const renderTabs = () => {
@@ -117,7 +117,7 @@ export async function initializeEditorialAdmin() {
 
   const renderForm = () => {
     const imageOptions = media.filter((record) => record.mimeType.startsWith('image/')).map((record) => `<option value="${escapeHtml(record.publicUrl)}" ${seo.pages[selectedPage].socialImage === record.publicUrl ? 'selected' : ''}>${escapeHtml(record.fileName)} // ${record.kind.toUpperCase()}</option>`).join('');
-    form!.innerHTML = `${field('seoTitle', 'SEO TITLE', 60)}${field('canonicalPath', 'CANONICAL PATH', 200)}${field('seoDescription', 'SEO DESCRIPTION', 160, true)}${field('socialTitle', 'SOCIAL TITLE', 60)}<label>SOCIAL IMAGE<select data-seo-field="socialImage"><option value="">USE NO CUSTOM IMAGE</option>${imageOptions}</select></label>${field('socialDescription', 'SOCIAL DESCRIPTION', 200, true)}`;
+    form!.innerHTML = `${field('seoTitle', 'SEO title', 60)}${field('canonicalPath', 'Canonical path', 200)}${field('seoDescription', 'SEO description', 160, true)}${field('socialTitle', 'Social title', 60)}<label>Social image<select data-seo-field="socialImage"><option value="">No custom image</option>${imageOptions}</select></label>${field('socialDescription', 'Social description', 200, true)}`;
     renderPreviews();
   };
 
@@ -131,14 +131,14 @@ export async function initializeEditorialAdmin() {
     document.querySelector<HTMLElement>('#social-preview-description')!.textContent = item.socialDescription || item.seoDescription;
     const image = document.querySelector<HTMLElement>('#social-preview-image')!;
     image.style.backgroundImage = item.socialImage ? `url("${item.socialImage.replace(/["\\]/g, '\\$&')}")` : '';
-    image.textContent = item.socialImage ? '' : '[ NO SOCIAL IMAGE SELECTED ]';
+    image.textContent = item.socialImage ? '' : 'No social image selected';
   };
 
   const renderSearch = () => {
     const term = searchInput!.value.trim().toLowerCase();
-    if (term.length < 2) { searchResults!.innerHTML = '<p>TYPE AT LEAST 2 CHARACTERS TO SEARCH ALL DRAFT PAGES.</p>'; return; }
+    if (term.length < 2) { searchResults!.innerHTML = '<p>Enter at least 2 characters to search your drafts.</p>'; return; }
     const matches = CMS_PAGE_IDS.flatMap((pageId) => searchableStrings(pages[pageId].data).filter((item) => item.value.toLowerCase().includes(term)).map((item) => ({ pageId, ...item }))).slice(0, 80);
-    searchResults!.innerHTML = matches.length ? matches.map((match) => `<a class="content-result" href="/admin/?page=${match.pageId}"><span>${labels[match.pageId]}</span><p>${escapeHtml(match.value)}</p><small>${escapeHtml(match.path)} ↗</small></a>`).join('') : '<p>NO MATCHES FOUND.</p>';
+    searchResults!.innerHTML = matches.length ? matches.map((match) => `<a class="content-result" href="/admin/?page=${match.pageId}"><span>${labels[match.pageId]}</span><p>${escapeHtml(match.value)}</p><small>${escapeHtml(match.path)} ↗</small></a>`).join('') : '<p>No matching content found.</p>';
   };
 
   const renderQuality = () => {
@@ -147,8 +147,8 @@ export async function initializeEditorialAdmin() {
     const errors = issues.filter((issue) => issue.severity === 'error').length;
     const warnings = issues.length - errors;
     const score = Math.max(0, Math.round(100 - errors * 5 - warnings * 2));
-    qualitySummary!.innerHTML = `<strong>READINESS ${score}%</strong><span>${errors} ERRORS</span><span>${warnings} WARNINGS</span><span>${issues.length ? 'ACTION REQUIRED' : 'READY TO SHIP'}</span>`;
-    qualityList!.innerHTML = issues.length ? issues.map((issue) => `<div class="quality-item" data-severity="${issue.severity}"><span>${String(issue.pageId).toUpperCase()} // ${issue.severity.toUpperCase()}</span><p>${escapeHtml(issue.message)}</p><small>${escapeHtml(issue.path)}</small></div>`).join('') : '<p>ALL CONTENT, MEDIA, SEO, ALT TEXT, AND RÉSUMÉ CHECKS PASSED.</p>';
+    qualitySummary!.innerHTML = `<strong>Readiness: ${score}%</strong><span>${errors} errors</span><span>${warnings} warnings</span><span>${issues.length ? 'Needs attention' : 'Ready to publish'}</span>`;
+    qualityList!.innerHTML = issues.length ? issues.map((issue) => `<div class="quality-item" data-severity="${issue.severity}"><span>${String(issue.pageId)} · ${issue.severity}</span><p>${escapeHtml(issue.message)}</p><small>${escapeHtml(issue.path)}</small></div>`).join('') : '<p>All content, media, SEO, alt text, and résumé checks passed.</p>';
   };
 
   tabs.addEventListener('click', (event) => {
@@ -184,9 +184,9 @@ export async function initializeEditorialAdmin() {
         const audit = auditPayload(services!, 'seo.publish', 'seo', 'published', `Published SEO metadata version ${nextVersion}`);
         transaction.set(doc(services!.db, 'cmsAudit', audit.id), audit);
       });
-      seoPublishedVersion = nextVersion; setMessage('SEO METADATA PUBLISHED FOR ALL 8 PAGES.');
+      seoPublishedVersion = nextVersion; setMessage('Seo metadata published for all 8 pages.');
     } catch (error) {
-      console.error(error); setMessage(error instanceof Error && error.message.startsWith('CMS_CONFLICT:') ? 'SEO PUBLISH CONFLICT // LIVE METADATA CHANGED ELSEWHERE. RELOAD BEFORE PUBLISHING.' : 'SEO PUBLISH FAILED.', true);
+      console.error(error); setMessage(error instanceof Error && error.message.startsWith('CMS_CONFLICT:') ? 'The published SEO metadata changed elsewhere. Reload before publishing.' : 'The SEO metadata could not be published.', true);
     }
   });
 
@@ -197,7 +197,7 @@ export async function initializeEditorialAdmin() {
   });
 
   await initializeAdminGate({ root, authPanel, signInButton, signOutButton, message, onAuthorized: async (_user, cloud) => {
-    if (!cloud) return setMessage('LOCAL MODE REQUIRES FIREBASE CONFIGURATION FOR EDITORIAL DATA.', true);
+    if (!cloud) return setMessage('Local mode requires Firebase configuration for editorial data.', true);
     services = await import('../lib/firebase').then(({ getFirebaseServices }) => getFirebaseServices());
     if (services) try { await recordAudit(services, 'admin.session', 'admin', 'editorial', 'Authenticated editorial editor session'); } catch (error) { console.error(error); }
     await load();

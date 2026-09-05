@@ -57,7 +57,7 @@ export async function initializeMediaAdmin() {
   const progressBar = progress?.querySelector<HTMLElement>('span');
   if (!root || !authPanel || !signInButton || !signOutButton || !message || !form || !grid || !resumeManager || !search || !filter) throw new Error('Media admin markup is incomplete.');
 
-  MEDIA_KINDS.forEach((kind) => filter.add(new Option(kind.toUpperCase(), kind)));
+  MEDIA_KINDS.forEach((kind) => filter.add(new Option(kind.charAt(0).toUpperCase() + kind.slice(1), kind)));
   let records: MediaRecord[] = [];
   let services: Awaited<ReturnType<typeof import('../lib/firebase').getFirebaseServices>> = null;
   let storage: Awaited<ReturnType<typeof getFirebaseStorage>> = null;
@@ -84,8 +84,8 @@ export async function initializeMediaAdmin() {
 
   const renderResume = () => {
     const versions = records.filter((record) => record.kind === 'resume' && record.mimeType === 'application/pdf');
-    const current = resumePublished.mediaId ? `<div><strong>${escapeHtml(resumePublished.fileName)}</strong><small>LIVE // ${escapeHtml(resumePublished.versionLabel || resumePublished.updatedDate)} // ${formatBytes(resumePublished.fileSize)}</small></div>` : '<div><strong>NO LIVE RÉSUMÉ</strong><small>Select a version, then publish it.</small></div>';
-    resumeManager!.innerHTML = `<div class="resume-current">${current}<span>PUBLIC: /resume/</span></div>${versions.length ? versions.map((record) => `<div class="resume-version"><div><strong>${escapeHtml(record.fileName)}</strong><small>${formatBytes(record.fileSize)}${resumeDraft.mediaId === record.id ? ' // SELECTED DRAFT' : ''}${resumePublished.mediaId === record.id ? ' // LIVE' : ''}</small></div><div class="media-actions"><button class="phase-d-button" data-resume-select="${record.id}">SELECT</button><button class="phase-d-button is-primary" data-resume-publish="${record.id}">PUBLISH</button></div></div>`).join('') : '<p>Upload a PDF with the RESUME type to create the first version.</p>'}`;
+    const current = resumePublished.mediaId ? `<div><strong>${escapeHtml(resumePublished.fileName)}</strong><small>Published · ${escapeHtml(resumePublished.versionLabel || resumePublished.updatedDate)} · ${formatBytes(resumePublished.fileSize)}</small></div>` : '<div><strong>No published résumé</strong><small>Select a version, then publish it.</small></div>';
+    resumeManager!.innerHTML = `<div class="resume-current">${current}<span>Résumé request page: /resume/</span></div>${versions.length ? versions.map((record) => `<div class="resume-version"><div><strong>${escapeHtml(record.fileName)}</strong><small>${formatBytes(record.fileSize)}${resumeDraft.mediaId === record.id ? ' · Selected draft' : ''}${resumePublished.mediaId === record.id ? ' · Published' : ''}</small></div><div class="media-actions"><button type="button" class="phase-d-button" data-resume-select="${record.id}">Select</button><button type="button" class="phase-d-button is-primary" data-resume-publish="${record.id}">Publish</button></div></div>`).join('') : '<p>Upload a PDF with the Résumé type to create the first version.</p>'}`;
   };
 
   const render = () => {
@@ -93,11 +93,11 @@ export async function initializeMediaAdmin() {
     const kind = filter!.value;
     const visible = records.filter((record) => (!kind || record.kind === kind) && (!term || [record.fileName, record.altText, record.caption, record.credit].some((value) => value.toLowerCase().includes(term))));
     grid!.innerHTML = visible.length ? visible.map((record) => `<article class="media-card" data-media-id="${record.id}">
-      <div class="media-preview">${record.mimeType.startsWith('image/') ? `<img src="${escapeHtml(record.thumbnailUrl || record.publicUrl)}" alt="" loading="lazy" />` : '<span>[ PDF DOCUMENT ]</span>'}</div>
-      <div class="media-card-body"><h3>${escapeHtml(record.fileName)}</h3><div class="media-meta"><span>${record.kind.toUpperCase()}</span><span>${formatBytes(record.fileSize)}</span>${record.width ? `<span>${record.width}×${record.height}</span>` : ''}</div>
-      ${record.mimeType.startsWith('image/') ? `<label>ALT TEXT<textarea rows="2" maxlength="300" data-media-alt>${escapeHtml(record.altText)}</textarea></label>` : ''}
-      <label>CAPTION<input maxlength="1000" value="${escapeHtml(record.caption)}" data-media-caption /></label><label>CREDIT<input maxlength="500" value="${escapeHtml(record.credit)}" data-media-credit /></label>
-      <div class="media-actions"><a class="phase-d-button" href="${escapeHtml(record.publicUrl)}" target="_blank" rel="noopener">PREVIEW ↗</a><button class="phase-d-button" data-media-copy>COPY REF</button><button class="phase-d-button" data-media-usage>VIEW USAGE</button><button class="phase-d-button" data-media-save>SAVE META</button><button class="phase-d-button" data-media-delete>DELETE</button></div></div></article>`).join('') : '<p>NO ASSETS MATCH THIS FILTER.</p>';
+      <div class="media-preview">${record.mimeType.startsWith('image/') ? `<img src="${escapeHtml(record.thumbnailUrl || record.publicUrl)}" alt="" loading="lazy" />` : '<span>PDF document</span>'}</div>
+      <div class="media-card-body"><h3>${escapeHtml(record.fileName)}</h3><div class="media-meta"><span>${record.kind.charAt(0).toUpperCase() + record.kind.slice(1)}</span><span>${formatBytes(record.fileSize)}</span>${record.width ? `<span>${record.width}×${record.height}</span>` : ''}</div>
+      ${record.mimeType.startsWith('image/') ? `<label>Alt text<textarea rows="2" maxlength="300" data-media-alt>${escapeHtml(record.altText)}</textarea></label>` : ''}
+      <label>Caption<input maxlength="1000" value="${escapeHtml(record.caption)}" data-media-caption /></label><label>Credit<input maxlength="500" value="${escapeHtml(record.credit)}" data-media-credit /></label>
+      <div class="media-actions"><a class="phase-d-button" href="${escapeHtml(record.publicUrl)}" target="_blank" rel="noopener">Preview ↗</a><button type="button" class="phase-d-button" data-media-copy>Copy reference</button><button type="button" class="phase-d-button" data-media-usage>View usage</button><button type="button" class="phase-d-button" data-media-save>Save details</button><button type="button" class="phase-d-button" data-media-delete>Delete</button></div></div></article>`).join('') : '<p>No assets match your filters.</p>';
     renderResume();
   };
 
@@ -114,9 +114,9 @@ export async function initializeMediaAdmin() {
         transaction.set(doc(services!.db, 'cmsAudit', audit.id), audit);
       });
       resumeDraft = nextDocument; resumeDraftVersion = nextVersion;
-      setMessage(`${record.fileName} SELECTED AS RÉSUMÉ DRAFT. LIVE LINK IS UNCHANGED.`); renderResume(); return true;
+      setMessage(`${record.fileName} selected as the résumé draft. Publish it when you are ready.`); renderResume(); return true;
     } catch (error) {
-      console.error(error); setMessage(error instanceof Error && error.message.startsWith('CMS_CONFLICT:') ? 'RÉSUMÉ CONFLICT // DRAFT CHANGED IN ANOTHER TAB OR DEVICE. RELOAD BEFORE SELECTING.' : 'RÉSUMÉ DRAFT SAVE FAILED.', true); return false;
+      console.error(error); setMessage(error instanceof Error && error.message.startsWith('CMS_CONFLICT:') ? 'This résumé draft changed in another tab or device. Reload before selecting.' : 'The résumé draft could not be saved.', true); return false;
     }
   };
 
@@ -133,9 +133,9 @@ export async function initializeMediaAdmin() {
         transaction.set(doc(services!.db, 'cmsAudit', audit.id), audit);
       });
       resumePublished = { ...resumeDraft }; resumePublishedVersion = nextVersion;
-      setMessage(`RÉSUMÉ PUBLISHED. /resume/ NOW RESOLVES TO ${record.fileName}.`); renderResume();
+      setMessage(`Résumé published. The request page now serves ${record.fileName}.`); renderResume();
     } catch (error) {
-      console.error(error); setMessage(error instanceof Error && error.message.startsWith('CMS_CONFLICT:') ? 'RÉSUMÉ PUBLISH CONFLICT // LIVE VERSION CHANGED ELSEWHERE. RELOAD BEFORE PUBLISHING.' : 'RÉSUMÉ PUBLISH FAILED.', true);
+      console.error(error); setMessage(error instanceof Error && error.message.startsWith('CMS_CONFLICT:') ? 'The published résumé changed elsewhere. Reload before publishing.' : 'The résumé could not be published.', true);
     }
   };
 
@@ -149,17 +149,17 @@ export async function initializeMediaAdmin() {
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    if (!services?.auth.currentUser || !storage) return setMessage('UPLOAD REQUIRES FIREBASE AUTHENTICATION.', true);
+    if (!services?.auth.currentUser || !storage) return setMessage('Upload requires Firebase authentication.', true);
     const file = document.querySelector<HTMLInputElement>('#media-file')?.files?.[0];
     const kind = document.querySelector<HTMLSelectElement>('#media-kind')?.value as MediaKind;
     const altText = document.querySelector<HTMLInputElement>('#media-alt')?.value.trim() ?? '';
     const caption = document.querySelector<HTMLTextAreaElement>('#media-caption')?.value.trim() ?? '';
     const credit = document.querySelector<HTMLInputElement>('#media-credit')?.value.trim() ?? '';
     if (!file) return;
-    if (!IMAGE_TYPES.has(file.type) && file.type !== 'application/pdf') return setMessage('ONLY JPEG, PNG, WEBP, AND PDF FILES ARE ACCEPTED.', true);
-    if (file.size > (file.type === 'application/pdf' ? MAX_PDF : MAX_IMAGE)) return setMessage(`FILE EXCEEDS THE ${file.type === 'application/pdf' ? '10' : '12'} MB LIMIT.`, true);
-    if (file.type.startsWith('image/') && !altText) return setMessage('ALT TEXT IS REQUIRED FOR EVERY IMAGE.', true);
-    if (kind === 'resume' && file.type !== 'application/pdf') return setMessage('RÉSUMÉ VERSIONS MUST BE PDF FILES.', true);
+    if (!IMAGE_TYPES.has(file.type) && file.type !== 'application/pdf') return setMessage('Only jpeg, png, WebP, and PDF files are accepted.', true);
+    if (file.size > (file.type === 'application/pdf' ? MAX_PDF : MAX_IMAGE)) return setMessage(`File exceeds the ${file.type === 'application/pdf' ? '10' : '12'} MB limit.`, true);
+    if (file.type.startsWith('image/') && !altText) return setMessage('Alt text is required for every image.', true);
+    if (kind === 'resume' && file.type !== 'application/pdf') return setMessage('Résumé versions must be PDF files.', true);
     const id = crypto.randomUUID();
     form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLButtonElement>('input,textarea,select,button').forEach((control) => control.disabled = true);
     if (progress) progress.hidden = false;
@@ -167,7 +167,7 @@ export async function initializeMediaAdmin() {
       let record: MediaRecord;
       if (file.type.startsWith('image/')) {
         const [display, thumbnail] = await Promise.all([resizeImage(file, 2400, .84), resizeImage(file, 640, .78)]);
-        if (display.width < 640 || display.height < 360) setMessage('LOW-RESOLUTION IMAGE DETECTED; UPLOAD WILL CONTINUE WITH A QUALITY WARNING.', true);
+        if (display.width < 640 || display.height < 360) setMessage('This image has a low resolution. The upload will continue with a quality warning.', true);
         const originalPath = `public/media/${id}/original`;
         const displayPath = `public/media/${id}/display.webp`;
         const thumbnailPath = `public/media/${id}/thumbnail.webp`;
@@ -188,11 +188,11 @@ export async function initializeMediaAdmin() {
       batch.set(doc(services.db, 'cmsAudit', audit.id), audit);
       await batch.commit();
       form.reset();
-      setMessage(`${file.name} UPLOADED AND CATALOGUED.`);
+      setMessage(`${file.name} uploaded to the media library.`);
       await load();
     } catch (error) {
       console.error(error);
-      setMessage('UPLOAD FAILED. NO CATALOGUE RECORD WAS PUBLISHED.', true);
+      setMessage('Upload failed. No catalogue record was published.', true);
     } finally {
       form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLButtonElement>('input,textarea,select,button').forEach((control) => control.disabled = false);
       if (progress) progress.hidden = true;
@@ -207,35 +207,35 @@ export async function initializeMediaAdmin() {
     if (!button || !card || !record || !services?.auth.currentUser) return;
     if (button.hasAttribute('data-media-copy')) {
       await navigator.clipboard.writeText(record.publicUrl);
-      return setMessage('PUBLIC MEDIA REFERENCE COPIED.');
+      return setMessage('Public media reference copied.');
     }
     if (button.hasAttribute('data-media-usage')) {
       const references = await referencedBy(record);
-      return setMessage(references.length ? `USED BY: ${references.join(', ')}` : 'NO DRAFT OR LIVE REFERENCES FOUND.');
+      return setMessage(references.length ? `Used by: ${references.join(', ')}` : 'No draft or live references found.');
     }
     if (button.hasAttribute('data-media-save')) {
       record.altText = card.querySelector<HTMLTextAreaElement>('[data-media-alt]')?.value.trim() ?? record.altText;
       record.caption = card.querySelector<HTMLInputElement>('[data-media-caption]')?.value.trim() ?? '';
       record.credit = card.querySelector<HTMLInputElement>('[data-media-credit]')?.value.trim() ?? '';
-      if (record.mimeType.startsWith('image/') && !record.altText) return setMessage('ALT TEXT CANNOT BE EMPTY FOR AN IMAGE.', true);
+      if (record.mimeType.startsWith('image/') && !record.altText) return setMessage('Alt text cannot be empty for an image.', true);
       const batch = writeBatch(services.db);
       batch.set(doc(services.db, 'cmsMedia', record.id), { ...record, updatedAt: serverTimestamp() });
       const audit = auditPayload(services, 'media.update', 'media', record.id, `Updated metadata for ${record.fileName}`);
       batch.set(doc(services.db, 'cmsAudit', audit.id), audit); await batch.commit();
-      return setMessage(`${record.fileName} METADATA SAVED.`);
+      return setMessage(`${record.fileName} details saved.`);
     }
     if (button.hasAttribute('data-media-delete')) {
-      setMessage('CHECKING LIVE AND DRAFT USAGE BEFORE DELETE...');
+      setMessage('Checking live and draft usage before delete…');
       const references = await referencedBy(record);
-      if (references.length) return setMessage(`DELETE BLOCKED. REFERENCED BY: ${references.join(', ')}`, true);
-      if (!window.confirm(`Permanently delete ${record.fileName} and its stored variants?`)) return setMessage('DELETE CANCELLED.');
+      if (references.length) return setMessage(`Cannot delete. This asset is used by: ${references.join(', ')}`, true);
+      if (!window.confirm(`Permanently delete ${record.fileName} and its stored variants?`)) return setMessage('Delete cancelled.');
       for (const path of new Set([record.storagePath, record.originalStoragePath, record.thumbnailStoragePath].filter(Boolean))) {
         try { await deleteObject(ref(storage!, path)); } catch (error) { if ((error as { code?: string }).code !== 'storage/object-not-found') throw error; }
       }
       const batch = writeBatch(services.db); batch.delete(doc(services.db, 'cmsMedia', record.id));
       const audit = auditPayload(services, 'media.delete', 'media', record.id, `Deleted ${record.fileName}`);
       batch.set(doc(services.db, 'cmsAudit', audit.id), audit); await batch.commit();
-      setMessage(`${record.fileName} DELETED.`);
+      setMessage(`${record.fileName} deleted.`);
       await load();
     }
   });
@@ -251,11 +251,11 @@ export async function initializeMediaAdmin() {
   filter.addEventListener('change', render);
 
   await initializeAdminGate({ root, authPanel, signInButton, signOutButton, message, onAuthorized: async (_user, cloud) => {
-    if (!cloud) return setMessage('LOCAL MODE REQUIRES FIREBASE CONFIGURATION FOR MEDIA STORAGE.', true);
+    if (!cloud) return setMessage('Local mode requires Firebase configuration for media storage.', true);
     services = await import('../lib/firebase').then(({ getFirebaseServices }) => getFirebaseServices());
     storage = await getFirebaseStorage();
     if (services) try { await recordAudit(services, 'admin.session', 'admin', 'media', 'Authenticated media editor session'); } catch (error) { console.error(error); }
-    setMessage('MEDIA NODE AUTHORIZED.');
+    setMessage('Media library connected.');
     await load();
   } });
 }

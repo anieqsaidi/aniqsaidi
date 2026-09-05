@@ -14,12 +14,14 @@ import {
 } from '../data/cmsOperations';
 import { createRevisionId, pageChangeSummary, pageContent, pagesMatch } from '../data/cmsWorkflow';
 import { initializeAdminGate } from './adminAuth';
+import { initializeRecruiterInbox } from './recruiterInbox';
+import { initializeAdminInsights } from './adminInsights';
 import { auditPayload, downloadJson, recordAudit } from './adminOperations';
 
 const escapeHtml = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]!);
 const formatDate = (value: unknown) => {
   const date = value && typeof value === 'object' && 'toDate' in value ? (value as { toDate: () => Date }).toDate() : null;
-  return date ? new Intl.DateTimeFormat('en-MY', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kuala_Lumpur' }).format(date) : 'NEVER';
+  return date ? new Intl.DateTimeFormat('en-MY', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kuala_Lumpur' }).format(date) : 'Not yet';
 };
 
 export async function initializeOperationsDashboard() {
@@ -32,12 +34,11 @@ export async function initializeOperationsDashboard() {
   const healthSummary = document.querySelector<HTMLElement>('#ops-health-summary');
   const healthList = document.querySelector<HTMLElement>('#ops-health-list');
   const auditList = document.querySelector<HTMLElement>('#ops-audit-list');
-  const cvRequestList = document.querySelector<HTMLElement>('#ops-cv-request-list');
   const importFile = document.querySelector<HTMLInputElement>('#ops-import-file');
   const importPreview = document.querySelector<HTMLElement>('#ops-import-preview');
   const importCommit = document.querySelector<HTMLButtonElement>('#ops-import-commit');
   const pageExport = document.querySelector<HTMLSelectElement>('#ops-page-export');
-  if (!root || !authPanel || !signInButton || !signOutButton || !message || !status || !healthSummary || !healthList || !auditList || !cvRequestList || !importFile || !importPreview || !importCommit || !pageExport) throw new Error('Operations dashboard markup is incomplete.');
+  if (!root || !authPanel || !signInButton || !signOutButton || !message || !status || !healthSummary || !healthList || !auditList || !importFile || !importPreview || !importCommit || !pageExport) throw new Error('Operations dashboard markup is incomplete.');
   CMS_PAGE_IDS.forEach((pageId) => pageExport.add(new Option(pageId.toUpperCase(), pageId)));
 
   const defaults = JSON.parse(root.dataset.pageDefaults ?? '{}') as CmsPages;
@@ -50,7 +51,8 @@ export async function initializeOperationsDashboard() {
   let resumePublished: ResumeDocument = structuredClone(defaultResumeDocument);
   let media: MediaRecord[] = [];
   let audits: AuditEntry[] = [];
-  let cvRequests: Array<Record<string, unknown>> = [];
+  let disposeOperations: (() => void) | undefined;
+  let authGeneration = 0;
   let selectedImport: CmsExportBundle | null = null;
   let importBaseVersions: Record<string, number> = {};
   const versions: Record<string, number> = {};
@@ -59,20 +61,21 @@ export async function initializeOperationsDashboard() {
 
   const load = async () => {
     if (!services) return;
+    const generation = authGeneration;
     Object.keys(versions).forEach((key) => delete versions[key]);
     Object.keys(timestamps).forEach((key) => delete timestamps[key]);
     drafts = structuredClone(defaults); published = structuredClone(defaults);
     seoDraft = structuredClone(defaultSeoDocument); seoPublished = structuredClone(defaultSeoDocument);
     resumeDraft = structuredClone(defaultResumeDocument); resumePublished = structuredClone(defaultResumeDocument);
-    const [draftDocs, publishedDocs, seoDraftDoc, seoPublishedDoc, resumeDraftDoc, resumePublishedDoc, mediaDocs, auditDocs, cvRequestDocs] = await Promise.all([
+    const [draftDocs, publishedDocs, seoDraftDoc, seoPublishedDoc, resumeDraftDoc, resumePublishedDoc, mediaDocs, auditDocs] = await Promise.all([
       Promise.all(CMS_PAGE_IDS.map((pageId) => getDoc(doc(services!.db, 'cmsDrafts', pageId)))),
       Promise.all(CMS_PAGE_IDS.map((pageId) => getDoc(doc(services!.db, 'cmsPublished', pageId)))),
       getDoc(doc(services.db, 'cmsSeo', 'draft')), getDoc(doc(services.db, 'cmsSeo', 'published')),
       getDoc(doc(services.db, 'cmsResume', 'draft')), getDoc(doc(services.db, 'cmsResume', 'published')),
       getDocs(collection(services.db, 'cmsMedia')),
       getDocs(query(collection(services.db, 'cmsAudit'), orderBy('timestamp', 'desc'), limit(30))),
-      getDocs(query(collection(services.db, 'cvRequests'), orderBy('requestedAt', 'desc'), limit(50))),
     ]);
+    if (generation !== authGeneration || !services) return;
     draftDocs.forEach((snapshot, index) => { const pageId = CMS_PAGE_IDS[index]; if (snapshot.exists()) { drafts[pageId] = sanitizeCmsPage(snapshot.data(), defaults[pageId]) as never; versions[`draft.${pageId}`] = Number(snapshot.data().version ?? 0); timestamps[`draft.${pageId}`] = snapshot.data().updatedAt; } });
     publishedDocs.forEach((snapshot, index) => { const pageId = CMS_PAGE_IDS[index]; if (snapshot.exists()) { published[pageId] = sanitizeCmsPage(snapshot.data(), defaults[pageId]) as never; versions[`published.${pageId}`] = Number(snapshot.data().version ?? 0); timestamps[`published.${pageId}`] = snapshot.data().publishedAt; } });
     if (seoDraftDoc.exists()) { seoDraft = sanitizeSeoDocument(seoDraftDoc.data()); versions['seo.draft'] = Number(seoDraftDoc.data().version ?? 0); }
@@ -81,24 +84,22 @@ export async function initializeOperationsDashboard() {
     if (resumePublishedDoc.exists()) { resumePublished = sanitizeResumeDocument(resumePublishedDoc.data()); versions['resume.published'] = Number(resumePublishedDoc.data().version ?? 0); }
     media = mediaDocs.docs.map((item) => item.data() as MediaRecord);
     audits = auditDocs.docs.map((item) => item.data() as AuditEntry);
-    cvRequests = cvRequestDocs.docs.map((item) => ({ id: item.id, ...item.data() }));
-    render(); setMessage('OPERATIONS DATA REFRESHED.');
+    render(); setMessage('Operations data refreshed.');
   };
 
   const render = () => {
     const modified = CMS_PAGE_IDS.filter((pageId) => !pagesMatch(drafts[pageId], published[pageId]));
     const lastDraft = Object.entries(timestamps).filter(([key]) => key.startsWith('draft.')).sort((a, b) => Number((b[1] as { seconds?: number })?.seconds ?? 0) - Number((a[1] as { seconds?: number })?.seconds ?? 0))[0]?.[1];
     const lastPublished = Object.entries(timestamps).filter(([key]) => key.startsWith('published.')).sort((a, b) => Number((b[1] as { seconds?: number })?.seconds ?? 0) - Number((a[1] as { seconds?: number })?.seconds ?? 0))[0]?.[1];
-    const actor = services?.auth.currentUser?.email ?? 'NOT AUTHENTICATED';
+    const actor = services?.auth.currentUser?.email ?? 'Not signed in';
     const environment = services?.app.options.projectId ?? 'LOCAL';
-    status!.innerHTML = `<article><span>SYSTEM STATUS</span><strong>ONLINE</strong></article><article><span>ENVIRONMENT</span><strong>${escapeHtml(environment)}</strong></article><article><span>EDITOR</span><strong>${escapeHtml(actor)}</strong></article><article><span>CONTENT STATE</span><strong>${modified.length} MODIFIED PAGE${modified.length === 1 ? '' : 'S'}</strong></article><article><span>LAST DRAFT</span><strong>${escapeHtml(formatDate(lastDraft))}</strong></article><article><span>LAST PUBLISHED</span><strong>${escapeHtml(formatDate(lastPublished))}</strong></article><article><span>MEDIA</span><strong>${media.length} ASSETS</strong></article><article><span>RÉSUMÉ</span><strong>${resumePublished.mediaId ? 'PUBLISHED' : 'NOT PUBLISHED'}</strong></article>`;
+    status!.innerHTML = `<article><span>CMS connection</span><strong>Connected</strong></article><article><span>Environment</span><strong>${escapeHtml(environment)}</strong></article><article><span>Editor</span><strong>${escapeHtml(actor)}</strong></article><article><span>Content changes</span><strong>${modified.length} modified page${modified.length === 1 ? '' : 's'}</strong></article><article><span>Last draft</span><strong>${escapeHtml(formatDate(lastDraft))}</strong></article><article><span>Last published</span><strong>${escapeHtml(formatDate(lastPublished))}</strong></article><article><span>Media</span><strong>${media.length} assets</strong></article><article><span>Résumé</span><strong>${resumePublished.mediaId ? 'Published' : 'Not published'}</strong></article>`;
     const contentIssues = CMS_PAGE_IDS.flatMap((pageId) => validateCmsPage(drafts[pageId]).map((issue) => ({ ...issue, pageId, severity: 'error' as const })));
     const issues = [...contentIssues, ...analyzeCompleteness(drafts, seoDraft, media, resumePublished)];
     const errors = issues.filter((issue) => issue.severity === 'error').length;
-    healthSummary!.innerHTML = `<strong>${issues.length ? 'ACTION REQUIRED' : 'READY TO SHIP'}</strong><span>${errors} ERRORS</span><span>${issues.length - errors} WARNINGS</span><span>${modified.length} UNPUBLISHED</span>`;
-    healthList!.innerHTML = issues.length ? issues.slice(0, 50).map((issue) => `<a class="quality-item" data-severity="${issue.severity}" href="${issue.pageId === 'media' || issue.pageId === 'resume' ? '/admin/media/' : `/admin/?page=${issue.pageId}`}"><span>${String(issue.pageId).toUpperCase()} // ${issue.severity.toUpperCase()}</span><p>${escapeHtml(issue.message)}</p><small>${escapeHtml(issue.path)} ↗</small></a>`).join('') : '<p>ALL VALIDATION CHECKS PASSED.</p>';
-    auditList!.innerHTML = audits.length ? audits.map((entry) => `<article><span>${escapeHtml(entry.action.toUpperCase())}</span><div><strong>${escapeHtml(entry.summary)}</strong><small>${escapeHtml(entry.actorEmail)} // ${escapeHtml(formatDate(entry.timestamp))}</small></div><small>${escapeHtml(entry.entityType)}:${escapeHtml(entry.entityId)}</small></article>`).join('') : '<p>NO AUDIT EVENTS RECORDED YET.</p>';
-    cvRequestList!.innerHTML = cvRequests.length ? cvRequests.map((entry) => `<article><span>${escapeHtml(String(entry.status ?? 'pending').toUpperCase())}</span><div><strong>${escapeHtml(String(entry.email ?? ''))}</strong><small>REQUESTED ${escapeHtml(formatDate(entry.requestedAt))} // VERIFIED ${escapeHtml(formatDate(entry.verifiedAt))} // DOWNLOADED ${escapeHtml(formatDate(entry.downloadedAt))}</small></div><small>${Number(entry.downloadCount ?? 0)} / 3 DOWNLOADS</small></article>`).join('') : '<p>NO CV REQUESTS RECORDED YET.</p>';
+    healthSummary!.innerHTML = `<strong>${issues.length ? 'Needs attention' : 'Ready to publish'}</strong><span>${errors} errors</span><span>${issues.length - errors} warnings</span><span>${modified.length} unpublished</span>`;
+    healthList!.innerHTML = issues.length ? issues.slice(0, 50).map((issue) => `<a class="quality-item" data-severity="${issue.severity}" href="${issue.pageId === 'media' || issue.pageId === 'resume' ? '/admin/media/' : `/admin/?page=${issue.pageId}`}"><span>${String(issue.pageId)} · ${issue.severity}</span><p>${escapeHtml(issue.message)}</p><small>${escapeHtml(issue.path)} ↗</small></a>`).join('') : '<p>All content checks passed.</p>';
+    auditList!.innerHTML = audits.length ? audits.map((entry) => `<article><span>${escapeHtml(entry.action.replaceAll('.', ' '))}</span><div><strong>${escapeHtml(entry.summary)}</strong><small>${escapeHtml(entry.actorEmail)} · ${escapeHtml(formatDate(entry.timestamp))}</small></div><small>${escapeHtml(entry.entityType)}:${escapeHtml(entry.entityId)}</small></article>`).join('') : '<p>No activity recorded yet.</p>';
   };
 
   const bundleFor = (scope: CmsExportBundle['scope'], pageId: CmsPageId | '' = '') => createExportBundle({
@@ -121,25 +122,25 @@ export async function initializeOperationsDashboard() {
   importFile.addEventListener('change', async () => {
     selectedImport = null; importCommit!.disabled = true;
     const file = importFile.files?.[0]; if (!file) return;
-    if (file.size > 5 * 1024 * 1024) return setMessage('IMPORT REJECTED: JSON FILE EXCEEDS 5 MB.', true);
+    if (file.size > 5 * 1024 * 1024) return setMessage('Import rejected: JSON file exceeds 5 MB.', true);
     try {
       const validation = validateImportBundle(JSON.parse(await file.text()));
       if (!validation.valid || !validation.bundle) {
-        importPreview!.innerHTML = validation.issues.slice(0, 20).map((issue) => `<p>${escapeHtml(issue.path)} // ${escapeHtml(issue.message)}</p>`).join('');
+        importPreview!.innerHTML = validation.issues.slice(0, 20).map((issue) => `<p>${escapeHtml(issue.path)} · ${escapeHtml(issue.message)}</p>`).join('');
         return setMessage(`IMPORT VALIDATION FAILED WITH ${validation.issues.length} ISSUE${validation.issues.length === 1 ? '' : 'S'}.`, true);
       }
       selectedImport = validation.bundle; importBaseVersions = { ...versions };
       const importedIds = Object.keys(selectedImport.drafts) as CmsPageId[];
-      importPreview!.innerHTML = `<strong>VALID IMPORT // ${importedIds.length} PAGE${importedIds.length === 1 ? '' : 'S'}</strong>${importedIds.map((pageId) => `<p>${pageId.toUpperCase()} // ${escapeHtml(pageChangeSummary(selectedImport!.drafts[pageId]!, drafts[pageId]))}</p>`).join('')}<small>${selectedImport.mediaManifest.length} MEDIA RECORDS ARE MANIFEST-ONLY; BINARY FILES ARE NOT RE-UPLOADED.</small>`;
-      importCommit!.disabled = false; setMessage('IMPORT VALIDATED. REVIEW THE CHANGE SUMMARY BEFORE COMMITTING.');
-    } catch (error) { console.error(error); setMessage('IMPORT REJECTED: FILE IS NOT VALID JSON.', true); }
+      importPreview!.innerHTML = `<strong>VALID IMPORT · ${importedIds.length} PAGE${importedIds.length === 1 ? '' : 'S'}</strong>${importedIds.map((pageId) => `<p>${pageId.toUpperCase()} · ${escapeHtml(pageChangeSummary(selectedImport!.drafts[pageId]!, drafts[pageId]))}</p>`).join('')}<small>${selectedImport.mediaManifest.length} Media RECORDS ARE MANIFEST-ONLY; BINARY FILES ARE NOT RE-UPLOADED.</small>`;
+      importCommit!.disabled = false; setMessage('Import validated. review the change summary before committing.');
+    } catch (error) { console.error(error); setMessage('Import rejected: file is not valid JSON.', true); }
   });
 
   importCommit.addEventListener('click', async () => {
     if (!services?.auth.currentUser || !selectedImport) return;
     const confirmation = window.prompt('Type IMPORT DRAFTS to create a backup and import this file. Live content will not change.');
-    if (confirmation !== 'IMPORT DRAFTS') return setMessage('IMPORT CANCELLED. CONFIRMATION DID NOT MATCH.', true);
-    importCommit.disabled = true; setMessage('VERIFYING REMOTE VERSIONS AND CREATING PRE-IMPORT BACKUP...');
+    if (confirmation !== 'IMPORT DRAFTS') return setMessage('Import cancelled. confirmation did not match.', true);
+    importCommit.disabled = true; setMessage('Verifying remote versions and creating pre-import backup…');
     try {
       const imported = selectedImport;
       await runTransaction(services.db, async (transaction) => {
@@ -180,20 +181,36 @@ export async function initializeOperationsDashboard() {
         const audit = auditPayload(services!, 'content.import', 'site', importedIds.join(','), `Imported ${importedIds.length} page draft(s); live content unchanged`);
         transaction.set(doc(services!.db, 'cmsAudit', audit.id), audit);
       });
-      selectedImport = null; importFile.value = ''; importPreview!.innerHTML = '<strong>IMPORT COMPLETE // DRAFTS ONLY</strong><p>A pre-import backup and revision records were created.</p>';
-      setMessage('IMPORT COMPLETE. REVIEW AND PUBLISH DRAFTS WHEN READY.'); await load();
+      selectedImport = null; importFile.value = ''; importPreview!.innerHTML = '<strong>IMPORT COMPLETE · DRAFTS ONLY</strong><p>A pre-import backup and revision records were created.</p>';
+      setMessage('Import complete. review and publish drafts when ready.'); await load();
     } catch (error) {
       console.error(error); const conflict = error instanceof Error && error.message.startsWith('CONFLICT:');
       setMessage(conflict ? `IMPORT BLOCKED: ${error.message.slice(9).toUpperCase()} CHANGED IN ANOTHER TAB. REFRESH AND REVIEW.` : 'IMPORT FAILED. NO LIVE CONTENT WAS CHANGED.', true);
     } finally { importCommit.disabled = !selectedImport; }
   });
-  document.querySelector('#ops-refresh')?.addEventListener('click', () => void load());
+  document.querySelector('#ops-refresh')?.addEventListener('click', () => void load().catch(() => setMessage('Content data could not refresh. retry shortly.', true)));
 
-  await initializeAdminGate({ root, authPanel, signInButton, signOutButton, message, onAuthorized: async (_user, cloud) => {
-    if (!cloud) return setMessage('LOCAL MODE REQUIRES FIREBASE CONFIGURATION FOR OPERATIONS DATA.', true);
+  await initializeAdminGate({ root, authPanel, signInButton, signOutButton, message, onUnauthorized: () => {
+    authGeneration++;
+    disposeOperations?.(); disposeOperations = undefined; services = null;
+    [status, healthSummary, healthList, auditList].forEach((element) => element.replaceChildren());
+  }, onAuthorized: async (_user, cloud) => {
+    if (!cloud) {
+      for (const id of ['recruiter-summary', 'analytics-message', 'site-health-message']) {
+        const node = document.getElementById(id); if (node) node.textContent = 'Local preview: connect Firebase and sign in to load private operations data. Live reports also require the deployed reporting API.';
+      }
+      for (const id of ['recruiter-refresh', 'analytics-refresh', 'site-health-run']) {
+        const button = document.getElementById(id) as HTMLButtonElement | null; if (button) button.disabled = true;
+      }
+      return setMessage('Local preview · Firebase is required for operations data.');
+    }
     services = await import('../lib/firebase').then(({ getFirebaseServices }) => getFirebaseServices());
     if (!services) return;
+    disposeOperations?.();
+    const disposeInbox = initializeRecruiterInbox(services);
+    const disposeInsights = initializeAdminInsights(services);
+    disposeOperations = () => { disposeInbox(); disposeInsights(); };
     try { await recordAudit(services, 'admin.session', 'admin', 'dashboard', 'Authenticated operations dashboard session'); } catch (error) { console.error(error); }
-    await load();
+    await load().catch(() => setMessage('Content data could not load. the inbox and reports load separately.', true));
   } });
 }

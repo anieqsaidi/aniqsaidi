@@ -30,6 +30,13 @@
     "cleanUrls": true,
     "rewrites": [
       {
+        "source": "/api/admin/insights",
+        "function": {
+          "functionId": "adminInsights",
+          "region": "asia-southeast1"
+        }
+      },
+      {
         "source": "/api/request-cv",
         "function": {
           "functionId": "requestCv",
