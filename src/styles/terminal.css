@@ -1973,7 +1973,9 @@ html[data-js='true'] .home-system.is-content-loading::before {
   color: var(--fg);
   text-shadow: 0 0 6px var(--glow);
   overflow: hidden;
-  cursor: wait;
+  display: grid;
+  place-items: center;
+  padding: 24px;
 }
 
 .boot-active .crt {
@@ -1986,94 +1988,122 @@ html[data-js='true'] .home-system.is-content-loading::before {
 
 .crt-boot--done {
   pointer-events: none;
-  animation: boot-matrix-exit .52s steps(12, end) forwards;
+  animation: boot-fade-out .42s ease-in forwards;
 }
 
-@keyframes boot-matrix-exit {
-  0% { clip-path: inset(0); filter: brightness(1); }
-  28% { clip-path: inset(0 0 8%); filter: brightness(1.8) contrast(1.25); }
-  100% { clip-path: inset(100% 0 0); filter: brightness(2.4) contrast(1.4); }
+@keyframes boot-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
-/* screen flash on power-on: a thin bright line that expands to full height.
-   Content lines up with the same block as .container. */
+.crt--boot-reveal {
+  animation: boot-home-fade-in .48s ease-out both;
+}
+
+@keyframes boot-home-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .crt-boot__screen {
-  max-width: 1080px;
-  margin: 0 auto;
-  padding: 24px 20px 40px;
-  animation: crt-power-on 0.5s ease-out both;
-  transform-origin: center;
+  position: relative;
+  width: min(100%, 620px);
+  padding: clamp(28px, 5vw, 52px);
+  border: 1px solid var(--fg-dim);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--fg) 8%, transparent), 0 24px 80px rgba(0, 0, 0, .22);
+  animation: boot-welcome-in .45s ease-out both;
 }
 
-@keyframes crt-power-on {
-  0% {
-    transform: scaleY(0.004);
-    filter: brightness(4);
-    opacity: 0.85;
-  }
-  55% {
-    transform: scaleY(0.02);
-    filter: brightness(3);
-  }
-  100% {
-    transform: scaleY(1);
-    filter: brightness(1);
-    opacity: 1;
-  }
+.crt-boot__logo {
+  display: block;
+  width: clamp(78px, 14vw, 112px);
+  height: auto;
+  margin-bottom: 28px;
+  filter: saturate(.82) brightness(.9);
 }
 
-.crt-boot__lines {
-  font-size: clamp(0.7rem, 2.6vw, 1rem);
-  white-space: pre-wrap;
+.crt-boot__eyebrow {
+  margin: 0 0 10px;
+  color: var(--ansi-green);
+  font-size: .72rem;
+  letter-spacing: .12em;
+}
+
+.crt-boot__title {
+  margin: 0;
+  color: var(--fg-bright);
+  font-size: clamp(2rem, 7vw, 4rem);
+  line-height: 1;
+  letter-spacing: -.07em;
+}
+
+.crt-boot__intro {
+  margin: 14px 0 30px;
+  color: var(--fg);
+  font-size: clamp(.85rem, 2vw, 1rem);
+  line-height: 1.6;
+}
+
+.crt-boot__checks {
+  display: grid;
+  gap: 9px;
+  color: var(--fg-dim);
+  font-size: .76rem;
+}
+
+.crt-boot__checks span {
   opacity: 0;
-  animation: boot-in 0.01s steps(1) 0.5s forwards;
+  animation: boot-check-in .25s ease-out forwards;
 }
 
-.crt-boot__lines .boot-line {
-  animation-delay: calc(0.5s + var(--i) * 90ms);
+.crt-boot__checks span:nth-child(1) { animation-delay: .35s; }
+.crt-boot__checks span:nth-child(2) { animation-delay: .65s; }
+.crt-boot__checks span:nth-child(3) { animation-delay: .95s; }
+
+.crt-boot__checks i {
+  color: var(--ansi-green);
+  font-style: normal;
+}
+
+.crt-boot__progress {
+  height: 2px;
+  margin-top: 28px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--fg) 15%, transparent);
+}
+
+.crt-boot__progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--ansi-green);
+  box-shadow: 0 0 8px var(--glow);
+  transform-origin: left;
+  animation: boot-progress 2.2s linear both;
 }
 
 .crt-boot__skip {
-  margin-top: 24px;
+  margin-top: 12px;
+  color: var(--fg-dim);
+  font-size: .68rem;
   text-align: right;
-  color: var(--accent-orange);
-  font-size: 0.8em;
-  opacity: 0;
-  animation: boot-in 0.01s steps(1) .75s forwards;
 }
 
-.crt-boot__matrix {
-  position: fixed;
-  inset: 0;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  overflow: hidden;
-  opacity: 0;
-  pointer-events: none;
+@keyframes boot-welcome-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.crt-boot__matrix span {
-  color: var(--ansi-blue);
-  font-size: clamp(.58rem, 1.5vw, .88rem);
-  line-height: 1.5;
-  text-align: center;
-  overflow-wrap: anywhere;
-  transform: translateY(-110%);
+@keyframes boot-check-in {
+  from { opacity: 0; transform: translateX(-5px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
-.crt-boot--done .crt-boot__matrix { opacity: .72; }
-
-.crt-boot--done .crt-boot__matrix span {
-  animation: boot-matrix-rain .48s steps(10, end) var(--delay) both;
+@keyframes boot-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
-
-@keyframes boot-matrix-rain {
-  from { transform: translateY(-110%); opacity: 0; }
-  18% { opacity: 1; }
-  to { transform: translateY(45%); opacity: 0; }
-}
-
 
 .crt-boot__count {
   display: inline-block;
@@ -2087,9 +2117,9 @@ html[data-js='true'] .home-system.is-content-loading::before {
 }
 
 @keyframes boot-count-tick {
-  0% { opacity: 0; transform: translateY(-2px); text-shadow: 0 0 14px var(--glow); }
-  12%, 72% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0.35; transform: translateY(1px); }
+  0% { opacity: .25; }
+  25%, 75% { opacity: 1; }
+  100% { opacity: .5; }
 }
 
 @media (prefers-reduced-motion: reduce) {

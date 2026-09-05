@@ -9,9 +9,6 @@ import {
   SITE_TITLE,
   SITE_DESCRIPTION,
   PRIVATE_MODE,
-  SITE_VENDOR,
-  SITE_SYSTEM,
-  SITE_MODEL,
 } from '../consts';
 
 interface Props {
@@ -50,7 +47,8 @@ const socialImageUrl = new URL('/social/aniq-terminal-social.png', Astro.site);
     <meta name="twitter:description" id="site-twitter-description" content={description} />
     <meta name="twitter:image" id="site-twitter-image" content={socialImageUrl} />
     <meta name="generator" content={Astro.generator} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="1254x1254" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -83,35 +81,22 @@ const socialImageUrl = new URL('/social/aniq-terminal-social.png', Astro.site);
   </head>
   <body>
     <a class="skip-link" href="#main-content">SKIP TO CONTENT</a>
-    <!-- Power-on screen: once per session, followed by a brisk automatic countdown. -->
-    <div class="crt-boot" id="crt-boot" role="status" aria-label="System startup">
+    <!-- Friendly terminal welcome: once per session, followed by a brisk automatic countdown. -->
+    <div class="crt-boot" id="crt-boot" role="status" aria-label="Welcome to Aniq Saidi's website">
       <div class="crt-boot__screen">
-        <pre class="crt-boot__lines" aria-hidden="true">{[
-          `${SITE_VENDOR} (TM) ${SITE_SYSTEM} PROTOCOL`,
-          `INITIALIZING ${SITE_MODEL}...`,
-          '',
-          '> SET TERMINAL/INQUIRE',
-          SITE_MODEL,
-          '> SET FILE/PROTECTION=OWNER:RWED ACCOUNTS.F',
-          '> SET HALT RESTART/MAINT',
-          '',
-          `INITIALIZING ${SITE_VENDOR}(TM) BOOT AGENT v2.3.0`,
-          'RETROS BIOS  RBIOS-4.02.08.00 52EE5.E7.E8',
-          `COPYRIGHT 1984-1991 ${SITE_VENDOR}`,
-          'UPPERMEM: 64 KB   ROOT: 05EAC8FF',
-          'EXECUTING THREAD...',
-          'LOAD ' + SITE_TITLE + ' // READY',
-        ].map((line, i) => (
-          <span class="boot-line" style={`--i:${i}`}>{line + '\n'}</span>
-        ))}</pre>
-        <div class="crt-boot__skip" aria-live="polite">
-          <span>[ REDIRECTING IN <span class="crt-boot__count" id="crt-boot-count">3</span>... ]</span>
+        <img class="crt-boot__logo" src="/favicon.png" alt="" width="1254" height="1254" />
+        <p class="crt-boot__eyebrow">PERSONAL SITE // ONLINE</p>
+        <h1 class="crt-boot__title">Welcome.</h1>
+        <p class="crt-boot__intro">I’m {SITE_TITLE}. Thanks for stopping by.</p>
+        <div class="crt-boot__checks" aria-hidden="true">
+          <span><i>✓</i> Profile ready</span>
+          <span><i>✓</i> Work selected</span>
+          <span><i>✓</i> Stories loaded</span>
         </div>
-      </div>
-      <div class="crt-boot__matrix" aria-hidden="true">
-        {['01A7//SYS','1100<>RUN','ANIQ0101','101//HOME','00110110','BOOT//01','11001010','SYS<>101','0101RUN','HOME//11','10110001','001<>SYS'].map((stream, index) => (
-          <span style={`--column:${index};--delay:${(index % 4) * -0.045}s`}>{stream}<br />{stream}<br />{stream}</span>
-        ))}
+        <div class="crt-boot__progress" aria-hidden="true"><span></span></div>
+        <div class="crt-boot__skip" aria-live="polite">
+          Entering site in <span class="crt-boot__count" id="crt-boot-count">3</span>
+        </div>
       </div>
     </div>
     <script is:inline>
@@ -121,7 +106,7 @@ const socialImageUrl = new URL('/social/aniq-terminal-social.png', Astro.site);
         if (!boot) return;
         var mq = window.matchMedia;
         var reduce = mq && mq('(prefers-reduced-motion: reduce)').matches;
-        if (reduce || sessionStorage.getItem('booted-v3')) {
+        if (reduce || sessionStorage.getItem('booted-v6')) {
           boot.classList.add('crt-boot--off');
         } else {
           document.body.classList.add('boot-active');
@@ -241,10 +226,13 @@ const socialImageUrl = new URL('/social/aniq-terminal-social.png', Astro.site);
         const finishBoot = () => {
           if (finished) return;
           finished = true;
-          sessionStorage.setItem('booted-v3', '1');
+          sessionStorage.setItem('booted-v6', '1');
           boot.classList.add('crt-boot--done');
-          document.body.classList.remove('boot-active');
-          setTimeout(() => boot.remove(), 560);
+          setTimeout(() => {
+            boot.remove();
+            document.body.classList.remove('boot-active');
+            document.querySelector('.crt')?.classList.add('crt--boot-reveal');
+          }, 440);
         };
 
         const tick = () => {
@@ -263,7 +251,7 @@ const socialImageUrl = new URL('/social/aniq-terminal-social.png', Astro.site);
           setTimeout(tick, 650);
         };
 
-        // The diagnostic lines establish the scene, then a brisk 3–2–1 begins.
+        // Let the welcome settle, then begin a brisk 3–2–1.
         setTimeout(tick, 1450);
       })();
 
