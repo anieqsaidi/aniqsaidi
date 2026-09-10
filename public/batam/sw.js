@@ -1,4 +1,4 @@
-const SHELL = 'batam-shell-v4';
+const SHELL = 'batam-shell-v5';
 const HOME = '/batam/';
 
 self.addEventListener('install', (event) => {
@@ -13,7 +13,7 @@ self.addEventListener('install', (event) => {
       const matches = html.matchAll(/(?:src|href)=["']([^"']+)["']/g);
       const assets = [...matches]
         .map((match) => new URL(match[1], self.location.origin))
-        .filter((url) => url.origin === self.location.origin)
+        .filter((url) => url.origin === self.location.origin && isBatamPath(url.pathname))
         .map((url) => url.href);
       await Promise.all(
         [...new Set(assets)].map(async (asset) => {
@@ -22,31 +22,46 @@ self.addEventListener('install', (event) => {
           } catch {
             // One optional asset must not break offline installation.
           }
-        })
+        }),
       );
-    })
+    }),
   );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key.startsWith('batam-shell-') && key !== SHELL).map((key) => caches.delete(key)))));
+  event.waitUntil(
+    caches.keys().then((keys) => Promise.all(
+      keys
+        .filter((key) => key.startsWith('batam-shell-') && key !== SHELL)
+        .map((key) => caches.delete(key)),
+    )),
+  );
   self.clients.claim();
 });
 
+function isBatamPath(pathname) {
+  return pathname === '/batam' || pathname.startsWith('/batam/');
+}
+
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
-  if (event.request.method !== 'GET' || url.origin !== location.origin || url.pathname.startsWith('/api/')) return;
+  if (
+    event.request.method !== 'GET'
+    || url.origin !== self.location.origin
+    || !isBatamPath(url.pathname)
+  ) return;
+
   if (event.request.mode === 'navigate') {
-    // This worker exists only for the private trip portal. Never cache or
-    // respond to navigations elsewhere on aniqsaidi.my.
-    if (!url.pathname.startsWith('/batam')) return;
     event.respondWith(fetch(event.request).then((response) => {
-      caches.open(SHELL).then((cache) => cache.put(HOME, response.clone()));
+      if (response.ok) {
+        caches.open(SHELL).then((cache) => cache.put(HOME, response.clone()));
+      }
       return response;
     }).catch(() => caches.match(HOME)));
     return;
   }
+
   event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
     if (response.ok) caches.open(SHELL).then((cache) => cache.put(event.request, response.clone()));
     return response;

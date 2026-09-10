@@ -62,6 +62,36 @@ const socialImageUrl = new URL('/social/aniq-terminal-social.png', Astro.site);
       href={new URL('rss.xml', Astro.site)}
     />
     <title id="site-page-title">{pageTitle}</title>
+    <!-- Recover visitors who still have the accidentally root-scoped Batam worker. -->
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(async (registrations) => {
+          const legacyRegistrations = registrations.filter((registration) => {
+            const worker = registration.active || registration.waiting || registration.installing;
+            if (!worker || !worker.scriptURL || !registration.scope) return false;
+
+            try {
+              return new URL(worker.scriptURL).pathname === '/batam-sw.js'
+                && new URL(registration.scope).pathname === '/';
+            } catch {
+              return false;
+            }
+          });
+
+          if (legacyRegistrations.length === 0) return;
+
+          await Promise.all(legacyRegistrations.map((registration) => registration.unregister()));
+          if ('caches' in window) {
+            const cacheKeys = await window.caches.keys();
+            await Promise.all(
+              cacheKeys
+                .filter((key) => key.startsWith('batam-shell-'))
+                .map((key) => window.caches.delete(key)),
+            );
+          }
+        }).catch(() => {});
+      }
+    </script>
     <!-- Apply the saved theme before first paint so it does not flash. -->
     <script is:inline>
       document.documentElement.dataset.js = 'true';

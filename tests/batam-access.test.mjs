@@ -2,6 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { adminSnapshot, BATAM_ACCOUNTS, BATAM_TRAVELLERS, documentForAccount, profileForAccount } from '../functions/batam-trip.mjs';
 import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+import {
+  cleanupLegacyBatamServiceWorkers,
+  isLegacyBatamRegistration,
+  registerBatamServiceWorker,
+} from '../src/scripts/batamServiceWorker.js';
 
 const expectedMembers = {
   aniq: ['aniq'], faisal: ['faisal'],
@@ -106,11 +112,123 @@ test('document previews use the offline custom viewer for PDFs and supported ima
   assert.match(source, /fullscreen\.addEventListener\('click', dispose\)/);
 });
 
-test('the Batam service worker cannot cache or serve public-site navigations', () => {
-  const page = readFileSync(new URL('../src/pages/batam.astro', import.meta.url), 'utf8');
-  const worker = readFileSync(new URL('../public/batam-sw.js', import.meta.url), 'utf8');
-  assert.match(page, /scope: '\/batam\/'/);
-  assert.match(page, /scriptPath === '\/batam-sw\.js' && scopePath === '\/'/);
-  assert.match(worker, /if \(!url\.pathname\.startsWith\('\/batam'\)\) return/);
-  assert.match(worker, /const SHELL = 'batam-shell-v4'/);
+test('legacy Batam registration detection requires the old script and root scope', () => {
+  const registration = (scriptPath, scopePath, state = 'active') => ({
+    [state]: { scriptURL: `https://aniqsaidi.my${scriptPath}` },
+    scope: `https://aniqsaidi.my${scopePath}`,
+  });
+
+  assert.equal(isLegacyBatamRegistration(registration('/batam-sw.js', '/')), true);
+  assert.equal(isLegacyBatamRegistration(registration('/batam-sw.js', '/', 'waiting')), true);
+  assert.equal(isLegacyBatamRegistration(registration('/batam-sw.js', '/batam/')), false);
+  assert.equal(isLegacyBatamRegistration(registration('/batam/sw.js', '/batam/')), false);
+  assert.equal(isLegacyBatamRegistration(registration('/another-sw.js', '/')), false);
+});
+
+test('public cleanup unregisters only root-scoped legacy workers and removes only Batam shell caches', async () => {
+  const unregistered = [];
+  const deletedCaches = [];
+  const registration = (scriptPath, scopePath) => ({
+    active: { scriptURL: `https://aniqsaidi.my${scriptPath}` },
+    scope: `https://aniqsaidi.my${scopePath}`,
+    unregister: async () => { unregistered.push(`${scriptPath}:${scopePath}`); return true; },
+  });
+  const registrations = [
+    registration('/batam-sw.js', '/'),
+    registration('/batam-sw.js', '/batam/'),
+    registration('/another-sw.js', '/'),
+  ];
+  const cacheStorage = {
+    keys: async () => ['batam-shell-v3', 'batam-shell-v4', 'portfolio-assets'],
+    delete: async (key) => { deletedCaches.push(key); return true; },
+  };
+
+  assert.equal(await cleanupLegacyBatamServiceWorkers({ getRegistrations: async () => registrations }, cacheStorage), true);
+  assert.deepEqual(unregistered, ['/batam-sw.js:/']);
+  assert.deepEqual(deletedCaches, ['batam-shell-v3', 'batam-shell-v4']);
+});
+
+test('cleanup leaves caches untouched when no root-scoped legacy worker exists', async () => {
+  let cacheReads = 0;
+  const registration = {
+    active: { scriptURL: 'https://aniqsaidi.my/batam-sw.js' },
+    scope: 'https://aniqsaidi.my/batam/',
+  };
+  const cleaned = await cleanupLegacyBatamServiceWorkers(
+    { getRegistrations: async () => [registration] },
+    { keys: async () => { cacheReads += 1; return []; } },
+  );
+
+  assert.equal(cleaned, false);
+  assert.equal(cacheReads, 0);
+});
+
+test('the public layout runs legacy cleanup inline before bundled page scripts', () => {
+  const layout = readFileSync(new URL('../src/layouts/Layout.astro', import.meta.url), 'utf8');
+  const cleanupStart = layout.indexOf("navigator.serviceWorker.getRegistrations()");
+  const bundledScriptStart = layout.indexOf("import { sfx, bindSfx }");
+
+  assert.ok(cleanupStart > -1, 'public layout must contain the recovery hook');
+  assert.ok(cleanupStart < bundledScriptStart, 'recovery hook must run before bundled scripts');
+  assert.match(layout, /worker\.scriptURL\)\.pathname === '\/batam-sw\.js'/);
+  assert.match(layout, /registration\.scope\)\.pathname === '\/'/);
+  assert.match(layout, /key\.startsWith\('batam-shell-'\)/);
+});
+
+test('Batam registration uses the relocated worker and restricted scope', async () => {
+  const calls = [];
+  const serviceWorker = {
+    getRegistrations: async () => [],
+    register: async (...args) => {
+      calls.push(args);
+      return { update: async () => { calls.push(['update']); } };
+    },
+  };
+
+  await registerBatamServiceWorker(serviceWorker);
+  assert.deepEqual(calls, [
+    ['/batam/sw.js', { scope: '/batam/', updateViaCache: 'none' }],
+    ['update'],
+  ]);
+});
+
+test('the Batam worker handles Batam paths and ignores every public-site request', () => {
+  const workerSource = readFileSync(new URL('../public/batam/sw.js', import.meta.url), 'utf8');
+  const listeners = {};
+  const context = {
+    URL,
+    location: { origin: 'https://aniqsaidi.my' },
+    self: {
+      location: { origin: 'https://aniqsaidi.my' },
+      addEventListener: (name, listener) => { listeners[name] = listener; },
+      skipWaiting: () => {},
+      clients: { claim: () => {} },
+    },
+    caches: {
+      open: async () => ({ put: async () => {} }),
+      match: async () => undefined,
+    },
+    fetch: async () => ({ ok: true, clone: () => ({}) }),
+  };
+  vm.runInNewContext(workerSource, context);
+
+  const isIntercepted = (pathname) => {
+    let intercepted = false;
+    listeners.fetch({
+      request: {
+        url: `https://aniqsaidi.my${pathname}`,
+        method: 'GET',
+        mode: 'navigate',
+      },
+      respondWith: () => { intercepted = true; },
+    });
+    return intercepted;
+  };
+
+  for (const pathname of ['/', '/about', '/projects', '/experience', '/certifications', '/awards', '/leadership', '/archives', '/_astro/example.css', '/_astro/example.js', '/favicon.png']) {
+    assert.equal(isIntercepted(pathname), false, `${pathname} must not be intercepted`);
+  }
+  for (const pathname of ['/batam', '/batam/', '/batam/admin']) {
+    assert.equal(isIntercepted(pathname), true, `${pathname} should be handled`);
+  }
 });
