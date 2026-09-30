@@ -1,0 +1,35 @@
+{
+  "indexes": [
+    { "collectionGroup": "loans", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "ownerId", "order": "ASCENDING" }, { "fieldPath": "vehicleId", "order": "ASCENDING" }] },
+    { "collectionGroup": "maintenance", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "ownerId", "order": "ASCENDING" }, { "fieldPath": "vehicleId", "order": "ASCENDING" }, { "fieldPath": "serviceDate", "order": "DESCENDING" }] },
+    { "collectionGroup": "maintenance", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "ownerId", "order": "ASCENDING" }, { "fieldPath": "vehicleId", "order": "ASCENDING" }, { "fieldPath": "serviceDate", "order": "ASCENDING" }] },
+    { "collectionGroup": "maintenance", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "ownerId", "order": "ASCENDING" }, { "fieldPath": "vehicleId", "order": "ASCENDING" }, { "fieldPath": "totalCost", "order": "ASCENDING" }] },
+    { "collectionGroup": "maintenance", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "ownerId", "order": "ASCENDING" }, { "fieldPath": "vehicleId", "order": "ASCENDING" }, { "fieldPath": "serviceDate", "order": "ASCENDING" }, { "fieldPath": "totalCost", "order": "ASCENDING" }] },
+    { "collectionGroup": "maintenance", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "ownerId", "order": "ASCENDING" }, { "fieldPath": "vehicleId", "order": "ASCENDING" }, { "fieldPath": "recordType", "order": "ASCENDING" }, { "fieldPath": "scheduleId", "order": "ASCENDING" }] },
+    { "collectionGroup": "odometer", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "ownerId", "order": "ASCENDING" }, { "fieldPath": "vehicleId", "order": "ASCENDING" }, { "fieldPath": "recordedAt", "order": "DESCENDING" }] },
+    { "collectionGroup": "expenses", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "ownerId", "order": "ASCENDING" }, { "fieldPath": "vehicleId", "order": "ASCENDING" }, { "fieldPath": "expenseDate", "order": "DESCENDING" }] },
+    { "collectionGroup": "loanPayments", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "ownerId", "order": "ASCENDING" }, { "fieldPath": "vehicleId", "order": "ASCENDING" }, { "fieldPath": "paymentDate", "order": "DESCENDING" }] }
+  ],
+  "fieldOverrides": [
+    {
+      "collectionGroup": "cvRequestLimits",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "DESCENDING", "queryScope": "COLLECTION" },
+        { "arrayConfig": "CONTAINS", "queryScope": "COLLECTION" }
+      ]
+    },
+    {
+      "collectionGroup": "cvRequests",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "DESCENDING", "queryScope": "COLLECTION" },
+        { "arrayConfig": "CONTAINS", "queryScope": "COLLECTION" }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,7 @@
+## Design preference
+
+Keep layouts neat and avoid unnecessary page scrolling. When a page fits in the viewport, keep it fixed; allow scrolling whenever content would otherwise be clipped, especially on smaller screens.
+
 ## Development
 
 When starting the dev server, use background mode:

@@ -1,6 +1,7 @@
 {
   "firestore": {
-    "rules": "firestore.rules"
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   },
   "storage": {
     "rules": "storage.rules"
@@ -181,6 +182,14 @@
             "key": "Cache-Control",
             "value": "private, no-store"
           }
+        ]
+      },
+      {
+        "source": "/car{,/**}",
+        "headers": [
+          { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" },
+          { "key": "Cache-Control", "value": "private, no-cache" },
+          { "key": "Referrer-Policy", "value": "no-referrer" }
         ]
       },
       {

@@ -7,12 +7,20 @@ import {
   initializeTestEnvironment,
 } from '@firebase/rules-unit-testing';
 import {
+  collection,
   deleteDoc,
   doc,
+  getAggregateFromServer,
   getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
   serverTimestamp,
   setDoc,
+  sum,
   updateDoc,
+  where,
   writeBatch,
 } from 'firebase/firestore';
 import { CMS_PAGE_IDS, migrateV1ToV2 } from '../src/data/cmsSchema.ts';
@@ -90,6 +98,42 @@ test('a verified matching email with the wrong UID is denied', async () => {
     email_verified: true,
   }).firestore();
   await assertFails(setDoc(doc(wrongUserDb, 'siteDrafts', 'home'), publishedHome()));
+});
+
+test('car data belongs only to the approved owner and its vehicle', async () => {
+  const ownerDb = environment.authenticatedContext(ADMIN_UID).firestore();
+  const otherDb = environment.authenticatedContext('another-person').firestore();
+  const vehicle = doc(ownerDb, 'vehicles', 'myvi-test');
+  await assertSucceeds(setDoc(vehicle, { ownerId: ADMIN_UID, currentMileage: 12345, registrationNo: 'TEST' }));
+  await assertFails(getDoc(doc(otherDb, 'vehicles', 'myvi-test')));
+  await assertFails(setDoc(doc(otherDb, 'vehicles', 'stolen'), { ownerId: ADMIN_UID, currentMileage: 0 }));
+  const expense = doc(ownerDb, 'expenses', 'fuel-test');
+  await assertSucceeds(setDoc(expense, { ownerId: ADMIN_UID, vehicleId: 'myvi-test', amount: 25, expenseDate: serverTimestamp() }));
+  await assertSucceeds(getDoc(expense));
+  await assertFails(getDoc(doc(otherDb, 'expenses', 'fuel-test')));
+  await assertFails(setDoc(doc(otherDb, 'expenses', 'forged'), { ownerId: 'another-person', vehicleId: 'myvi-test', amount: 10 }));
+  await assertFails(updateDoc(expense, { vehicleId: 'other-vehicle' }));
+  await assertFails(setDoc(doc(ownerDb, 'maintenance', 'wrong-vehicle'), { ownerId: ADMIN_UID, vehicleId: 'missing', totalCost: 0 }));
+});
+
+test('car query shapes and coupled vehicle writes are authorized', async () => {
+  const ownerDb = environment.authenticatedContext(ADMIN_UID).firestore();
+  const vehicle = doc(ownerDb, 'vehicles', 'batched-myvi');
+  const reading = doc(ownerDb, 'odometer', 'first-reading');
+  const batch = writeBatch(ownerDb);
+  batch.set(vehicle, { ownerId: ADMIN_UID, currentMileage: 40000, registrationNo: 'TEST' });
+  batch.set(reading, { ownerId: ADMIN_UID, vehicleId: vehicle.id, mileage: 40000, source: 'system', recordedAt: serverTimestamp() });
+  await assertSucceeds(batch.commit());
+  const service = doc(ownerDb, 'maintenance', 'myvi-40k');
+  const serviceBatch = writeBatch(ownerDb);
+  serviceBatch.set(service, { ownerId: ADMIN_UID, vehicleId: vehicle.id, recordType: 'scheduled', scheduleId: 'perodua-myvi1500-auto-40000', totalCost: 610, serviceDate: serverTimestamp() });
+  serviceBatch.set(doc(ownerDb, 'odometer', 'maintenance-myvi-40k'), { ownerId: ADMIN_UID, vehicleId: vehicle.id, mileage: 41000, source: 'maintenance', recordedAt: serverTimestamp() });
+  serviceBatch.update(vehicle, { currentMileage: 41000 });
+  await assertSucceeds(serviceBatch.commit());
+  await assertSucceeds(getDocs(query(collection(ownerDb, 'maintenance'), where('ownerId', '==', ADMIN_UID), where('vehicleId', '==', vehicle.id), orderBy('serviceDate', 'desc'), limit(100))));
+  await assertSucceeds(getDocs(query(collection(ownerDb, 'maintenance'), where('ownerId', '==', ADMIN_UID), where('vehicleId', '==', vehicle.id), where('recordType', '==', 'scheduled'), where('scheduleId', 'in', ['perodua-myvi1500-auto-40000']), limit(20))));
+  const total = await assertSucceeds(getAggregateFromServer(query(collection(ownerDb, 'maintenance'), where('ownerId', '==', ADMIN_UID), where('vehicleId', '==', vehicle.id)), { total: sum('totalCost') }));
+  assert.equal(total.data().total, 610);
 });
 
 test('the approved UID can atomically write valid v1 documents', async () => {

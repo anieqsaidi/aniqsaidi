@@ -602,6 +602,64 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    function isCarOwner() {
+      return request.auth != null && request.auth.uid == '1Mhzu5HmjdU82yzGlph6gQHX1843';
+    }
+
+    function ownsVehicle(vehicleId) {
+      return vehicleId is string
+        && exists(/databases/$(database)/documents/vehicles/$(vehicleId))
+        && get(/databases/$(database)/documents/vehicles/$(vehicleId)).data.ownerId == request.auth.uid;
+    }
+
+    function ownsVehicleAfter(vehicleId) {
+      return vehicleId is string
+        && getAfter(/databases/$(database)/documents/vehicles/$(vehicleId)).data.ownerId == request.auth.uid;
+    }
+
+    function validCarChild(data) {
+      return isCarOwner()
+        && data.ownerId == request.auth.uid
+        && ownsVehicleAfter(data.vehicleId);
+    }
+
+    function immutableCarChild() {
+      return request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.vehicleId == resource.data.vehicleId;
+    }
+
+    match /users/{uid} {
+      allow read, create, update, delete: if isCarOwner() && uid == request.auth.uid;
+    }
+
+    match /vehicles/{vehicleId} {
+      allow read: if isCarOwner() && resource.data.ownerId == request.auth.uid;
+      allow create: if isCarOwner() && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.currentMileage is int && request.resource.data.currentMileage >= 0;
+      allow update: if isCarOwner() && resource.data.ownerId == request.auth.uid
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.currentMileage is int && request.resource.data.currentMileage >= 0;
+      allow delete: if false;
+    }
+
+    match /{kind}/{recordId} {
+      allow read: if kind in ['loans', 'loanPayments', 'maintenance', 'odometer', 'expenses']
+        && isCarOwner() && resource.data.ownerId == request.auth.uid && ownsVehicle(resource.data.vehicleId);
+      allow create: if kind in ['loans', 'loanPayments', 'maintenance', 'odometer', 'expenses']
+        && validCarChild(request.resource.data)
+        && (kind != 'loanPayments' || (
+          request.resource.data.loanId is string
+          && getAfter(/databases/$(database)/documents/loans/$(request.resource.data.loanId)).data.vehicleId == request.resource.data.vehicleId
+          && getAfter(/databases/$(database)/documents/loans/$(request.resource.data.loanId)).data.ownerId == request.auth.uid
+        ));
+      allow update: if kind in ['loans', 'loanPayments', 'maintenance', 'odometer', 'expenses']
+        && isCarOwner() && resource.data.ownerId == request.auth.uid
+        && immutableCarChild() && ownsVehicleAfter(resource.data.vehicleId)
+        && (kind != 'loanPayments' || request.resource.data.loanId == resource.data.loanId);
+      allow delete: if kind in ['loans', 'loanPayments', 'maintenance', 'odometer', 'expenses']
+        && isCarOwner() && resource.data.ownerId == request.auth.uid && ownsVehicle(resource.data.vehicleId);
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

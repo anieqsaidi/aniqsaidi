@@ -23,8 +23,9 @@
     "test:ordering": "node --test tests/record-order.test.mjs tests/content-sort.test.mjs",
     "test:security": "node --test tests/cv-security.test.mjs tests/security-posture.test.mjs",
     "test:batam": "node --test tests/batam-access.test.mjs",
-    "verify:prod": "npm run build && npm run test:cms && npm run test:editorial && npm run test:operations && npm run test:accessibility && npm run test:public-cms && npm run test:email && npm run test:ordering && npm run test:security && npm run test:batam && npm run test:admin",
-    "deploy:prod": "npm run verify:prod && firebase deploy --only functions,hosting,firestore:rules,storage --project aniqsaidi",
+    "test:car": "node --test tests/car.test.mjs",
+    "verify:prod": "npm run build && npm run test:cms && npm run test:editorial && npm run test:operations && npm run test:accessibility && npm run test:public-cms && npm run test:email && npm run test:ordering && npm run test:security && npm run test:batam && npm run test:admin && npm run test:car",
+    "deploy:prod": "npm run verify:prod && firebase deploy --only functions,hosting,firestore:rules,firestore:indexes,storage --project aniqsaidi",
     "test:rules": "firebase emulators:exec --only firestore --project demo-aniqsaidi \"node --test tests/firestore.rules.test.mjs\"",
     "test:storage": "firebase emulators:exec --only storage --project demo-aniqsaidi \"node --test tests/storage.rules.test.mjs\"",
     "test:admin": "node --test tests/admin-insights.test.mjs"
@@ -37,6 +38,8 @@
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.1",
-    "firebase-tools": "^15.18.0"
+    "@tailwindcss/vite": "^4.3.3",
+    "firebase-tools": "^15.18.0",
+    "tailwindcss": "^4.3.3"
   }
 }
