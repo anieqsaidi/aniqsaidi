@@ -1,0 +1,27 @@
+name: Check Firebase deployment account
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check_identity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ANIQSAIDI }}
+      - name: Show deployment account email only
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const credentials = JSON.parse(readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS, 'utf8'));
+          const email = credentials.client_email;
+          if (typeof email !== 'string' || !/^[A-Za-z0-9._+-]+@[A-Za-z0-9.-]+\.gserviceaccount\.com$/.test(email)) {
+            throw new Error('No valid service-account email found in deployment credentials.');
+          }
+          console.log(`Firebase deployment account: ${email}`);
+          NODE
