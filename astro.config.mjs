@@ -3,7 +3,6 @@ import { defineConfig } from 'astro/config';
 import { execFileSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import tailwindcss from '@tailwindcss/vite';
 import { adminSnapshot, BATAM_ACCOUNTS, documentForAccount, profileForAccount } from './functions/batam-trip.mjs';
 
 const packageMetadata = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
@@ -90,7 +89,7 @@ function batamDevelopmentApi() {
 export default defineConfig({
   site: 'https://aniqsaidi.my',
   vite: {
-    plugins: [tailwindcss(), batamDevelopmentApi()],
+    plugins: [batamDevelopmentApi()],
     build: {
       // The full Firebase SDK is isolated to authenticated admin routes.
       // Public pages use the much smaller Firestore Lite bundle.

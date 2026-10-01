@@ -12,7 +12,7 @@ The Firebase Console must have Google sign-in enabled and `aniqsaidi.my` listed 
 
 `src/car/schedule.ts` has only the supplied 40,000 km and 80,000 km automatic item group. The line totals and regional totals came from the owner-supplied screenshot described in `AGENTS.md`. Its capture/check date is unknown, so the app labels every price as an unverified reference. The public Perodua selector did not expose the selected table in inspectable page content on 30 September 2026. A service centre or the vehicle's Warranty and Service Booklet should confirm applicable dates, items, and current prices before more milestones are added. The booklet takes priority for this specific car.
 
-HyperDrive was inspected as a visual reference. Its current repository has no license file, so no source code, images, fonts, or icons were copied. The app uses its own personal-dashboard layout and Tailwind integration.
+HyperDrive was inspected as a visual reference. Its current repository has no license file, so no source code, images, fonts, or icons were copied. The app uses its own personal-dashboard layout and plain CSS styles.
 
 ## Local checks and release
 

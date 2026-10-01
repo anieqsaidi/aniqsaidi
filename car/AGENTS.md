@@ -20,7 +20,7 @@ This file belongs at `aniqsaidi/car/AGENTS.md` and applies to `/car` and the min
 
 ### Required stack
 
-- Astro with **static output** and Tailwind CSS; use the versions and integration API compatible with the existing repository.
+- Astro with **static output** and plain CSS; do not add Tailwind. Use the Astro version compatible with the existing repository.
 - Vanilla TypeScript/JavaScript for client-side state, forms, calculations, filtering and Firebase operations. Astro handles static layouts and markup.
 - Existing **`aniqsaidi` Firebase project**, Firebase Hosting, Cloud Firestore, and Firebase Authentication. Reuse existing Firebase initialization and authentication if present; centralize the client app, `auth`, and `db` in one module if absent.
 - Chart.js only if a small chart materially helps. No state-management framework.
@@ -28,7 +28,7 @@ This file belongs at `aniqsaidi/car/AGENTS.md` and applies to `/car` and the min
 
 ### HyperDrive adaptation
 
-Use [HyperDrive](https://github.com/wpinfusion/astro-hyperdrive) as a **visual source**, after inspecting its current source and license. Adapt suitable automotive typography, cards, imagery, buttons, grids, responsive patterns and Tailwind styles. Remove dealership inventory, car sales/search, featured listings, makes directory, blog, corporate counts, sales CTAs/team and contact-sales flow. Remove or refactor Netlify adapter/configuration, server actions, server form handlers and API routes if they interfere with a static Firebase build. Do not blindly copy the template or replace the existing site. The finished app must look like a personal ownership dashboard.
+Use [HyperDrive](https://github.com/wpinfusion/astro-hyperdrive) as a **visual source**, after inspecting its current source and license. Adapt suitable automotive typography, cards, imagery, buttons, grids, responsive patterns and styling patterns using plain CSS. Remove dealership inventory, car sales/search, featured listings, makes directory, blog, corporate counts, sales CTAs/team and contact-sales flow. Remove or refactor Netlify adapter/configuration, server actions, server form handlers and API routes if they interfere with a static Firebase build. Do not blindly copy the template or replace the existing site. The finished app must look like a personal ownership dashboard.
 
 ### `/car` deployment boundary
 

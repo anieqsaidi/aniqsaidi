@@ -27,6 +27,14 @@ Consult these guides before working on related tasks:
 
 ## Deployment
 
+### GitHub Actions deployment troubleshooting
+
+If a Firebase workflow fails, inspect the failed job logs before changing application code. A successful build and validation followed by a Firestore indexes HTTP 403 (`The caller does not have permission`) indicates a deployment service-account IAM issue.
+
+For this issue, guide the user step by step to grant `roles/datastore.indexAdmin` (Cloud Datastore Index Admin) in the `aniqsaidi` project to the service account used by the GitHub secret `FIREBASE_SERVICE_ACCOUNT_ANIQSAIDI`. Identify the account by its `client_email`; do not assume an account from its name or expose the secret JSON/private key. Preserve existing roles and allow time for permission propagation. Other 403 errors need their own diagnosis rather than automatically applying this role.
+
+Explain that rerunning the production workflow deploys the application. Do not change IAM permissions or rerun a deployment workflow without explicit user authorization. Run local build and validation checks and report code readiness separately from deployment permission blockers.
+
 Do not deploy the application automatically.
 
 Codex may:
