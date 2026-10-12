@@ -1,16 +1,6 @@
 ---
 import { SITE_VERSION, SITE_BUILD_ID } from '../consts';
 import PrimaryNav from './PrimaryNav.astro';
-
-const buildDateValue = new Date();
-const buildDate = buildDateValue
-  .toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-  .toUpperCase();
-const compactBuildDate = buildDateValue
-  .toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })
-  .replaceAll(' ', '-')
-  .toUpperCase();
-
 ---
 
 <header class="t-header">
@@ -29,7 +19,7 @@ const compactBuildDate = buildDateValue
         <time class="header-clock" id="header-clock" aria-label="Current time in Malaysia">
           <span id="clock-hour">--</span><span class="clock-separator" aria-hidden="true">:</span><span id="clock-minute">--</span> MYT
         </time>
-        <span class="header-mobile-date" aria-label={`Build date ${buildDate}`}>// {compactBuildDate}</span>
+        <span class="header-mobile-date" aria-label="Current date in Malaysia">// -- --- --</span>
       </span>
     </div>
     <div class="h-line h-line-bottom">
@@ -37,7 +27,7 @@ const compactBuildDate = buildDateValue
       <span class="header-build">BUILD {SITE_BUILD_ID}</span>
       <span class="header-date">
         <span id="birthday-emoji" role="img" aria-label="Birthday" hidden>🎉 </span>
-        <span class="header-date-full">{buildDate}</span><span class="header-date-short">{compactBuildDate}</span>
+        <span class="header-date-full">--</span><span class="header-date-short">-- --- --</span>
       </span>
     </div>
     <PrimaryNav placement="header" />
@@ -46,13 +36,29 @@ const compactBuildDate = buildDateValue
 
 <script is:inline>
   (function () {
-    var today = new Date();
     var birthdayEmoji = document.getElementById('birthday-emoji');
     var clock = document.getElementById('header-clock');
     var clockHour = document.getElementById('clock-hour');
     var clockMinute = document.getElementById('clock-minute');
+    var fullDate = document.querySelector('.header-date-full');
+    var shortDate = document.querySelector('.header-date-short');
+    var mobileDate = document.querySelector('.header-mobile-date');
+    var clockTimer;
+    var fullDateFormat = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Kuala_Lumpur',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    });
+    var shortDateFormat = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Kuala_Lumpur',
+      day: '2-digit',
+      month: 'short',
+      year: '2-digit',
+    });
 
     function updateClock() {
+      window.clearTimeout(clockTimer);
       if (!clock || !clockHour || !clockMinute) return;
 
       var now = new Date();
@@ -69,15 +75,28 @@ const compactBuildDate = buildDateValue
       clock.setAttribute('datetime', now.toISOString());
       clock.setAttribute('aria-label', malaysiaTime + ' Malaysia Time');
 
+      // Generate today's date in the browser, not when Astro builds the page.
+      var dateLabel = fullDateFormat.format(now).toUpperCase();
+      var compactDateLabel = shortDateFormat.format(now).replaceAll(' ', '-').toUpperCase();
+      if (fullDate) fullDate.textContent = dateLabel;
+      if (shortDate) shortDate.textContent = compactDateLabel;
+      if (mobileDate) {
+        mobileDate.textContent = '// ' + compactDateLabel;
+        mobileDate.setAttribute('aria-label', 'Current date in Malaysia: ' + dateLabel);
+      }
+      if (birthdayEmoji) birthdayEmoji.hidden = !compactDateLabel.startsWith('02-AUG-');
+
       // Update just after the minute changes instead of polling every second.
-      window.setTimeout(updateClock, 60050 - (Date.now() % 60000));
+      clockTimer = window.setTimeout(updateClock, 60050 - (Date.now() % 60000));
     }
 
     updateClock();
 
-    if (birthdayEmoji && today.getMonth() === 7 && today.getDate() === 2) {
-      birthdayEmoji.hidden = false;
-    }
+    // Refresh immediately when a suspended or cached page becomes visible again.
+    window.addEventListener('pageshow', updateClock);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) updateClock();
+    });
 
     var commandWord = document.getElementById('header-command-word');
     var reduceMotion = window.matchMedia
